@@ -1,68 +1,86 @@
-/* Dark Mode FTW */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Orbitron:wght@500&display=swap');
+
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background-color: #000000;
-  color: cyan;
-  line-height: 1.6;
+  background-color: #0b0f1a;
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+  height: 100vh;
+  color: #fff;
 }
 
-a {
-  color: red;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 2rem;
-}
-
-header {
+.bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
   text-align: center;
-  margin-bottom: 3rem;
 }
 
-header h1 {
+.content {
+  z-index: 10;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
   font-size: 3rem;
-  color: #f0f6fc;
+  color: #ffffff;
+  margin: 0;
+  animation: fadeIn 2s ease;
 }
 
-header p {
+.subtitle {
+  color: #9ea7bb;
   font-size: 1.2rem;
-  color: #8b949e;
+  margin-top: 0.5rem;
+  animation: fadeIn 3s ease;
 }
 
-section {
-  margin-bottom: 3rem;
+.btn {
+  margin-top: 2rem;
+  padding: 0.8rem 1.5rem;
+  background: #00ffd5;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  text-decoration: none;
+  border-radius: 6px;
+  box-shadow: 0 0 15px #00ffd5aa;
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
+  animation: fadeIn 4s ease;
 }
 
-h2 {
-  border-bottom: 2px solid #30363d;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  color: #f0f6fc;
+.btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px #00ffd5ff;
 }
 
-.project-card {
-  background-color: #161b22;
-  border: 1px solid #30363d;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+.blob {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle at 30% 30%, #00ffd5 0%, transparent 70%);
+  filter: blur(120px);
+  animation: float 10s ease-in-out infinite;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.project-card h3 {
-  margin-top: 0;
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -60%) scale(1.2);
+  }
 }
 
-footer {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #8b949e;
-  border-top: 1px solid #30363d;
-  padding-top: 1rem;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

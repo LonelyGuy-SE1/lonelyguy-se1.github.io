@@ -2,13 +2,13 @@
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
-  background-color: #0d1117;
-  color: #c9d1d9;
+  background-color: #000000;
+  color: cyan;
   line-height: 1.6;
 }
 
 a {
-  color: #58a6ff;
+  color: red;
   text-decoration: none;
 }
 a:hover {

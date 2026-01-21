@@ -1,41 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Midnight Echoes</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Display</title>
+    <style>
+      
+        body {
+            display: flex;
+            justify_content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #000000;
+        }
+
+        .gif-style {
+            max-width: 100%;      
+            height: auto;          
+            display: block;        
+            border-radius: 8px;    
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+        }
+    </style>
 </head>
 <body>
-<h6>This site was built with the objective to explore hosting a github page, hence AI was used to build this.</h6>
-  <div class="hero">
 
-    <h1>Midnight Echoes</h1>
-    <p>A quiet place at the edge of the internet, where reality blurs into dreams, and code becomes poetry.</p>
-    <button class="enter-btn" onclick="document.getElementById('world').scrollIntoView({behavior: 'smooth'})">Enter</button>
-  </div>
+    <img 
+        src="lonelyguyanimatedv1" 
+        alt="Animated GIF" 
+        class="gif-style"
+    >
 
-  <section class="section" id="world">
-    <h2>Fragments of the Dream</h2>
-    <div class="cards">
-      <div class="card">
-        <h3>🌙 Project Aether</h3>
-        <p>A procedurally generated pixel forest built with WebGL — inspired by Ghibli landscapes and ghost stories.</p>
-      </div>
-      <div class="card">
-        <h3>💫 Echo Synth</h3>
-        <p>A generative music visualizer that responds to your inner thoughts (or just whatever your mic hears).</p>
-      </div>
-      <div class="card">
-        <h3>🧬 Memory Threads</h3>
-        <p>A local-first journal built with CRDTs and anime monologue mode. Save thoughts, lose nothing.</p>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <p>Built in a parallel timeline where anime is reality — ✦ Midnight Echoes ✦</p>
-  </footer>
 </body>
 </html>

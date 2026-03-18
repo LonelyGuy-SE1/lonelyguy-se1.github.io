@@ -1,37 +1,778 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>./ Lonely Guy</title>
-    <link rel="icon" type="image/x-icon" href="SE1.jpg">
-    <style>
-      
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #000000;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lonely Guy</title>
+    <meta
+      name="description"
+      content="Lonely Guy: robotics, local inference, AI, and decentralized systems."
+    />
+    <link rel="icon" type="image/jpeg" href="assets/SE1.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">skip to main</a>
+    <a class="skip-link" href="#tabs">skip to sections</a>
+    <a class="skip-link" href="#footer">skip to footer</a>
 
-        .gif-style {
-            max-width: 100%;      
-            height: auto;          
-            display: block;        
-            border-radius: 8px;    
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
-        }
-    </style>
-</head>
-<body>
+    <div class="scroll-progress" aria-hidden="true">
+      <span class="scroll-progress-bar" id="scroll-progress-bar"></span>
+    </div>
 
-    <img 
-        src="lonelyguyanimatedv1.gif" 
-        alt="Animated GIF" 
-        class="gif-style"
+    <header class="site-header" id="top">
+      <div class="site-width header-inner">
+        <a class="brand" href="#top" data-scroll-top>
+          <img class="brand-mark" src="assets/SE1.jpg" alt="" />
+          <span class="brand-copy">
+            <strong>lonely guy</strong>
+          </span>
+        </a>
+
+        <nav class="breadcrumbs header-breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="#top" data-scroll-top>home</a></li>
+            <li aria-current="page" id="crumb-current">home</li>
+          </ol>
+        </nav>
+
+        <nav class="header-nav" aria-label="Header">
+          <div
+            class="header-tabs"
+            role="tablist"
+            aria-label="portfolio sections"
+          >
+            <button
+              class="tab-button"
+              id="tab-home"
+              role="tab"
+              type="button"
+              aria-selected="true"
+              aria-controls="panel-home"
+              tabindex="0"
+              data-tab="home"
+            >
+              home
+            </button>
+            <button
+              class="tab-button"
+              id="tab-now"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-now"
+              tabindex="-1"
+              data-tab="now"
+            >
+              now
+            </button>
+            <button
+              class="tab-button"
+              id="tab-stack"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-stack"
+              tabindex="-1"
+              data-tab="stack"
+            >
+              stack
+            </button>
+            <button
+              class="tab-button"
+              id="tab-path"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-path"
+              tabindex="-1"
+              data-tab="path"
+            >
+              path
+            </button>
+            <button
+              class="tab-button"
+              id="tab-updates"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-updates"
+              tabindex="-1"
+              data-tab="updates"
+            >
+              updates
+            </button>
+            <button
+              class="tab-button"
+              id="tab-articles"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-articles"
+              tabindex="-1"
+              data-tab="articles"
+            >
+              articles
+            </button>
+            <button
+              class="tab-button"
+              id="tab-papers"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-papers"
+              tabindex="-1"
+              data-tab="papers"
+            >
+              papers
+            </button>
+            <button
+              class="tab-button"
+              id="tab-images"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-images"
+              tabindex="-1"
+              data-tab="images"
+            >
+              images
+            </button>
+            <button
+              class="tab-button"
+              id="tab-links"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-links"
+              tabindex="-1"
+              data-tab="links"
+            >
+              links
+            </button>
+            <button
+              class="tab-button"
+              id="tab-contact"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-contact"
+              tabindex="-1"
+              data-tab="contact"
+            >
+              contact
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="site-width" id="main">
+      <section class="tabs-shell" id="tabs" aria-label="sections">
+        <div class="tab-panels">
+          <section
+            class="tab-panel"
+            id="panel-home"
+            role="tabpanel"
+            aria-labelledby="tab-home"
+          >
+            <p class="panel-label">home</p>
+            <div class="panel-head">
+              <h3>Choose the desired section from the header to navigate</h3>
+              <p>home is the default state.</p>
+            </div>
+
+            <section class="hero" aria-labelledby="hero-title">
+              <div class="hero-copy">
+                <h1 id="hero-title">
+                  rl, robotics, world models, embodied ai, and system stuff.
+                </h1>
+                <p class="hero-text">
+                  im a cs undergrad. im interested in embodied ai (rl as a
+                  focus), autonomus robotics, decentralized systems and pretty
+                  much any topics related to these. there is only one goal that
+                  i want to achieve, work towards making robotic brains
+                  autnomous, provide them autonomy, i want to have a humanoid
+                  assistant some day and want to work towards that. i love rl a
+                  LOT, i see huge huge potential to achieve my desires of an
+                  autonomous robotic assistant thorugh this. i see this as my
+                  path there. lastly, i love anime, its my lifeblood at this
+                  point to keep moving forward. :) i am always open to debate,
+                  discussion, and collaboration, regarding any of the topic
+                  above, even if they are remotely related, you can be sure i
+                  will make my way there :))
+                </p>
+              </div>
+
+              <div class="hero-media">
+                <figure class="hero-art">
+                  <img src="assets/yuri.png" alt="Yuri illustration" />
+                </figure>
+                <p class="hero-image-note">
+                  i am not sure what is with this image, but i feel its
+                  beautiful, and love the image
+                </p>
+              </div>
+            </section>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-now"
+            role="tabpanel"
+            aria-labelledby="tab-now"
+            hidden
+          >
+            <p class="panel-label">now</p>
+            <div class="panel-head">
+              <h3>what im on right now</h3>
+              <p>main areas im spending time on right now.</p>
+            </div>
+
+            <ul class="line-list line-list-wide">
+              <li>
+                <strong>reinforcement learning</strong>
+                <span
+                  >learning everything about rl from scratch, all content from
+                  20th century to the 21st century, following Aske Plaat's deep
+                  rl graduate textbook as of now.. also spending quite a bit of
+                  time experimenting with various other options too :)</span
+                >
+              </li>
+              <li>
+                <strong>LLMs</strong>
+                <span
+                  >learning everything about llms, again from back in the time..
+                  including stuff all the way from bag of words to transformers,
+                  been hearning that the chinese folks are coming up with
+                  something wild, gotta look into that too.</span
+                >
+              </li>
+              <li>
+                <strong>robotic simulations</strong>
+                <span
+                  >working towards getting myself familiar with various robotic
+                  simulation platforms and tools... purely hands on, no course,
+                  no structure.. will try, fk around and find out.. playing
+                  around with (mujoco, matlabs simulink/simscape, isaac lab,
+                  gazebo, ros, all open robotics products)</span
+                >
+              </li>
+              <li>
+                <strong>world models</strong>
+                <span
+                  >trying to play with world models, ive got some ideas i want
+                  to try and get working, might be real useful for robots
+                  training thorugh rl</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-stack"
+            role="tabpanel"
+            aria-labelledby="tab-stack"
+            hidden
+          >
+            <p class="panel-label">stack</p>
+            <div class="panel-head">
+              <h3>skill tree / sub stuff</h3>
+              <p>
+                this section is something ive always struggled with, when
+                exactly could one call that they have acquired a certain skill,
+                im sure the field keeps evolving... so its better to judge me by
+                having a talk. also what if i learned something but forgot it,
+                or learned it but cant apply it.
+              </p>
+            </div>
+
+            <div class="accordion">
+              <details open>
+                <summary>languages + base stuff</summary>
+                <ul class="tree">
+                  <li>
+                    <span class="tree-label">core</span>
+                    <ul>
+                      <li>python</li>
+                      <li>embedded c/c++</li>
+                      <li>java</li>
+                      <li>javascript</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="tree-label">web + model formats</span>
+                    <ul>
+                      <li>html</li>
+                      <li>css</li>
+                      <li>urdf</li>
+                      <li>mjcf</li>
+                    </ul>
+                  </li>
+                </ul>
+              </details>
+
+              <details>
+                <summary>ai / ml / learning side</summary>
+                <ul class="tree">
+                  <li>
+                    <span class="tree-label">concepts</span>
+                    <ul>
+                      <li>supervised learning</li>
+                      <li>unsupervised learning</li>
+                      <li>reinforcement learning</li>
+                      <li>deep learning</li>
+                      <li>
+                        llm basics, transformers, encoders, decoders, rnns
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="tree-label">tools</span>
+                    <ul>
+                      <li>numpy</li>
+                      <li>pandas</li>
+                      <li>matplotlib</li>
+                      <li>seaborn</li>
+                      <li>scikit-learn</li>
+                      <li>gymnasium</li>
+                      <li>stable baselines</li>
+                      <li>hugging face</li>
+                      <li>
+                        actually there are a lot more, simply cannot be listed
+                        here
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </details>
+
+              <details>
+                <summary>robotics / sim / embedded side</summary>
+                <ul class="tree">
+                  <li>
+                    <span class="tree-label">simulation</span>
+                    <ul>
+                      <li>matlab</li>
+                      <li>simulink</li>
+                      <li>simscape multibody</li>
+                      <li>mujoco</li>
+                      <li>gazebo</li>
+                      <li>isaac lab</li>
+                      <li>ros</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="tree-label">hardware</span>
+                    <ul>
+                      <li>arduino</li>
+                      <li>raspberry pi</li>
+                      <li>sensor work</li>
+                      <li>embedded c from robotics training</li>
+                      <li>
+                        i also played by dismantling and playing around with my
+                        personal systems, if that is of any significance (all
+                        the way to the cpu)
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </details>
+
+              <details>
+                <summary>infra / build / distributed side</summary>
+                <ul class="tree">
+                  <li>
+                    <span class="tree-label">workflow</span>
+                    <ul>
+                      <li>git</li>
+                      <li>github</li>
+                      <li>github actions</li>
+                      <li>jupyter</li>
+                      <li>colab</li>
+                      <li>bash</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="tree-label">systems</span>
+                    <ul>
+                      <li>docker</li>
+                      <li>fastapi</li>
+                      <li>
+                        parallax for decentralized heterogeneous inference
+                      </li>
+                      <li>
+                        blockchain architecture, dapps, daos, tokenomics
+                        (blockchain had its time, was a good time of my life)
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </details>
+            </div>
+            <details>
+              <summary>
+                maybe more skills, ive decided to not waste anymore time on this
+                section, as its really arbitrary, and skills can be learned and
+                will change with time.
+              </summary>
+            </details>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-path"
+            role="tabpanel"
+            aria-labelledby="tab-path"
+            hidden
+          >
+            <p class="panel-label">path</p>
+            <div class="panel-head">
+              <h3>where this is going</h3>
+              <p>what does the path look like.</p>
+            </div>
+
+            <ol class="path-list">
+              <li>
+                <strong>right now</strong>
+                <p>
+                  cs undergrad, figuring things out, forming connections,
+                  experimenting.
+                </p>
+              </li>
+              <li>
+                <strong
+                  >masters + research + maybe some entrepreneurship</strong
+                >
+                <p>
+                  nothing much to explain, start working towards a masters, do
+                  research in the areas mentioned above, publish papers,
+                  contribute to open source, and keep building stuff, i see a
+                  lot of stuff that has to be built... rl has a long way to go,
+                  and so does robotics. We are still struggling to replicate
+                  stuff a human could do with close to no effort.
+                </p>
+              </li>
+              <li>
+                <strong>research + anime</strong>
+                <p>
+                  keep working towards that goal of building an autonomus
+                  robtoic assistant, get it to be as close to a human as
+                  possible. playing with emotions seems to be a fun one, play
+                  with hormones...
+                </p>
+              </li>
+            </ol>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-updates"
+            role="tabpanel"
+            aria-labelledby="tab-updates"
+            hidden
+          >
+            <p class="panel-label">updates</p>
+            <div class="panel-head">
+              <h3>progress updates</h3>
+              <p>pick a note from the list and it opens on the right.</p>
+            </div>
+
+            <div class="updates-layout">
+              <aside
+                class="updates-list"
+                id="updates-list"
+                aria-label="update list"
+              >
+                <p class="dynamic-note">loading updates...</p>
+              </aside>
+
+              <div class="reader-shell">
+                <div class="reader-empty" id="updates-reader-empty">
+                  select an update from the list. the full note opens here.
+                </div>
+                <article
+                  class="update-reader"
+                  id="updates-reader-content"
+                  hidden
+                ></article>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-articles"
+            role="tabpanel"
+            aria-labelledby="tab-articles"
+            hidden
+          >
+            <p class="panel-label">articles</p>
+            <div class="panel-head">
+              <h3>articles</h3>
+              <p>longer writeups.</p>
+            </div>
+
+            <div class="updates-layout">
+              <aside
+                class="updates-list"
+                id="articles-list"
+                aria-label="article list"
+              >
+                <p class="dynamic-note">loading articles...</p>
+              </aside>
+
+              <div class="reader-shell">
+                <div class="reader-empty" id="articles-reader-empty">
+                  select an article from the list. the full note opens here.
+                </div>
+                <article
+                  class="update-reader"
+                  id="articles-reader-content"
+                  hidden
+                ></article>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-papers"
+            role="tabpanel"
+            aria-labelledby="tab-papers"
+            hidden
+          >
+            <p class="panel-label">papers</p>
+            <div class="panel-head">
+              <h3>papers</h3>
+              <p>published research and formal work.</p>
+            </div>
+
+            <div class="updates-layout">
+              <aside
+                class="updates-list"
+                id="papers-list"
+                aria-label="paper list"
+              >
+                <p class="dynamic-note">loading papers...</p>
+              </aside>
+
+              <div class="reader-shell">
+                <div class="reader-empty" id="papers-reader-empty">
+                  select a paper from the list. the full note opens here.
+                </div>
+                <article
+                  class="update-reader"
+                  id="papers-reader-content"
+                  hidden
+                ></article>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-images"
+            role="tabpanel"
+            aria-labelledby="tab-images"
+            hidden
+          >
+            <p class="panel-label">images</p>
+            <div class="panel-head">
+              <h3>gallery</h3>
+              <p>stuff i want to keep around visually.</p>
+            </div>
+
+            <div class="gallery-tools">
+              <label class="gallery-search">
+                <span class="visually-hidden">search images</span>
+                <input
+                  id="gallery-search"
+                  type="search"
+                  name="gallery-search"
+                  placeholder="search images"
+                  autocomplete="off"
+                />
+              </label>
+            </div>
+
+            <div class="gallery-grid" id="gallery-grid">
+              <p class="dynamic-note">loading images...</p>
+            </div>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-links"
+            role="tabpanel"
+            aria-labelledby="tab-links"
+            hidden
+          >
+            <p class="panel-label">links</p>
+            <div class="panel-head">
+              <h3>links</h3>
+              <p>public links for now.</p>
+            </div>
+
+            <ul class="social-list">
+              <li>
+                <span
+                  ><img
+                    class="service-logo"
+                    src="assets/icons/github.svg"
+                    alt=""
+                  />github</span
+                >
+                <a
+                  href="https://github.com/LonelyGuy-SE1"
+                  target="_blank"
+                  rel="noreferrer"
+                  >LonelyGuy-SE1</a
+                >
+              </li>
+              <li>
+                <span
+                  ><img
+                    class="service-logo"
+                    src="assets/icons/x.svg"
+                    alt=""
+                  />x</span
+                >
+                <a
+                  href="https://x.com/lonelyguyse1"
+                  target="_blank"
+                  rel="noreferrer"
+                  >x.com/lonelyguyse1</a
+                >
+              </li>
+              <li>
+                <span
+                  ><img
+                    class="service-logo"
+                    src="assets/icons/huggingface.svg"
+                    alt=""
+                  />hugging face</span
+                >
+                <a
+                  href="https://huggingface.co/Lonelyguyse1"
+                  target="_blank"
+                  rel="noreferrer"
+                  >huggingface.co/Lonelyguyse1</a
+                >
+              </li>
+              <li>
+                <span
+                  ><img
+                    class="service-logo"
+                    src="assets/icons/orcid.svg"
+                    alt=""
+                  />orcid</span
+                >
+                <a
+                  href="https://orcid.org/0009-0000-7221-863X"
+                  target="_blank"
+                  rel="noreferrer"
+                  >orcid.org/0009-0000-7221-863X</a
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-contact"
+            role="tabpanel"
+            aria-labelledby="tab-contact"
+            hidden
+          >
+            <p class="panel-label">contact</p>
+            <div class="panel-head">
+              <h3>contact me</h3>
+              <p>direct contact points.</p>
+            </div>
+
+            <ul class="social-list contact-list">
+              <li>
+                <span>email</span>
+                <div class="contact-stack">
+                  <a href="mailto:brawlers.assemble@gmail.com"
+                    >brawlers.assemble@gmail.com</a
+                  >
+                  <a href="mailto:lonelyguy.se1@gmail.com"
+                    >lonelyguy.se1@gmail.com</a
+                  >
+                </div>
+              </li>
+              <li>
+                <span
+                  ><img
+                    class="service-logo"
+                    src="assets/icons/discord.svg"
+                    alt=""
+                  />discord</span
+                >
+                <span>lonelyguy_se1</span>
+              </li>
+              <li>
+                <span>note</span>
+                <span
+                  >for phone / real personal details, contact through one of the
+                  socials or backtrace to the linkedin profile.</span
+                >
+              </li>
+            </ul>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="footer">
+      <div class="site-width footer-inner">
+        <p class="footer-kicker">stuck in my head while making this</p>
+        <blockquote class="footer-quote">
+          "Your enemy is a resilient one. The thing you all oppose isn't just
+          me. Nor is it heretics. It's part imagination and part curiosity. In
+          short, it's truth itself"
+        </blockquote>
+        <div class="footer-meta">
+          <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
+          <a href="#top" data-scroll-top>back to top</a>
+        </div>
+        <p class="footer-copy">© 2026 Lonely Guy. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <div
+      class="lightbox"
+      id="gallery-lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="gallery-lightbox-caption"
+      hidden
     >
+      <button
+        class="lightbox-backdrop"
+        type="button"
+        data-lightbox-close
+        aria-label="close image viewer"
+      ></button>
+      <figure class="lightbox-figure">
+        <button class="lightbox-close" type="button" data-lightbox-close>
+          close
+        </button>
+        <img id="gallery-lightbox-image" src="" alt="" />
+        <figcaption id="gallery-lightbox-caption"></figcaption>
+      </figure>
+    </div>
 
-</body>
+    <script src="scripts/content.js"></script>
+    <script src="scripts/main.js"></script>
+  </body>
 </html>

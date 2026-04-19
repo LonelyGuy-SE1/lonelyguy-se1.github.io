@@ -677,6 +677,15 @@ summary,
   font-size: 1.15rem;
 }
 
+.reader-body code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9em;
+  padding: 0.15rem 0.35rem;
+  background: rgba(14, 4, 3, 0.45);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .reader-body pre {
   margin: 0.9rem 0;
   padding: 0.85rem;
@@ -685,16 +694,10 @@ summary,
   overflow-x: auto;
 }
 
-.reader-body code {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.9em;
-  padding: 0.15rem 0.35rem;
-  background: rgba(14, 4, 3, 0.45);
-}
-
 .reader-body pre code {
   padding: 0;
   background: transparent;
+  white-space: pre;
 }
 
 .reader-body blockquote {
@@ -723,6 +726,12 @@ summary,
 
 .reader-body a {
   color: var(--cinnabar);
+}
+
+.reader-body hr {
+  margin: 1.2rem 0;
+  border: none;
+  border-top: 1px solid var(--line-strong);
 }
 
 .reader-head-actions a {

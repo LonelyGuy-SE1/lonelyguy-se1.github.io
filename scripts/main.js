@@ -434,7 +434,7 @@ function openProjectsReader(id) {
     trigger.classList.toggle("is-active", isActive);
     trigger.setAttribute("aria-pressed", String(isActive));
   });
-  const readmeHtml = record.html ? marked.parse(record.html) : "<p>No README available.</p>";
+  const readmeHtml = record.html ? marked.parse(record.html, { gfm: true, breaks: true }) : "<p>No README available.</p>";
   section.reader.innerHTML = `
     <div class="reader-head">
       <div>

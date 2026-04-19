@@ -440,12 +440,12 @@ function openProjectsReader(id) {
       <div>
         <h4>${escapeHtml(record.title)}</h4>
       </div>
-      <button class="reader-close" type="button" data-reader-close="projects">exit</button>
+      <div class="reader-head-actions">
+        <a href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">visit repo</a>
+        <button class="reader-close" type="button" data-reader-close="projects">exit</button>
+      </div>
     </div>
     <div class="reader-body">${readmeHtml}</div>
-    <div class="reader-actions">
-      <a href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">visit repo</a>
-    </div>
   `;
   section.reader.querySelector("[data-reader-close]").addEventListener("click", () => {
     closeReader("projects");

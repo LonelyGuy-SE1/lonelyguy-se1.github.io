@@ -691,6 +691,11 @@ summary,
   font-weight: 600;
 }
 
+.reader-body td {
+  display: table-cell;
+  background: rgba(14, 4, 3, 0.3) !important;
+}
+
 .reader-body tr {
   display: table-row;
 }
@@ -715,6 +720,7 @@ summary,
   background: rgba(14, 4, 3, 0.65) !important;
   white-space: pre-wrap;
   word-break: break-all;
+  border-radius: 3px;
 }
 
 .reader-body pre,
@@ -725,6 +731,7 @@ summary,
   border: 1px solid var(--line) !important;
   background: rgba(14, 4, 3, 0.65) !important;
   overflow-x: auto;
+  border-radius: 4px;
 }
 
 .reader-body pre code,

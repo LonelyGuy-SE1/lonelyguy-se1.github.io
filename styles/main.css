@@ -671,6 +671,27 @@ summary,
   font-size: 1.15rem;
 }
 
+.reader-actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.reader-actions a {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-decoration: none;
+}
+
+.reader-actions a:hover,
+.reader-actions a:focus-visible {
+  background: var(--cinnabar);
+  color: var(--black-2);
+}
+
 .reader-body img {
   margin: 0.9rem 0;
   border: 1px solid var(--line);

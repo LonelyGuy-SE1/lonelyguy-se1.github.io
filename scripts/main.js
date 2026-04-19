@@ -36,12 +36,19 @@ const feedSections = {
     reader: document.getElementById("papers-reader-content"),
     emptyText: "no papers added yet.",
   },
+  projects: {
+    list: document.getElementById("projects-list"),
+    empty: document.getElementById("projects-reader-empty"),
+    reader: document.getElementById("projects-reader-content"),
+    emptyText: "no projects added yet.",
+  },
 };
 
 const feedRecords = {
   updates: [],
   articles: [],
   papers: [],
+  projects: [],
 };
 
 let galleryRecords = [];
@@ -340,3 +347,111 @@ renderFeed("updates", siteContent.updates || []);
 renderFeed("articles", siteContent.articles || []);
 renderFeed("papers", siteContent.papers || []);
 renderGallery(siteContent.gallery || []);
+
+async function fetchProjects() {
+  const section = feedSections.projects;
+  try {
+    const res = await fetch("projects.json");
+    const repos = await res.json();
+    if (!repos.length) {
+      section.list.innerHTML = `<p class="dynamic-note">no projects added yet.</p>`;
+      return;
+    }
+    const projects = await Promise.all(
+      repos.map(async ({ repo }) => {
+        const [owner, name] = repo.split("/");
+        const [infoRes, readmeRes] = await Promise.all([
+          fetch(`https://api.github.com/repos/${owner}/${name}`),
+          fetch(`https://api.github.com/repos/${owner}/${name}/readme`),
+        ]);
+        const info = await infoRes.json();
+        let readme = "";
+        try {
+          const readmeData = await readmeRes.json();
+          if (readmeData.content) {
+            readme = atob(readmeData.content.replace(/\n/g, ""));
+          }
+        } catch {}
+        return {
+          id: repo,
+          title: info.name || repo,
+          summary: info.description || "No description",
+          html: readme,
+          url: info.html_url || `https://github.com/${repo}`,
+        };
+      })
+    );
+    feedRecords.projects = projects;
+    renderProjectsList(projects);
+  } catch {
+    section.list.innerHTML = `<p class="dynamic-note">failed to load projects.</p>`;
+  }
+}
+
+function renderProjectsList(records) {
+  const section = feedSections.projects;
+  if (!records.length) {
+    section.list.innerHTML = `<p class="dynamic-note">no projects added yet.</p>`;
+    closeReader("projects");
+    return;
+  }
+  section.list.innerHTML = records
+    .map((record) => {
+      const summary = record.summary.length > 100
+        ? record.summary.slice(0, 100) + "..."
+        : record.summary;
+      return `
+        <button
+          class="feed-trigger feed-trigger--text-only"
+          type="button"
+          data-section="projects"
+          data-entry-target="${escapeHtml(record.id)}"
+          aria-pressed="false"
+        >
+          <span class="feed-trigger-copy">
+            <strong>${escapeHtml(record.title)}</strong>
+            <span>${escapeHtml(summary)}</span>
+            <span class="feed-trigger-action">view readme</span>
+          </span>
+        </button>
+      `;
+    })
+    .join("");
+  section.list.querySelectorAll(".feed-trigger").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      openProjectsReader(trigger.dataset.entryTarget);
+    });
+  });
+  closeReader("projects");
+}
+
+function openProjectsReader(id) {
+  const section = feedSections.projects;
+  const record = feedRecords.projects.find((item) => item.id === id);
+  if (!record) return;
+  document.querySelectorAll('.feed-trigger[data-section="projects"]').forEach((trigger) => {
+    const isActive = trigger.dataset.entryTarget === id;
+    trigger.classList.toggle("is-active", isActive);
+    trigger.setAttribute("aria-pressed", String(isActive));
+  });
+  const readmeHtml = record.html ? marked.parse(record.html) : "<p>No README available.</p>";
+  section.reader.innerHTML = `
+    <div class="reader-head">
+      <div>
+        <h4>${escapeHtml(record.title)}</h4>
+      </div>
+      <button class="reader-close" type="button" data-reader-close="projects">exit</button>
+    </div>
+    <div class="reader-body">${readmeHtml}</div>
+    <div class="reader-actions">
+      <a href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">visit repo</a>
+    </div>
+  `;
+  section.reader.querySelector("[data-reader-close]").addEventListener("click", () => {
+    closeReader("projects");
+  });
+  section.empty.hidden = true;
+  section.reader.hidden = false;
+}
+
+fetchProjects();

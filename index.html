@@ -158,6 +158,18 @@
             </button>
             <button
               class="tab-button"
+              id="tab-projects"
+              role="tab"
+              type="button"
+              aria-selected="false"
+              aria-controls="panel-projects"
+              tabindex="-1"
+              data-tab="projects"
+            >
+              projects
+            </button>
+            <button
+              class="tab-button"
               id="tab-contact"
               role="tab"
               type="button"
@@ -687,6 +699,41 @@
 
           <section
             class="tab-panel"
+            id="panel-projects"
+            role="tabpanel"
+            aria-labelledby="tab-projects"
+            hidden
+          >
+            <p class="panel-label">projects</p>
+            <div class="panel-head">
+              <h3>projects</h3>
+              <p>github repos.</p>
+            </div>
+
+            <div class="updates-layout">
+              <aside
+                class="updates-list"
+                id="projects-list"
+                aria-label="project list"
+              >
+                <p class="dynamic-note">loading projects...</p>
+              </aside>
+
+              <div class="reader-shell">
+                <div class="reader-empty" id="projects-reader-empty">
+                  select a project from the list. the readme opens here.
+                </div>
+                <article
+                  class="update-reader"
+                  id="projects-reader-content"
+                  hidden
+                ></article>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="tab-panel"
             id="panel-contact"
             role="tabpanel"
             aria-labelledby="tab-contact"
@@ -772,6 +819,7 @@
       </figure>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="scripts/content.js"></script>
     <script src="scripts/main.js"></script>
   </body>

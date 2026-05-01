@@ -33,6 +33,12 @@ window.PORTFOLIO_CONTENT = {
   "papers": [],
   "gallery": [
     {
+      "url": "gallery/env.cybersec.png",
+      "alt": "env.cybersec",
+      "caption": "env.cybersec",
+      "date": "2026-05-01T03:51:27.806Z"
+    },
+    {
       "url": "gallery/humanoid.circuit.png",
       "alt": "humanoid.circuit",
       "caption": "humanoid.circuit",

@@ -1,3 +1,4 @@
+//node scripts/build-content.js
 const fs = require("fs/promises");
 const path = require("path");
 
@@ -38,7 +39,10 @@ function normalizeAssetUrl(assetPath) {
     return normalized;
   }
 
-  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(normalized) && !normalized.includes("/")) {
+  if (
+    /\.(png|jpe?g|webp|gif|svg)$/i.test(normalized) &&
+    !normalized.includes("/")
+  ) {
     return `gallery/${normalized}`;
   }
 
@@ -52,7 +56,10 @@ function inlineMarkdown(text) {
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
       return `<img src="${escapeHtml(normalizeAssetUrl(src))}" alt="${alt}">`;
     })
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noreferrer">$1</a>',
+    )
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
@@ -168,7 +175,9 @@ function formatFallbackTitle(slug) {
 }
 
 function extractFirstImage(markdownBody) {
-  const match = normalizeLineEndings(markdownBody).match(/!\[[^\]]*\]\(([^)]+)\)/);
+  const match = normalizeLineEndings(markdownBody).match(
+    /!\[[^\]]*\]\(([^)]+)\)/,
+  );
   return match ? match[1] : "";
 }
 
@@ -176,14 +185,24 @@ function fallbackSummary(markdownBody) {
   const line = normalizeLineEndings(markdownBody)
     .split(/\n+/)
     .map((entry) => entry.trim())
-    .find((entry) => entry && !entry.startsWith("#") && !entry.startsWith("-") && !entry.startsWith("!"));
+    .find(
+      (entry) =>
+        entry &&
+        !entry.startsWith("#") &&
+        !entry.startsWith("-") &&
+        !entry.startsWith("!"),
+    );
 
   return line || "no summary yet.";
 }
 
 async function readMarkdownCollection(directory) {
-  const entries = await fs.readdir(directory, { withFileTypes: true }).catch(() => []);
-  const markdownFiles = entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md"));
+  const entries = await fs
+    .readdir(directory, { withFileTypes: true })
+    .catch(() => []);
+  const markdownFiles = entries.filter(
+    (entry) => entry.isFile() && entry.name.endsWith(".md"),
+  );
 
   const records = await Promise.all(
     markdownFiles.map(async (entry) => {
@@ -193,11 +212,13 @@ async function readMarkdownCollection(directory) {
       const fallbackDate = stats.mtime.toISOString().slice(0, 10);
       const parsed = parseFrontmatter(rawText, fallbackDate);
       const summary = parsed.attributes.summary || fallbackSummary(parsed.body);
-      const previewImage = parsed.attributes.image || extractFirstImage(parsed.body);
+      const previewImage =
+        parsed.attributes.image || extractFirstImage(parsed.body);
 
       return {
         id: toSlug(entry.name),
-        title: parsed.attributes.title || formatFallbackTitle(toSlug(entry.name)),
+        title:
+          parsed.attributes.title || formatFallbackTitle(toSlug(entry.name)),
         date: parsed.attributes.date || fallbackDate,
         dateLabel: parsed.dateLabel,
         summary,
@@ -211,13 +232,17 @@ async function readMarkdownCollection(directory) {
 }
 
 async function readGallery() {
-  const entries = await fs.readdir(GALLERY_DIR, { withFileTypes: true }).catch(() => []);
+  const entries = await fs
+    .readdir(GALLERY_DIR, { withFileTypes: true })
+    .catch(() => []);
   const imageFiles = entries.filter((entry) => {
     if (!entry.isFile() || entry.name.startsWith(".")) {
       return false;
     }
 
-    return [".png", ".jpg", ".jpeg", ".webp", ".gif"].includes(path.extname(entry.name).toLowerCase());
+    return [".png", ".jpg", ".jpeg", ".webp", ".gif"].includes(
+      path.extname(entry.name).toLowerCase(),
+    );
   });
 
   const records = await Promise.all(

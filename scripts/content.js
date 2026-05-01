@@ -1,6 +1,15 @@
 window.PORTFOLIO_CONTENT = {
   "updates": [
     {
+      "id": "2026-05-01-moirai",
+      "title": "Project Moirai — Bare-Metal Embodied Control",
+      "date": "2026-05-01",
+      "dateLabel": "2026-05-01",
+      "summary": "Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.",
+      "image": "",
+      "html": "<p>so i started a new project called <strong>Moirai</strong>... been really into this idea of running continuous control RL policies on edge hardware without the bloat of standard ml frameworks.</p><p>basically, most ml frameworks are built for cloud gpus, not for constrained robots. the latency is kinda crazy. so my goal is to get microsecond-level determinism on commodity cpus, completely bypassing floating-point matrix mul.</p><p>right now im architecting an end-to-end pipeline to train and deploy 1.58-bit (ternary-weight) reinforcement learning policies. the deployment layer is a custom bare-metal c++ inference runtime. by packing neural weights into high-density 2-bit structures and using raw avx2 compiler intrinsics, im replacing heavy fp32 gemm operations with fast integer dot products.</p><p>the architecture has three strict constraints:</p><ul><li><strong>Zero heap allocation</strong>: a statically allocated memory arena guarantees deterministic execution without os garbage collection spikes</li><li><strong>Cache residency</strong>: 2-bit packing ensures the active continuous control policy stays entirely in the cpu&#39;s l1/l2 cache</li><li><strong>rl-specific topologies</strong>: unlike generalized llm quantization engines, this runtime is aggressively unrolled and specialized for fixed-shape mlps</li></ul><p>the repo is strictly private while i finalize the mathematical stability of the quantization-aware training (qat) methodology. benchmarks and source code will be released publicly once the core engine is done.</p><p>back to the metal :))</p>"
+    },
+    {
       "id": "2026-04-11-updates",
       "title": "Hackathons + Humanoid Simulation + UAV Conference + Breakout",
       "date": "2026-04-11",

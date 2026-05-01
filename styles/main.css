@@ -90,6 +90,13 @@ a {
   color: inherit;
   text-decoration-color: var(--line-strong);
   text-underline-offset: 0.2em;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--cinnabar);
+  text-decoration-color: var(--cinnabar);
 }
 
 img {
@@ -257,6 +264,7 @@ summary,
   font-size: 0.95rem;
   white-space: nowrap;
   cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .tab-button:hover,
@@ -537,6 +545,7 @@ summary,
   color: inherit;
   text-align: left;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .feed-trigger--text-only {
@@ -569,12 +578,23 @@ summary,
 
 .feed-trigger-action {
   color: var(--text);
+  transition: color 0.15s ease;
+}
+
+.feed-trigger:hover .feed-trigger-action,
+.feed-trigger:focus-visible .feed-trigger-action {
+  color: var(--cinnabar);
 }
 
 .feed-trigger.is-active strong,
 .feed-trigger:hover strong,
 .feed-trigger:focus-visible strong {
   color: var(--cinnabar);
+}
+
+.feed-trigger:hover,
+.feed-trigger:focus-visible {
+  background: rgba(255, 69, 56, 0.05);
 }
 
 .reader-shell {
@@ -750,6 +770,12 @@ summary,
 
 .reader-body a {
   color: var(--cinnabar);
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.reader-body a:hover,
+.reader-body a:focus-visible {
+  opacity: 0.75;
 }
 
 .reader-body hr {
@@ -795,6 +821,7 @@ summary,
   background: rgba(14, 4, 3, 0.6);
   color: var(--text);
   font: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .gallery-search input::placeholder {
@@ -832,6 +859,12 @@ summary,
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  transition: opacity 0.15s ease;
+}
+
+.gallery-trigger:hover img,
+.gallery-trigger:focus-visible img {
+  opacity: 0.75;
 }
 
 .gallery-item figcaption {

@@ -88,6 +88,8 @@ function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
   }
 }
 
+let lastFocusedReaderTrigger = null;
+
 function closeReader(sectionKey) {
   const section = feedSections[sectionKey];
 
@@ -103,6 +105,12 @@ function closeReader(sectionKey) {
   section.reader.hidden = true;
   section.reader.innerHTML = "";
   section.empty.hidden = false;
+
+  if (lastFocusedReaderTrigger && document.contains(lastFocusedReaderTrigger)) {
+    lastFocusedReaderTrigger.focus();
+  }
+
+  lastFocusedReaderTrigger = null;
 }
 
 function openReader(sectionKey, id) {
@@ -112,6 +120,10 @@ function openReader(sectionKey, id) {
   if (!section || !record) {
     return;
   }
+
+  lastFocusedReaderTrigger = document.querySelector(
+    `.feed-trigger[data-section="${sectionKey}"][data-entry-target="${escapeHtml(id)}"]`
+  );
 
   document.querySelectorAll(`.feed-trigger[data-section="${sectionKey}"]`).forEach((trigger) => {
     const isActive = trigger.dataset.entryTarget === id;
@@ -241,6 +253,33 @@ function updateGalleryView() {
   });
 }
 
+function trapLightboxFocus(event) {
+  if (!galleryLightbox || galleryLightbox.hidden) {
+    return;
+  }
+
+  const focusable = galleryLightbox.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+
+  if (!focusable.length) {
+    return;
+  }
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (event.key === "Tab") {
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+}
+
 function openGalleryLightbox(index, trigger) {
   const item = galleryRecords[index];
 
@@ -255,6 +294,7 @@ function openGalleryLightbox(index, trigger) {
   galleryLightbox.hidden = false;
   document.body.classList.add("lightbox-open");
   galleryLightbox.querySelector(".lightbox-close").focus();
+  document.addEventListener("keydown", trapLightboxFocus);
 }
 
 function closeGalleryLightbox() {
@@ -263,6 +303,7 @@ function closeGalleryLightbox() {
   galleryLightboxImage.alt = "";
   galleryLightboxCaption.textContent = "";
   document.body.classList.remove("lightbox-open");
+  document.removeEventListener("keydown", trapLightboxFocus);
 
   if (lastFocusedGalleryTrigger && document.contains(lastFocusedGalleryTrigger)) {
     lastFocusedGalleryTrigger.focus();

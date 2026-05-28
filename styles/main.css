@@ -829,7 +829,8 @@ summary,
 }
 
 .gallery-search input:focus {
-  outline: 0;
+  outline: 1px solid var(--cinnabar);
+  outline-offset: 1px;
   border-color: var(--line-strong);
 }
 

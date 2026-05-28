@@ -3,12 +3,117 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lonely Guy</title>
+    <title>Lonely Guy — RL, Robotics &amp; Embodied AI</title>
     <meta
       name="description"
-      content="Lonely Guy: robotics, local inference, AI, and decentralized systems."
+      content="lonely guy (greeshma surya) — cs undergrad on reinforcement learning, robotics, world models, and embodied ai. building towards autonomous robotic assistants."
     />
+    <meta name="author" content="Lonely Guy" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://lonelyguy.vercel.app" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Lonely Guy" />
+    <meta
+      property="og:title"
+      content="Lonely Guy — RL, Robotics &amp; Embodied AI"
+    />
+    <meta
+      property="og:description"
+      content="lonely guy (greeshma surya) — cs undergrad on reinforcement learning, robotics, world models, and embodied ai."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lonelyguy.vercel.app" />
+    <meta property="og:image" content="https://lonelyguy.vercel.app/assets/SE1.jpg" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lonelyguyse1" />
+    <meta name="twitter:creator" content="@lonelyguyse1" />
+    <meta
+      name="twitter:title"
+      content="Lonely Guy — RL, Robotics &amp; Embodied AI"
+    />
+    <meta
+      name="twitter:description"
+      content="lonely guy (greeshma surya) — cs undergrad on reinforcement learning, robotics, world models, and embodied ai."
+    />
+    <meta name="twitter:image" content="https://lonelyguy.vercel.app/assets/SE1.jpg" />
+
+    <!-- JSON-LD: site-wide entity graph -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://lonelyguy.vercel.app/#person",
+          "name": "Lonely Guy",
+          "alternateName": "Greeshma Surya",
+          "url": "https://lonelyguy.vercel.app",
+          "sameAs": [
+            "https://github.com/LonelyGuy-SE1",
+            "https://x.com/lonelyguyse1",
+            "https://huggingface.co/Lonelyguyse1",
+            "https://orcid.org/0009-0000-7221-863X",
+            "https://www.linkedin.com/in/greeshmasurya/"
+          ],
+          "knowsAbout": [
+            "Reinforcement Learning",
+            "Robotics",
+            "Embodied AI",
+            "World Models",
+            "Deep Learning",
+            "Decentralized Systems",
+            "Large Language Models"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://lonelyguy.vercel.app/#website",
+          "url": "https://lonelyguy.vercel.app",
+          "name": "Lonely Guy",
+          "publisher": { "@id": "https://lonelyguy.vercel.app/#person" }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://lonelyguy.vercel.app/#webpage",
+          "isPartOf": { "@id": "https://lonelyguy.vercel.app/#website" },
+          "about": { "@id": "https://lonelyguy.vercel.app/#person" }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Speculation Rules: prerender articles/updates on hover -->
+    <script type="speculationrules">
+    {
+      "prerender": [
+        {
+          "where": { "href_matches": "/articles/*" },
+          "eagerness": "moderate"
+        },
+        {
+          "where": { "href_matches": "/updates/*" },
+          "eagerness": "moderate"
+        }
+      ],
+      "prefetch": [
+        {
+          "where": { "href_matches": "/*" },
+          "eagerness": "conservative"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Feed links -->
+    <link rel="alternate" type="application/rss+xml" title="Lonely Guy — Articles" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Lonely Guy — Articles" href="/feed.json" />
+
     <link rel="icon" type="image/jpeg" href="assets/SE1.jpg" />
+    <link rel="preload" href="assets/yuri.png" as="image" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -196,7 +301,7 @@
           >
             <p class="panel-label">home</p>
             <div class="panel-head">
-              <h3>Choose the desired section from the header to navigate</h3>
+              <h2>Choose the desired section from the header to navigate</h2>
               <p>home is the default state.</p>
             </div>
 
@@ -243,7 +348,7 @@
           >
             <p class="panel-label">now</p>
             <div class="panel-head">
-              <h3>what im on right now</h3>
+              <h2>what im on right now</h2>
               <p>main areas im spending time on right now.</p>
             </div>
 
@@ -296,7 +401,7 @@
           >
             <p class="panel-label">stack</p>
             <div class="panel-head">
-              <h3>skill tree / sub stuff</h3>
+              <h2>skill tree / sub stuff</h2>
               <p>
                 this section is something ive always struggled with, when
                 exactly could one call that they have acquired a certain skill,
@@ -447,7 +552,7 @@
           >
             <p class="panel-label">path</p>
             <div class="panel-head">
-              <h3>where this is going</h3>
+              <h2>where this is going</h2>
               <p>what does the path look like.</p>
             </div>
 
@@ -493,7 +598,7 @@
           >
             <p class="panel-label">updates</p>
             <div class="panel-head">
-              <h3>progress updates</h3>
+              <h2>progress updates</h2>
               <p>pick a note from the list and it opens on the right.</p>
             </div>
 
@@ -528,7 +633,7 @@
           >
             <p class="panel-label">articles</p>
             <div class="panel-head">
-              <h3>articles</h3>
+              <h2>articles</h2>
               <p>longer writeups.</p>
             </div>
 
@@ -563,7 +668,7 @@
           >
             <p class="panel-label">papers</p>
             <div class="panel-head">
-              <h3>papers</h3>
+              <h2>papers</h2>
               <p>published research and formal work.</p>
             </div>
 
@@ -598,7 +703,7 @@
           >
             <p class="panel-label">images</p>
             <div class="panel-head">
-              <h3>gallery</h3>
+              <h2>gallery</h2>
               <p>stuff i want to keep around visually.</p>
             </div>
 
@@ -629,7 +734,7 @@
           >
             <p class="panel-label">links</p>
             <div class="panel-head">
-              <h3>links</h3>
+              <h2>links</h2>
               <p>public links for now.</p>
             </div>
 
@@ -645,7 +750,7 @@
                 <a
                   href="https://github.com/LonelyGuy-SE1"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="me noreferrer"
                   >LonelyGuy-SE1</a
                 >
               </li>
@@ -660,7 +765,7 @@
                 <a
                   href="https://x.com/lonelyguyse1"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="me noreferrer"
                   >x.com/lonelyguyse1</a
                 >
               </li>
@@ -675,7 +780,7 @@
                 <a
                   href="https://huggingface.co/Lonelyguyse1"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="me noreferrer"
                   >huggingface.co/Lonelyguyse1</a
                 >
               </li>
@@ -690,8 +795,23 @@
                 <a
                   href="https://orcid.org/0009-0000-7221-863X"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="me noreferrer"
                   >orcid.org/0009-0000-7221-863X</a
+                >
+              </li>
+              <li>
+                <span
+                  ><img
+                    class="service-logo"
+                    src="assets/icons/linkedin.svg"
+                    alt=""
+                  />linkedin</span
+                >
+                <a
+                  href="https://www.linkedin.com/in/greeshmasurya/"
+                  target="_blank"
+                  rel="me noreferrer"
+                  >linkedin.com/in/greeshmasurya</a
                 >
               </li>
             </ul>
@@ -706,7 +826,7 @@
           >
             <p class="panel-label">projects</p>
             <div class="panel-head">
-              <h3>projects</h3>
+              <h2>projects</h2>
               <p>github repos.</p>
             </div>
 
@@ -741,7 +861,7 @@
           >
             <p class="panel-label">contact</p>
             <div class="panel-head">
-              <h3>contact me</h3>
+              <h2>contact me</h2>
               <p>direct contact points.</p>
             </div>
 

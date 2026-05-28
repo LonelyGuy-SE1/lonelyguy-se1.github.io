@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Moirai — Bare-Metal Embodied Control — Lonely Guy</title>
+    <meta name="description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics." />
+    <link rel="canonical" href="https://lonelyguy.vercel.app/updates/2026-05-01-moirai/" />
+    <meta property="og:site_name" content="Lonely Guy" />
+    <meta property="og:title" content="Project Moirai — Bare-Metal Embodied Control" />
+    <meta property="og:description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://lonelyguy.vercel.app/updates/2026-05-01-moirai/" />
+    <meta property="og:image" content="https://lonelyguy.vercel.app/assets/SE1.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lonelyguyse1" />
+    <meta name="twitter:creator" content="@lonelyguyse1" />
+    <meta name="twitter:title" content="Project Moirai — Bare-Metal Embodied Control" />
+    <meta name="twitter:description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics." />
+    <meta name="twitter:image" content="https://lonelyguy.vercel.app/assets/SE1.jpg" />
+    <link rel="icon" type="image/jpeg" href="../../assets/SE1.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai/#post","headline":"Project Moirai — Bare-Metal Embodied Control","description":"Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.","image":"https://lonelyguy.vercel.app/assets/SE1.jpg","datePublished":"2026-05-01","dateModified":"2026-05-01","author":{"@id":"https://lonelyguy.vercel.app/#person"},"publisher":{"@id":"https://lonelyguy.vercel.app/#person"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai/"},"isPartOf":{"@id":"https://lonelyguy.vercel.app/#website"}}</script>
+</head>
+<body>
+    <a class="skip-link" href="#main">skip to main</a>
+
+    <header class="site-header">
+      <div class="site-width header-inner">
+        <a class="brand" href="../../index.html">
+          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" />
+          <span class="brand-copy"><strong>lonely guy</strong></span>
+        </a>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="../../index.html">home</a></li>
+            <li><a href="../../index.html#updates">updates</a></li>
+            <li aria-current="page">Project Moirai — Bare-Metal Embodied Control</li>
+          </ol>
+        </nav>
+      </div>
+    </header>
+
+    <main class="site-width" id="main">
+      <article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">2026-05-01</p>
+            <h1>Project Moirai — Bare-Metal Embodied Control</h1>
+          </div>
+          <a href="../../index.html#updates" class="reader-close">back</a>
+        </div>
+        <div class="reader-body"><p>so i started a new project called <strong>Moirai</strong>... been really into this idea of running continuous control RL policies on edge hardware without the bloat of standard ml frameworks.</p><p>basically, most ml frameworks are built for cloud gpus, not for constrained robots. the latency is kinda crazy. so my goal is to get microsecond-level determinism on commodity cpus, completely bypassing floating-point matrix mul.</p><p>right now im architecting an end-to-end pipeline to train and deploy 1.58-bit (ternary-weight) reinforcement learning policies. the deployment layer is a custom bare-metal c++ inference runtime. by packing neural weights into high-density 2-bit structures and using raw avx2 compiler intrinsics, im replacing heavy fp32 gemm operations with fast integer dot products.</p><p>the architecture has three strict constraints:</p><ul><li><strong>Zero heap allocation</strong>: a statically allocated memory arena guarantees deterministic execution without os garbage collection spikes</li><li><strong>Cache residency</strong>: 2-bit packing ensures the active continuous control policy stays entirely in the cpu&#39;s l1/l2 cache</li><li><strong>rl-specific topologies</strong>: unlike generalized llm quantization engines, this runtime is aggressively unrolled and specialized for fixed-shape mlps</li></ul><p>the repo is strictly private while i finalize the mathematical stability of the quantization-aware training (qat) methodology. benchmarks and source code will be released publicly once the core engine is done.</p><p>back to the metal :))</p></div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-width footer-inner">
+        <p class="footer-kicker">stuck in my head while making this</p>
+        <blockquote class="footer-quote">
+          &ldquo;Your enemy is a resilient one. The thing you all oppose isn&rsquo;t just me. Nor is it heretics. It&rsquo;s part imagination and part curiosity. In short, it&rsquo;s truth itself&rdquo;
+        </blockquote>
+        <div class="footer-meta">
+          <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
+          <a href="../../index.html">back to home</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
+      </div>
+    </footer>
+</body>
+</html>

@@ -63,6 +63,21 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function pictureHtml(src, alt, extra) {
+  if (!src) return "";
+  const base = src.replace(/\.(png|jpe?g|gif)$/i, "");
+  const extMatch = src.match(/\.(png|jpe?g|gif)$/i);
+  const fallbackExt = extMatch ? extMatch[1] : "png";
+  const attrs = extra || "";
+  return [
+    "<picture>",
+    "<source srcset=\"" + escapeHtml(base) + ".avif\" type=\"image/avif\">",
+    "<source srcset=\"" + escapeHtml(base) + ".webp\" type=\"image/webp\">",
+    "<img src=\"" + escapeHtml(src) + "\" alt=\"" + escapeHtml(alt) + "\"" + attrs + " loading=\"lazy\">",
+    "</picture>",
+  ].join("");
+}
+
 function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
   const nextButton = tabButtons.find((button) => button.dataset.tab === tabId) || tabButtons[0];
   const nextId = nextButton.dataset.tab;
@@ -168,11 +183,7 @@ function renderFeed(sectionKey, records) {
   section.list.innerHTML = records
     .map((record) => {
       const preview = record.image
-        ? `
-          <span class="feed-trigger-media">
-            <img src="${escapeHtml(record.image)}" alt="" loading="lazy">
-          </span>
-        `
+        ? "\n          <span class=\"feed-trigger-media\">\n            " + pictureHtml(record.image, "", "") + "\n          </span>\n        "
         : "";
 
       return `
@@ -230,19 +241,14 @@ function updateGalleryView() {
 
   galleryGrid.innerHTML = items
     .map(({ item, index }) => {
-      return `
-        <figure class="gallery-item">
-          <button
-            class="gallery-trigger"
-            type="button"
-            data-gallery-index="${index}"
-            aria-label="open ${escapeHtml(item.caption)}"
-          >
-            <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.alt)}" loading="lazy">
-          </button>
-          <figcaption>${escapeHtml(item.caption)}</figcaption>
-        </figure>
-      `;
+      return [
+        "<figure class=\"gallery-item\">",
+        "<button class=\"gallery-trigger\" type=\"button\" data-gallery-index=\"" + index + "\" aria-label=\"open " + escapeHtml(item.caption) + "\">",
+        pictureHtml(item.url, item.alt, ""),
+        "</button>",
+        "<figcaption>" + escapeHtml(item.caption) + "</figcaption>",
+        "</figure>",
+      ].join("");
     })
     .join("");
 
@@ -288,7 +294,8 @@ function openGalleryLightbox(index, trigger) {
   }
 
   lastFocusedGalleryTrigger = trigger || null;
-  galleryLightboxImage.src = item.url;
+  const lightboxBase = item.url.replace(/\.(png|jpe?g|gif)$/i, "");
+  galleryLightboxImage.src = lightboxBase + ".webp";
   galleryLightboxImage.alt = item.alt;
   galleryLightboxCaption.textContent = item.caption;
   galleryLightbox.hidden = false;

@@ -85,7 +85,7 @@ function normalizeAssetUrl(assetPath) {
 }
 
 function toRootRelativePaths(html) {
-  return html.replace(/(src=")(gallery\/)/g, '$1/$2');
+  return html.replace(/(src="|srcset=")(gallery\/)/g, '$1/$2');
 }
 
 function inlineMarkdown(text) {

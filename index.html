@@ -113,7 +113,7 @@
     <link rel="alternate" type="application/feed+json" title="Lonely Guy — Articles" href="/feed.json" />
 
     <link rel="icon" type="image/jpeg" href="assets/SE1.jpg" />
-    <link rel="preload" href="assets/yuri.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="assets/yuri.webp" as="image" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -329,7 +329,11 @@
 
               <div class="hero-media">
                 <figure class="hero-art">
-                  <img src="assets/yuri.png" alt="Yuri illustration" />
+                  <picture>
+                    <source srcset="assets/yuri.avif" type="image/avif" />
+                    <source srcset="assets/yuri.webp" type="image/webp" />
+                    <img src="assets/yuri.png" alt="Yuri illustration" fetchpriority="high" />
+                  </picture>
                 </figure>
                 <p class="hero-image-note">
                   i am not sure what is with this image, but i feel its

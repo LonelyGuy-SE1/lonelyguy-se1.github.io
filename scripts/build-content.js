@@ -91,6 +91,10 @@ function toRootRelativePaths(html) {
 function inlineMarkdown(text) {
   const escaped = escapeHtml(text);
   return escaped
+    .replace(
+      /\[!\[([^\]]*)\]\(([^)]+)\)\]\(([^)]+)\)/g,
+      (_, alt, imgUrl, linkUrl) => `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noreferrer"><img src="${escapeHtml(imgUrl)}" alt="${alt}"></a>`,
+    )
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
       return `<img src="${escapeHtml(normalizeAssetUrl(src))}" alt="${alt}">`;
     })
@@ -134,6 +138,9 @@ function markdownToHtml(markdown) {
       if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(block)) {
         const m = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
         return `<div class="reader-media"><img src="${escapeHtml(normalizeAssetUrl(m[2]))}" alt="${escapeHtml(m[1])}"></div>`;
+      }
+      if (/^---$/.test(block.trim())) {
+        return `<hr>`;
       }
       const paragraph = block.split("\n").map((l) => inlineMarkdown(l)).join("<br>");
       return `<p>${paragraph}</p>`;

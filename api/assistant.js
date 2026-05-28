@@ -39,10 +39,26 @@ module.exports = async (req, res) => {
   if (contextString) {
     fullSystemPrompt += "\n\nCONTEXT INFORMATION:\n" + contextString;
   }
+  
+  fullSystemPrompt += "\n\nCRITICAL FORMATTING INSTRUCTIONS:\n- Keep your answers concise, natural, and helpful.\n- Use standard markdown formatting.\n- DO NOT include strange artifacts, `<think>` tags, or internal reasoning in your final output.\n- For simple greetings or casual questions, reply conversationally and briefly in 1-2 sentences.";
 
   const openRouterMessages = [
     { role: "system", content: fullSystemPrompt }
   ].concat(messages);
+
+  const lastUserMessage = messages.slice().reverse().find((m) => m.role === "user")?.content || "";
+  const cleanMsg = lastUserMessage.trim();
+  // Only trigger fast routing if the ENTIRE message is just a greeting or short conversational filler.
+  const isSimpleGreeting = /^(hi|hello|hey|yo|greetings|sup|howdy|hiya|hey there|good morning|good evening|good afternoon)[\s,!?.]*$/i.test(cleanMsg) || 
+                           /^(who are you|what are you|how are you|thanks|thank you|ok|okay|cool|awesome|nice)[\s,!?.]*$/i.test(cleanMsg);
+  
+  let currentReasoning = reasoning;
+  if (isSimpleGreeting) {
+    currentReasoning = false;
+    if (!models.includes("google/gemini-2.5-flash")) {
+      models.unshift("google/gemini-2.5-flash");
+    }
+  }
 
   async function tryModel(model) {
     const requestBody = {
@@ -53,7 +69,7 @@ module.exports = async (req, res) => {
       stream: wantStream,
     };
 
-    if (reasoning) {
+    if (currentReasoning) {
       requestBody.reasoning = { effort: reasoningEffort };
     }
 

@@ -251,18 +251,6 @@
             </button>
             <button
               class="tab-button"
-              id="tab-links"
-              role="tab"
-              type="button"
-              aria-selected="false"
-              aria-controls="panel-links"
-              tabindex="-1"
-              data-tab="links"
-            >
-              links
-            </button>
-            <button
-              class="tab-button"
               id="tab-projects"
               role="tab"
               type="button"
@@ -283,7 +271,7 @@
               tabindex="-1"
               data-tab="contact"
             >
-              contact
+              links / contact
             </button>
           </div>
         </nav>
@@ -735,17 +723,56 @@
             </div>
           </section>
 
+
+
           <section
             class="tab-panel"
-            id="panel-links"
+            id="panel-projects"
             role="tabpanel"
-            aria-labelledby="tab-links"
+            aria-labelledby="tab-projects"
             hidden
           >
-            <p class="panel-label">links</p>
+            <p class="panel-label">projects</p>
             <div class="panel-head">
-              <h2>links</h2>
-              <p>public links for now.</p>
+              <h2>projects</h2>
+              <p>github repos.</p>
+            </div>
+
+            <div class="updates-layout">
+              <aside
+                class="updates-list"
+                id="projects-list"
+                aria-live="polite"
+                aria-atomic="true"
+                aria-label="project list"
+              >
+                <p class="dynamic-note">loading projects...</p>
+              </aside>
+
+              <div class="reader-shell">
+                <div class="reader-empty" id="projects-reader-empty">
+                  select a project from the list. the readme opens here.
+                </div>
+                <article
+                  class="update-reader"
+                  id="projects-reader-content"
+                  hidden
+                ></article>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="tab-panel"
+            id="panel-contact"
+            role="tabpanel"
+            aria-labelledby="tab-contact"
+            hidden
+          >
+            <p class="panel-label">links / contact</p>
+            <div class="panel-head">
+              <h2>links / contact</h2>
+              <p>all the ways to reach me and my profiles.</p>
             </div>
 
             <ul class="social-list">
@@ -824,60 +851,6 @@
                   >linkedin.com/in/greeshmasurya</a
                 >
               </li>
-            </ul>
-          </section>
-
-          <section
-            class="tab-panel"
-            id="panel-projects"
-            role="tabpanel"
-            aria-labelledby="tab-projects"
-            hidden
-          >
-            <p class="panel-label">projects</p>
-            <div class="panel-head">
-              <h2>projects</h2>
-              <p>github repos.</p>
-            </div>
-
-            <div class="updates-layout">
-              <aside
-                class="updates-list"
-                id="projects-list"
-                aria-live="polite"
-                aria-atomic="true"
-                aria-label="project list"
-              >
-                <p class="dynamic-note">loading projects...</p>
-              </aside>
-
-              <div class="reader-shell">
-                <div class="reader-empty" id="projects-reader-empty">
-                  select a project from the list. the readme opens here.
-                </div>
-                <article
-                  class="update-reader"
-                  id="projects-reader-content"
-                  hidden
-                ></article>
-              </div>
-            </div>
-          </section>
-
-          <section
-            class="tab-panel"
-            id="panel-contact"
-            role="tabpanel"
-            aria-labelledby="tab-contact"
-            hidden
-          >
-            <p class="panel-label">contact</p>
-            <div class="panel-head">
-              <h2>contact me</h2>
-              <p>direct contact points.</p>
-            </div>
-
-            <ul class="social-list contact-list">
               <li>
                 <span>email</span>
                 <div class="contact-stack">

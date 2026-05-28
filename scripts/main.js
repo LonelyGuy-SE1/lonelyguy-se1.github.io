@@ -65,10 +65,11 @@ function escapeHtml(value) {
 
 function pictureHtml(src, alt, extra) {
   if (!src) return "";
-  const base = src.replace(/\.(png|jpe?g|gif)$/i, "");
-  const extMatch = src.match(/\.(png|jpe?g|gif)$/i);
-  const fallbackExt = extMatch ? extMatch[1] : "png";
   const attrs = extra || "";
+  if (/^https?:\/\//i.test(src)) {
+    return "<img src=\"" + escapeHtml(src) + "\" alt=\"" + escapeHtml(alt) + "\"" + attrs + " loading=\"lazy\">";
+  }
+  const base = src.replace(/\.(png|jpe?g|gif)$/i, "");
   return [
     "<picture>",
     "<source srcset=\"" + escapeHtml(base) + ".avif\" type=\"image/avif\">",

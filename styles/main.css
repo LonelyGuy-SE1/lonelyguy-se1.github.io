@@ -1,14 +1,14 @@
 :root {
   --black: #000500;
-  --cinnabar: #ff4538;
+  --cinnabar: #ff6b35;
   --pitch-black: #0e0403;
   --black-2: #000100;
-  --carmine: #d9241e;
-  --text: rgba(255, 69, 56, 0.96);
-  --muted: rgba(255, 69, 56, 0.72);
-  --soft: rgba(217, 36, 30, 0.58);
-  --line: rgba(255, 69, 56, 0.22);
-  --line-strong: rgba(255, 69, 56, 0.62);
+  --carmine: #e0552a;
+  --text: rgba(255, 107, 53, 0.96);
+  --muted: rgba(255, 107, 53, 0.72);
+  --soft: rgba(224, 85, 42, 0.58);
+  --line: rgba(255, 107, 53, 0.22);
+  --line-strong: rgba(255, 107, 53, 0.62);
   --max-width: 1120px;
 }
 
@@ -594,7 +594,7 @@ summary,
 
 .feed-trigger:hover,
 .feed-trigger:focus-visible {
-  background: rgba(255, 69, 56, 0.05);
+  background: rgba(255, 107, 53, 0.05);
 }
 
 .reader-shell {

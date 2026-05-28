@@ -147,6 +147,12 @@
           </ol>
         </nav>
 
+        <div class="header-search" role="search">
+          <label for="site-search" class="visually-hidden">search site</label>
+          <input id="site-search" type="search" placeholder="search articles, updates, gallery..." autocomplete="off" spellcheck="false" />
+          <div class="search-results" id="search-results" hidden></div>
+        </div>
+
         <nav class="header-nav" aria-label="Header">
           <div
             class="header-tabs"
@@ -927,5 +933,6 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="scripts/content.js"></script>
     <script src="scripts/main.js"></script>
+    <script src="scripts/assistant.js"></script>
   </body>
 </html>

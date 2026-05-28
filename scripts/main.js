@@ -504,3 +504,115 @@ function openProjectsReader(id) {
 }
 
 fetchProjects();
+
+// ── Site Search ──────────────────────────────────────────────────────
+
+const searchInput = document.getElementById("site-search");
+const searchResults = document.getElementById("search-results");
+let searchTimeout = null;
+
+function buildSearchIndex() {
+  const index = [];
+  for (const type of ["updates", "articles", "papers"]) {
+    for (const item of (siteContent[type] || [])) {
+      index.push({ type, id: item.id, title: item.title, summary: item.summary, date: item.dateLabel });
+    }
+  }
+  for (const item of (siteContent.gallery || [])) {
+    index.push({ type: "gallery", id: item.url, title: item.alt, summary: item.caption, date: "" });
+  }
+  return index;
+}
+
+let searchIndex = buildSearchIndex();
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function runSearch(query) {
+  if (!query || query.length < 2) {
+    searchResults.hidden = true;
+    return;
+  }
+
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const scored = [];
+
+  for (const item of searchIndex) {
+    const haystack = (item.title + " " + item.summary).toLowerCase();
+    const matches = terms.filter((t) => haystack.includes(t)).length;
+    if (matches === 0) continue;
+
+    const exactTitle = item.title.toLowerCase().includes(query.toLowerCase()) ? 3 : 0;
+    const score = matches + exactTitle;
+
+    const snippetStart = haystack.indexOf(terms[0]);
+    const snippet = snippetStart >= 0
+      ? item.summary.slice(Math.max(0, snippetStart - 20), snippetStart + 100) + (snippetStart + 100 < item.summary.length ? "..." : "")
+      : item.summary.slice(0, 100);
+
+    scored.push({ item, score, snippet });
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  const top = scored.slice(0, 8);
+
+  if (!top.length) {
+    searchResults.hidden = true;
+    return;
+  }
+
+  searchResults.innerHTML = top
+    .map(({ item, snippet }) => {
+      return "<button class=\"search-result-item\" type=\"button\" data-search-type=\"" + escapeHtml(item.type) + "\" data-search-id=\"" + escapeHtml(item.id) + "\"><span class=\"search-result-type\">" + escapeHtml(item.type) + "</span><strong>" + escapeHtml(item.title) + "</strong><span class=\"search-result-snippet\">" + escapeHtml(snippet) + "</span></button>";
+    })
+    .join("");
+
+  searchResults.hidden = false;
+
+  searchResults.querySelectorAll(".search-result-item").forEach((el) => {
+    el.addEventListener("click", () => {
+      searchInput.value = "";
+      searchResults.hidden = true;
+      navigateToSearchResult(el.dataset.searchType, el.dataset.searchId);
+    });
+  });
+}
+
+function navigateToSearchResult(type, id) {
+  if (type === "gallery") {
+    setActiveTab("images", true, true);
+    return;
+  }
+  setActiveTab(type, true, true);
+  const section = feedSections[type];
+  if (!section) return;
+  const trigger = section.list.querySelector(".feed-trigger[data-entry-target=\"" + escapeHtml(id) + "\"]");
+  if (trigger) trigger.click();
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => runSearch(searchInput.value.trim()), 200);
+  });
+
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      searchInput.value = "";
+      searchResults.hidden = true;
+      searchInput.blur();
+    }
+    if (e.key === "Enter") {
+      const first = searchResults.querySelector(".search-result-item");
+      if (first) first.click();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".header-search")) {
+      searchResults.hidden = true;
+    }
+  });
+}

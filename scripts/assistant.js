@@ -1,6 +1,5 @@
 (function () {
   var ASSISTANT_API = "/api/assistant";
-  var messages = [];
   var conversation = [];
 
   function buildContext() {
@@ -13,7 +12,7 @@
       var items = content[key] || [];
       for (var ii = 0; ii < items.length; ii++) {
         var item = items[ii];
-        parts.push(key + ": " + item.title + " — " + (item.summary || ""));
+        parts.push(key + ": " + item.title + " - " + (item.summary || ""));
       }
     }
     var gallery = content.gallery || [];
@@ -27,13 +26,13 @@
     var container = document.createElement("div");
     container.id = "assistant-container";
     container.innerHTML = [
-      "<button id=\"assistant-toggle\" class=\"assistant-toggle\" type=\"button\" aria-label=\"open guide\" title=\"guide\">",
+      "<button id=\"assistant-toggle\" class=\"assistant-toggle\" type=\"button\" aria-label=\"ask loner's agent\" title=\"loner's agent\">",
       "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg>",
       "</button>",
       "<div id=\"assistant-panel\" class=\"assistant-panel\" hidden>",
       "<div class=\"assistant-head\">",
-      "<span class=\"assistant-name\">guide</span>",
-      "<button id=\"assistant-close\" class=\"assistant-close\" type=\"button\" aria-label=\"close guide\">close</button>",
+      "<span class=\"assistant-name\">loner's agent</span>",
+      "<button id=\"assistant-close\" class=\"assistant-close\" type=\"button\" aria-label=\"close\">close</button>",
       "</div>",
       "<div class=\"assistant-body\" id=\"assistant-body\">",
       "<div class=\"assistant-msg assistant-msg--bot\">hey! ask me anything about the site or the work here :)</div>",
@@ -92,10 +91,47 @@
     var body = document.getElementById("assistant-body");
     var div = document.createElement("div");
     div.className = "assistant-msg assistant-msg--bot";
-    div.textContent = text;
+    var navRegex = /\u2192\s*([\w-]+)(?::([\w-]+))?/g;
+    var match;
+    var lastIndex = 0;
+    var actions = [];
+
+    while ((match = navRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        var textPart = document.createTextNode(text.slice(lastIndex, match.index));
+        div.appendChild(textPart);
+      }
+      actions.push({ type: match[1], id: match[2] || null });
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+      div.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    if (actions.length) {
+      var actionDiv = document.createElement("div");
+      actionDiv.className = "assistant-actions";
+      for (var ai = 0; ai < actions.length; ai++) {
+        (function (action) {
+          var btn = document.createElement("button");
+          btn.className = "assistant-action-btn";
+          btn.type = "button";
+          btn.textContent = action.id ? "\u2192 " + action.type + ": " + action.id : "\u2192 " + action.type;
+          btn.addEventListener("click", function () {
+            if (typeof window.assistantNavigate === "function") {
+              window.assistantNavigate(action.type, action.id);
+            }
+          });
+          actionDiv.appendChild(btn);
+        })(actions[ai]);
+      }
+      div.appendChild(actionDiv);
+    }
+
     body.appendChild(div);
     body.scrollTop = body.scrollHeight;
-    conversation.push({ role: "user", content: text });
+    conversation.push({ role: "assistant", content: text });
   }
 
   function showTyping() {
@@ -117,11 +153,12 @@
     showTyping();
     var context = buildContext();
     var recent = conversation.slice(-10);
+    var currentTab = window.currentTab || "home";
 
     fetch(ASSISTANT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: recent, context: context }),
+      body: JSON.stringify({ messages: recent, context: context, currentTab: currentTab }),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {

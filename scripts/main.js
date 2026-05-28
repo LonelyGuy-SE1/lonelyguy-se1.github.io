@@ -79,6 +79,8 @@ function pictureHtml(src, alt, extra) {
   ].join("");
 }
 
+window.currentTab = "home";
+
 function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
   const nextButton = tabButtons.find((button) => button.dataset.tab === tabId) || tabButtons[0];
   const nextId = nextButton.dataset.tab;
@@ -94,6 +96,7 @@ function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
   });
 
   crumbCurrent.textContent = nextId;
+  window.currentTab = nextId;
 
   if (updateHash) {
     history.replaceState(null, "", `#${nextId}`);
@@ -103,6 +106,19 @@ function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
     tabsSection.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
+
+window.assistantNavigate = function (type, id) {
+  if (id) {
+    setActiveTab(type, true, true);
+    var section = feedSections[type];
+    if (section) {
+      var trigger = section.list.querySelector('.feed-trigger[data-entry-target="' + escapeHtml(id) + '"]');
+      if (trigger) trigger.click();
+    }
+  } else {
+    setActiveTab(type, true, true);
+  }
+};
 
 let lastFocusedReaderTrigger = null;
 
@@ -509,7 +525,34 @@ fetchProjects();
 
 const searchInput = document.getElementById("site-search");
 const searchResults = document.getElementById("search-results");
+const searchTrigger = document.getElementById("search-trigger");
+const searchField = document.getElementById("search-field");
 let searchTimeout = null;
+
+function openSearch() {
+  searchField.classList.add("search-field--open");
+  searchTrigger.setAttribute("aria-expanded", "true");
+  setTimeout(function () { searchInput.focus(); }, 100);
+}
+
+function closeSearch() {
+  searchField.classList.remove("search-field--open");
+  searchResults.hidden = true;
+  searchTrigger.setAttribute("aria-expanded", "false");
+  searchInput.value = "";
+  searchInput.blur();
+}
+
+if (searchTrigger) {
+  searchTrigger.addEventListener("click", function () {
+    if (searchField.classList.contains("search-field--open")) {
+      closeSearch();
+      searchTrigger.focus();
+    } else {
+      openSearch();
+    }
+  });
+}
 
 function buildSearchIndex() {
   const index = [];
@@ -537,6 +580,12 @@ function runSearch(query) {
   }
 
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const typeBoost = {};
+  const typeNames = { updates: 1, articles: 1, papers: 1, gallery: 1 };
+  for (const t of terms) {
+    if (typeNames[t]) typeBoost[t] = 4;
+  }
+
   const scored = [];
 
   for (const item of searchIndex) {
@@ -545,7 +594,8 @@ function runSearch(query) {
     if (matches === 0) continue;
 
     const exactTitle = item.title.toLowerCase().includes(query.toLowerCase()) ? 3 : 0;
-    const score = matches + exactTitle;
+    const typeBonus = typeBoost[item.type] || 0;
+    const score = matches + exactTitle + typeBonus;
 
     const snippetStart = haystack.indexOf(terms[0]);
     const snippet = snippetStart >= 0
@@ -573,8 +623,7 @@ function runSearch(query) {
 
   searchResults.querySelectorAll(".search-result-item").forEach((el) => {
     el.addEventListener("click", () => {
-      searchInput.value = "";
-      searchResults.hidden = true;
+      closeSearch();
       navigateToSearchResult(el.dataset.searchType, el.dataset.searchId);
     });
   });
@@ -600,9 +649,7 @@ if (searchInput) {
 
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      searchInput.value = "";
-      searchResults.hidden = true;
-      searchInput.blur();
+      closeSearch();
     }
     if (e.key === "Enter") {
       const first = searchResults.querySelector(".search-result-item");
@@ -612,7 +659,7 @@ if (searchInput) {
 
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".header-search")) {
-      searchResults.hidden = true;
+      closeSearch();
     }
   });
 }

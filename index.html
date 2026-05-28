@@ -148,8 +148,13 @@
         </nav>
 
         <div class="header-search" role="search">
-          <label for="site-search" class="visually-hidden">search site</label>
-          <input id="site-search" type="search" placeholder="search articles, updates, gallery..." autocomplete="off" spellcheck="false" />
+          <div class="search-field" id="search-field">
+            <label for="site-search" class="visually-hidden">search site</label>
+            <input id="site-search" type="search" placeholder="search articles, updates, gallery..." autocomplete="off" spellcheck="false" />
+          </div>
+          <button class="search-trigger" id="search-trigger" type="button" aria-label="open search" title="search" aria-expanded="false">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
           <div class="search-results" id="search-results" hidden></div>
         </div>
 

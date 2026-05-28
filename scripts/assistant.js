@@ -6,19 +6,32 @@
     var content = window.PORTFOLIO_CONTENT;
     if (!content) return "";
     var parts = [];
+
     var sections = ["updates", "articles", "papers"];
     for (var si = 0; si < sections.length; si++) {
       var key = sections[si];
       var items = content[key] || [];
+      parts.push("== " + key.toUpperCase() + " (" + items.length + " items) ==");
       for (var ii = 0; ii < items.length; ii++) {
         var item = items[ii];
-        parts.push(key + ": " + item.title + " - " + (item.summary || ""));
+        parts.push("  - " + item.id + ": " + item.title + " (" + item.dateLabel + ") - " + (item.summary || ""));
       }
     }
+
     var gallery = content.gallery || [];
+    parts.push("== GALLERY (" + gallery.length + " images) ==");
     for (var gi = 0; gi < gallery.length; gi++) {
-      parts.push("gallery: " + (gallery[gi].alt || gallery[gi].caption || ""));
+      parts.push("  - " + (gallery[gi].alt || gallery[gi].caption || ""));
     }
+
+    var projects = content.projects || [];
+    if (projects.length) {
+      parts.push("== PROJECTS (" + projects.length + " repos) ==");
+      for (var pi = 0; pi < projects.length; pi++) {
+        parts.push("  - " + projects[pi].title);
+      }
+    }
+
     return parts.join("\n");
   }
 

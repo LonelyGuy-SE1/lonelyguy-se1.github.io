@@ -3,18 +3,38 @@
   --cinnabar: #ff6b35;
   --amber: #f59e0b;
   --ember: #dc2626;
+  --garnet: #c4284a;
+  --gold: #e8b84b;
+  --moss: #4a7c59;
   --pitch-black: #0e0403;
   --black-2: #000100;
   --carmine: #e0552a;
   --text: rgba(255, 107, 53, 0.96);
   --text-amber: rgba(245, 158, 11, 0.92);
+  --text-gold: rgba(232, 184, 75, 0.92);
+  --text-garnet: rgba(196, 40, 74, 0.92);
   --muted: rgba(255, 107, 53, 0.72);
+  --muted-gold: rgba(232, 184, 75, 0.65);
   --soft: rgba(224, 85, 42, 0.58);
   --line: rgba(255, 107, 53, 0.22);
   --line-strong: rgba(255, 107, 53, 0.62);
   --amber-line: rgba(245, 158, 11, 0.28);
   --amber-glow: rgba(245, 158, 11, 0.08);
+  --gold-line: rgba(232, 184, 75, 0.25);
+  --gold-glow: rgba(232, 184, 75, 0.08);
+  --garnet-line: rgba(196, 40, 74, 0.25);
+  --garnet-glow: rgba(196, 40, 74, 0.1);
   --max-width: 1120px;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 107, 53, 0); }
+}
+
+@keyframes fade-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 * {
@@ -63,13 +83,13 @@ body::after {
   pointer-events: none;
   background:
     radial-gradient(38rem 38rem at 14% 16%, rgba(232, 58, 50, 0.14), transparent 72%),
-    radial-gradient(32rem 32rem at 84% 20%, rgba(193, 30, 46, 0.12), transparent 74%),
-    radial-gradient(44rem 44rem at 52% 82%, rgba(232, 58, 50, 0.09), transparent 76%);
+    radial-gradient(32rem 32rem at 84% 20%, rgba(196, 40, 74, 0.08), transparent 74%),
+    radial-gradient(44rem 44rem at 52% 82%, rgba(232, 184, 75, 0.06), transparent 76%);
   opacity: 0.75;
 }
 
 ::selection {
-  background: var(--cinnabar);
+  background: var(--garnet);
   color: var(--black-2);
 }
 
@@ -88,7 +108,7 @@ body::after {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--cinnabar);
+  background: var(--gold);
 }
 
 a {
@@ -166,7 +186,7 @@ summary,
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--cinnabar);
+  background: linear-gradient(90deg, var(--cinnabar), var(--gold));
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -246,8 +266,8 @@ summary,
 
 .search-trigger:hover,
 .search-trigger:focus-visible {
-  color: var(--amber);
-  border-color: var(--amber);
+  color: var(--gold);
+  border-color: var(--gold);
 }
 
 .search-results {
@@ -285,7 +305,7 @@ summary,
 
 .search-result-item:hover,
 .search-result-item:focus-visible {
-  background: rgba(255, 107, 53, 0.08);
+  background: var(--gold-glow);
 }
 
 .search-result-item strong {
@@ -338,7 +358,7 @@ summary,
 .reader-kicker,
 .feed-trigger-meta,
 .dynamic-note {
-  color: var(--text-amber);
+  color: var(--text-gold);
   font-size: 0.8rem;
   opacity: 0.75;
 }
@@ -401,12 +421,12 @@ summary,
 
 .tab-button:hover,
 .tab-button:focus-visible {
-  color: var(--amber);
+  color: var(--gold);
 }
 
 .tab-button[aria-selected="true"] {
   color: var(--text);
-  border-bottom-color: var(--amber);
+  border-bottom-color: var(--gold);
 }
 
 .tab-panels {
@@ -617,7 +637,15 @@ summary,
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 999px;
+  background: var(--gold);
+}
+
+.path-list li:nth-child(2)::before {
   background: var(--cinnabar);
+}
+
+.path-list li:nth-child(3)::before {
+  background: var(--garnet);
 }
 
 .path-list strong {
@@ -678,7 +706,19 @@ summary,
   text-align: left;
   cursor: pointer;
   transition: background 0.15s ease;
+  animation: fade-slide-in 0.35s ease both;
 }
+
+.feed-trigger:nth-child(1) { animation-delay: 0.02s; }
+.feed-trigger:nth-child(2) { animation-delay: 0.05s; }
+.feed-trigger:nth-child(3) { animation-delay: 0.08s; }
+.feed-trigger:nth-child(4) { animation-delay: 0.11s; }
+.feed-trigger:nth-child(5) { animation-delay: 0.14s; }
+.feed-trigger:nth-child(6) { animation-delay: 0.17s; }
+.feed-trigger:nth-child(7) { animation-delay: 0.2s; }
+.feed-trigger:nth-child(8) { animation-delay: 0.23s; }
+.feed-trigger:nth-child(9) { animation-delay: 0.26s; }
+.feed-trigger:nth-child(10) { animation-delay: 0.29s; }
 
 .feed-trigger--text-only {
   grid-template-columns: 1fr;
@@ -715,18 +755,24 @@ summary,
 
 .feed-trigger:hover .feed-trigger-action,
 .feed-trigger:focus-visible .feed-trigger-action {
-  color: var(--amber);
+  color: var(--gold);
 }
 
 .feed-trigger.is-active strong,
 .feed-trigger:hover strong,
 .feed-trigger:focus-visible strong {
-  color: var(--amber);
+  color: var(--gold);
 }
 
 .feed-trigger:hover,
 .feed-trigger:focus-visible {
-  background: var(--amber-glow);
+  background: var(--gold-glow);
+}
+
+.feed-trigger.is-active {
+  background: var(--gold-glow);
+  border-left: 2px solid var(--gold);
+  padding-left: 0.5rem;
 }
 
 .reader-shell {
@@ -907,7 +953,8 @@ summary,
 
 .reader-body a:hover,
 .reader-body a:focus-visible {
-  opacity: 0.75;
+  color: var(--gold);
+  opacity: 0.85;
 }
 
 .reader-body hr {
@@ -928,8 +975,9 @@ summary,
 
 .reader-head-actions a:hover,
 .reader-head-actions a:focus-visible {
-  background: var(--cinnabar);
+  background: var(--garnet);
   color: var(--black-2);
+  border-color: var(--garnet);
 }
 
 .reader-body img {
@@ -987,6 +1035,19 @@ summary,
   background: transparent;
   cursor: zoom-in;
 }
+
+.gallery-item {
+  animation: fade-slide-in 0.35s ease both;
+}
+
+.gallery-item:nth-child(2) { animation-delay: 0.04s; }
+.gallery-item:nth-child(3) { animation-delay: 0.08s; }
+.gallery-item:nth-child(4) { animation-delay: 0.12s; }
+.gallery-item:nth-child(5) { animation-delay: 0.16s; }
+.gallery-item:nth-child(6) { animation-delay: 0.2s; }
+.gallery-item:nth-child(7) { animation-delay: 0.24s; }
+.gallery-item:nth-child(8) { animation-delay: 0.28s; }
+.gallery-item:nth-child(9) { animation-delay: 0.32s; }
 
 .gallery-item img {
   width: 100%;
@@ -1234,6 +1295,10 @@ summary,
   border-color: var(--cinnabar);
 }
 
+.assistant-toggle[aria-expanded="true"] {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
 .assistant-panel {
   position: fixed;
   bottom: 5rem;
@@ -1332,8 +1397,8 @@ summary,
 
 .assistant-action-btn:hover,
 .assistant-action-btn:focus-visible {
-  background: var(--amber-glow);
-  color: var(--text-amber);
+  background: var(--gold-glow);
+  color: var(--text-gold);
 }
 
 .assistant-form {

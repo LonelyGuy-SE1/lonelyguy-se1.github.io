@@ -1,6 +1,13 @@
 (function () {
   var ASSISTANT_API = "/api/assistant";
+  var STORAGE_KEY = "lonelyguy_chat";
+  var MAX_HISTORY = 30;
   var conversation = [];
+
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) conversation = JSON.parse(saved);
+  } catch (e) {}
 
   function buildContext() {
     var content = window.PORTFOLIO_CONTENT;
@@ -35,6 +42,12 @@
     return parts.join("\n");
   }
 
+  function saveConversation() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation.slice(-MAX_HISTORY)));
+    } catch (e) {}
+  }
+
   function createUI() {
     var container = document.createElement("div");
     container.id = "assistant-container";
@@ -65,6 +78,8 @@
     var input = document.getElementById("assistant-input");
     var body = document.getElementById("assistant-body");
 
+    restoreHistory(body);
+
     toggle.addEventListener("click", function () {
       var isOpen = !panel.hidden;
       panel.hidden = isOpen;
@@ -88,6 +103,22 @@
     });
   }
 
+  function restoreHistory(body) {
+    var restored = 0;
+    for (var i = 0; i < conversation.length; i++) {
+      if (conversation[i].role === "assistant") {
+        renderBotMessage(body, conversation[i].content);
+        restored++;
+      } else {
+        var div = document.createElement("div");
+        div.className = "assistant-msg assistant-msg--user";
+        div.textContent = conversation[i].content;
+        body.appendChild(div);
+      }
+    }
+    if (restored > 0) body.scrollTop = body.scrollHeight;
+  }
+
   function addMessage(text, role) {
     var body = document.getElementById("assistant-body");
     var div = document.createElement("div");
@@ -97,22 +128,21 @@
     body.scrollTop = body.scrollHeight;
     if (role === "user") {
       conversation.push({ role: "user", content: text });
+      saveConversation();
     }
   }
 
-  function addBotMessage(text) {
-    var body = document.getElementById("assistant-body");
+  function renderBotMessage(body, text) {
     var div = document.createElement("div");
     div.className = "assistant-msg assistant-msg--bot";
-    var navRegex = /\u2192\s*([\w-]+)(?::([\w-]+))?/g;
+    var navRegex = /[\u2192\?]\s*([\w-]+)(?::([\w-]+))?/g;
     var match;
     var lastIndex = 0;
     var actions = [];
 
     while ((match = navRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
-        var textPart = document.createTextNode(text.slice(lastIndex, match.index));
-        div.appendChild(textPart);
+        div.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
       }
       actions.push({ type: match[1], id: match[2] || null });
       lastIndex = match.index + match[0].length;
@@ -144,26 +174,42 @@
 
     body.appendChild(div);
     body.scrollTop = body.scrollHeight;
-    conversation.push({ role: "assistant", content: text });
+    return div;
   }
 
-  function showTyping() {
-    var body = document.getElementById("assistant-body");
+  function showTyping(body) {
     var div = document.createElement("div");
     div.className = "assistant-msg assistant-msg--bot assistant-msg--typing";
-    div.textContent = ".";
+    div.textContent = "thinking";
     div.id = "assistant-typing";
     body.appendChild(div);
     body.scrollTop = body.scrollHeight;
+
+    var dots = 0;
+    div._interval = setInterval(function () {
+      dots = (dots + 1) % 4;
+      div.textContent = "thinking" + ".".repeat(dots);
+    }, 400);
   }
 
   function hideTyping() {
     var el = document.getElementById("assistant-typing");
-    if (el) el.remove();
+    if (el) {
+      clearInterval(el._interval);
+      el.remove();
+    }
+  }
+
+  function addBotMessage(text) {
+    var body = document.getElementById("assistant-body");
+    var node = renderBotMessage(body, text);
+    conversation.push({ role: "assistant", content: text });
+    saveConversation();
   }
 
   function sendMessage(text) {
-    showTyping();
+    var body = document.getElementById("assistant-body");
+    showTyping(body);
     var context = buildContext();
     var recent = conversation.slice(-10);
     var currentTab = window.currentTab || "home";
@@ -171,18 +217,102 @@
     fetch(ASSISTANT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: recent, context: context, currentTab: currentTab }),
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
+      body: JSON.stringify({ messages: recent, context: context, currentTab: currentTab, stream: true }),
+    }).then(async function (response) {
+      if (!response.ok) {
         hideTyping();
-        var reply = data.reply || "couldnt get an answer. try again?";
-        addBotMessage(reply);
-      })
-      .catch(function () {
-        hideTyping();
-        addBotMessage("something went wrong. try again?");
-      });
+        addBotMessage("couldnt reach the agent. try again?");
+        return;
+      }
+
+      var contentType = response.headers.get("Content-Type") || "";
+      if (contentType.includes("text/event-stream")) {
+        return handleStream(response);
+      }
+
+      hideTyping();
+      var data = await response.json();
+      addBotMessage(data.reply || "couldnt get an answer. try again?");
+    }).catch(function () {
+      hideTyping();
+      addBotMessage("something went wrong. try again?");
+    });
+  }
+
+  async function handleStream(response) {
+    var body = document.getElementById("assistant-body");
+    hideTyping();
+
+    var msgDiv = document.createElement("div");
+    msgDiv.className = "assistant-msg assistant-msg--bot";
+    body.appendChild(msgDiv);
+
+    var fullText = "";
+    var reader = response.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = "";
+    var navActions = [];
+    var textNode = document.createTextNode("");
+    msgDiv.appendChild(textNode);
+
+    try {
+      while (true) {
+        var result = await reader.read();
+        if (result.done) break;
+        buffer += decoder.decode(result.value, { stream: true });
+
+        var lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (var li = 0; li < lines.length; li++) {
+          var line = lines[li].trim();
+          if (!line || !line.startsWith("data: ")) continue;
+          var jsonStr = line.slice(6);
+          if (jsonStr === "[DONE]") continue;
+          try {
+            var chunk = JSON.parse(jsonStr);
+            var token = chunk.token || "";
+            if (token) {
+              fullText += token;
+              textNode.nodeValue = fullText;
+              body.scrollTop = body.scrollHeight;
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (err) {
+      console.error("Stream read error:", err);
+    }
+
+    var navRegex = /[\u2192\?]\s*([\w-]+)(?::([\w-]+))?/g;
+    var match;
+    while ((match = navRegex.exec(fullText)) !== null) {
+      navActions.push({ type: match[1], id: match[2] || null });
+    }
+
+    if (navActions.length) {
+      var actionDiv = document.createElement("div");
+      actionDiv.className = "assistant-actions";
+      for (var ai = 0; ai < navActions.length; ai++) {
+        (function (action) {
+          var btn = document.createElement("button");
+          btn.className = "assistant-action-btn";
+          btn.type = "button";
+          btn.textContent = action.id ? "\u2192 " + action.type + ": " + action.id : "\u2192 " + action.type;
+          btn.addEventListener("click", function () {
+            if (typeof window.assistantNavigate === "function") {
+              window.assistantNavigate(action.type, action.id);
+            }
+          });
+          actionDiv.appendChild(btn);
+        })(navActions[ai]);
+      }
+      msgDiv.appendChild(actionDiv);
+    }
+
+    conversation.push({ role: "assistant", content: fullText });
+    saveConversation();
+    body.scrollTop = body.scrollHeight;
   }
 
   if (document.readyState === "loading") {

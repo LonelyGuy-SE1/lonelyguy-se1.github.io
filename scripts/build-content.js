@@ -251,19 +251,33 @@ function makePageHtml(record, type, slug) {
     ? (record.image.startsWith("http") ? record.image : `${BASE_URL}/${record.image}`)
     : `${BASE_URL}/assets/SE1.jpg`;
   const htmlContent = toRootRelativePaths(record.html);
+  const articleType = type === "articles" ? "BlogPosting" : "Article";
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
-    "@type": type === "articles" ? "BlogPosting" : "BlogPosting",
-    "@id": `${url}#post`,
-    headline: record.title,
-    description: record.summary,
-    image: imageUrl,
-    datePublished: record.date,
-    dateModified: record.date,
-    author: { "@id": `${BASE_URL}/#person` },
-    publisher: { "@id": `${BASE_URL}/#person` },
-    mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    isPartOf: { "@id": `${BASE_URL}/#website` },
+    "@graph": [
+      {
+        "@type": articleType,
+        "@id": `${url}#post`,
+        headline: record.title,
+        description: record.summary,
+        image: imageUrl,
+        datePublished: record.date,
+        dateModified: record.date,
+        author: { "@id": `${BASE_URL}/#person` },
+        publisher: { "@id": `${BASE_URL}/#person` },
+        mainEntityOfPage: { "@type": "WebPage", "@id": url },
+        isPartOf: { "@id": `${BASE_URL}/#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL },
+          { "@type": "ListItem", "position": 2, "name": type, "item": `${BASE_URL}/#${type}` },
+          { "@type": "ListItem", "position": 3, "name": record.title, "item": url },
+        ],
+      },
+    ],
   });
 
   return `<!doctype html>
@@ -272,7 +286,8 @@ function makePageHtml(record, type, slug) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(record.title)} — Lonely Guy</title>
-    <meta name="description" content="${escapeHtml(record.summary)}" />
+    <meta name="description" content="${escapeHtml(record.summary)} — lonely guy's portfolio on reinforcement learning, robotics, and embodied ai." />
+    <meta name="keywords" content="reinforcement learning, robotics, embodied AI, ${escapeHtml(record.title.toLowerCase())}" />
     <link rel="canonical" href="${url}" />
     <meta property="og:site_name" content="Lonely Guy" />
     <meta property="og:title" content="${escapeHtml(record.title)}" />
@@ -443,10 +458,21 @@ async function generateJsonFeed(articles) {
   console.log("  → feed.json");
 }
 
-async function generateLlmsTxt(updates, articles) {
+async function generateLlmsTxt(updates, articles, papers) {
   let lines = [
     "# Lonely Guy",
     "> rl, robotics, world models, embodied ai, and system stuff.",
+    "",
+    "lonely guy is a cs undergrad working on reinforcement learning, robotics simulation, world models, and embodied ai. the goal is autonomous robotic assistants.",
+    "",
+    "## Navigation",
+    "- Home: " + BASE_URL + "/",
+    "- Articles: " + BASE_URL + "/#articles",
+    "- Updates: " + BASE_URL + "/#updates",
+    "- Papers: " + BASE_URL + "/#papers",
+    "- Gallery: " + BASE_URL + "/#images",
+    "- Projects: " + BASE_URL + "/#projects",
+    "- Contact: " + BASE_URL + "/#contact",
     "",
   ];
   if (articles.length) {
@@ -463,7 +489,14 @@ async function generateLlmsTxt(updates, articles) {
     }
     lines.push("");
   }
-  lines.push("## More");
+  if (papers.length) {
+    lines.push("## Papers");
+    for (const r of papers) {
+      lines.push(`- ${r.title}: ${r.summary}`);
+    }
+    lines.push("");
+  }
+  lines.push("## Profiles");
   lines.push(`- [GitHub](https://github.com/LonelyGuy-SE1)`);
   lines.push(`- [Hugging Face](https://huggingface.co/Lonelyguyse1)`);
   lines.push(`- [ORCID](https://orcid.org/0009-0000-7221-863X)`);
@@ -506,7 +539,7 @@ async function build() {
 
   // Generate llms.txt
   console.log("generating llms.txt...");
-  await generateLlmsTxt(updates, articles);
+  await generateLlmsTxt(updates, articles, papers);
 
   console.log("done.");
 }

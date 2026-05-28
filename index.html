@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lonely Guy - RL, Robotics &amp; Embodied AI</title>
+    <title>Lonely Guy — RL, Robotics &amp; Embodied AI Portfolio</title>
     <meta
       name="description"
-      content="lonely guy (greeshma surya) — cs undergrad on reinforcement learning, robotics, world models, and embodied ai. building towards autonomous robotic assistants."
+      content="lonely guy — cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied ai. portfolio with articles, projects, and research."
     />
+    <meta name="keywords" content="reinforcement learning, robotics, embodied AI, world models, deep learning, autonomous robots, portfolio, research" />
     <meta name="author" content="Lonely Guy" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://lonelyguy.vercel.app" />
+    <meta name="google-site-verification" content="lonelyguy.vercel.app" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="Lonely Guy" />
@@ -74,13 +76,41 @@
           "@id": "https://lonelyguy.vercel.app/#website",
           "url": "https://lonelyguy.vercel.app",
           "name": "Lonely Guy",
-          "publisher": { "@id": "https://lonelyguy.vercel.app/#person" }
+          "description": "rl, robotics, world models, embodied ai, and system stuff.",
+          "publisher": { "@id": "https://lonelyguy.vercel.app/#person" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://lonelyguy.vercel.app/#search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
         },
         {
           "@type": "WebPage",
           "@id": "https://lonelyguy.vercel.app/#webpage",
           "isPartOf": { "@id": "https://lonelyguy.vercel.app/#website" },
-          "about": { "@id": "https://lonelyguy.vercel.app/#person" }
+          "about": { "@id": "https://lonelyguy.vercel.app/#person" },
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "@id": "https://lonelyguy.vercel.app/#breadcrumb",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://lonelyguy.vercel.app" }
+            ]
+          }
+        },
+        {
+          "@type": "Project",
+          "name": "Breakout-DQN",
+          "url": "https://github.com/LonelyGuy-SE1/Breakout-DQN",
+          "author": { "@id": "https://lonelyguy.vercel.app/#person" }
+        },
+        {
+          "@type": "Project",
+          "name": "EcomEnv",
+          "url": "https://github.com/LonelyGuy-SE1/EcomEnv",
+          "author": { "@id": "https://lonelyguy.vercel.app/#person" }
         }
       ]
     }
@@ -140,6 +170,7 @@
           </span>
         </a>
 
+        <div class="header-actions">
         <nav class="breadcrumbs header-breadcrumbs" aria-label="Breadcrumb">
           <ol class="breadcrumb-list">
             <li><a href="#top" data-scroll-top>home</a></li>
@@ -286,6 +317,7 @@
           </button>
           <div class="search-results" id="search-results" hidden></div>
         </div>
+        </div>
       </div>
     </header>
 
@@ -331,7 +363,7 @@
                   <picture>
                     <source srcset="assets/yuri.avif" type="image/avif" />
                     <source srcset="assets/yuri.webp" type="image/webp" />
-                    <img src="assets/yuri.png" alt="Yuri illustration" fetchpriority="high" />
+                    <img src="assets/yuri.png" alt="Yuri illustration — loner guy's personal mascot reflecting the anime-inspired aesthetic of the portfolio" fetchpriority="high" />
                   </picture>
                 </figure>
                 <p class="hero-image-note">

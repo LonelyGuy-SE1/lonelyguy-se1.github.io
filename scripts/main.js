@@ -167,7 +167,7 @@ function openReader(sectionKey, id) {
     <div class="reader-head">
       <div>
         <p class="reader-kicker">${escapeHtml(record.dateLabel)}</p>
-        <h4>${escapeHtml(record.title)}</h4>
+        <h3>${escapeHtml(record.title)}</h3>
       </div>
       <button class="reader-close" type="button" data-reader-close="${sectionKey}">exit</button>
     </div>
@@ -503,7 +503,7 @@ function openProjectsReader(id) {
   section.reader.innerHTML = `
     <div class="reader-head">
       <div>
-        <h4>${escapeHtml(record.title)}</h4>
+        <h3>${escapeHtml(record.title)}</h3>
       </div>
       <div class="reader-head-actions">
         <a href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">visit repo</a>

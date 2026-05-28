@@ -116,7 +116,7 @@
     }
     </script>
 
-    <!-- Speculation Rules: prerender articles/updates on hover -->
+    <!-- Speculation Rules: prerender articles/updates/papers on hover -->
     <script type="speculationrules">
     {
       "prerender": [
@@ -126,6 +126,10 @@
         },
         {
           "where": { "href_matches": "/updates/*" },
+          "eagerness": "moderate"
+        },
+        {
+          "where": { "href_matches": "/papers/*" },
           "eagerness": "moderate"
         }
       ],

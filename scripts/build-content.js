@@ -357,7 +357,7 @@ function makePageHtml(record, type, slug) {
 </html>`;
 }
 
-async function generatePages(updates, articles) {
+async function generatePages(updates, articles, papers) {
   for (const record of updates) {
     const dir = path.join(ROOT, "updates", record.id);
     await fs.mkdir(dir, { recursive: true });
@@ -370,15 +370,24 @@ async function generatePages(updates, articles) {
     await fs.writeFile(path.join(dir, "index.html"), makePageHtml(record, "articles", record.id), "utf8");
     console.log(`  → articles/${record.id}/index.html`);
   }
+  for (const record of papers) {
+    const dir = path.join(ROOT, "papers", record.id);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, "index.html"), makePageHtml(record, "papers", record.id), "utf8");
+    console.log(`  → papers/${record.id}/index.html`);
+  }
 }
 
-async function generateSitemap(updates, articles) {
+async function generateSitemap(updates, articles, papers) {
   const entries = [`<url><loc>${BASE_URL}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`];
   for (const r of updates) {
     entries.push(`<url><loc>${BASE_URL}/updates/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
   }
   for (const r of articles) {
     entries.push(`<url><loc>${BASE_URL}/articles/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`);
+  }
+  for (const r of papers) {
+    entries.push(`<url><loc>${BASE_URL}/papers/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`);
   }
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -524,11 +533,11 @@ async function build() {
 
   // Generate standalone pages
   console.log("generating pages...");
-  await generatePages(updates, articles);
+  await generatePages(updates, articles, papers);
 
   // Generate sitemap
   console.log("generating sitemap...");
-  await generateSitemap(updates, articles);
+  await generateSitemap(updates, articles, papers);
 
   // Generate feeds (articles only)
   console.log("generating feeds...");

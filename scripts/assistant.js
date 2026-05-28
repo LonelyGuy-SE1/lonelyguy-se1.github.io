@@ -1,8 +1,8 @@
 (function () {
-  var ASSISTANT_API = "/api/assistant";
-  var STORAGE_KEY = "lonelyguy_chat";
-  var MAX_HISTORY = 30;
-  var conversation = [];
+  const ASSISTANT_API = "/api/assistant";
+  const STORAGE_KEY = "lonelyguy_chat";
+  const MAX_HISTORY = 30;
+  let conversation = [];
 
   try {
     var saved = localStorage.getItem(STORAGE_KEY);

@@ -558,11 +558,12 @@ function buildSearchIndex() {
   const index = [];
   for (const type of ["updates", "articles", "papers"]) {
     for (const item of (siteContent[type] || [])) {
-      index.push({ type, id: item.id, title: item.title, summary: item.summary, date: item.dateLabel });
+      const rawText = (item.html || "").replace(/<[^>]*>?/gm, " ");
+      index.push({ type, id: item.id, title: item.title, summary: item.summary, date: item.dateLabel, content: rawText });
     }
   }
   for (const item of (siteContent.gallery || [])) {
-    index.push({ type: "gallery", id: item.url, title: item.alt, summary: item.caption, date: "" });
+    index.push({ type: "gallery", id: item.url, title: item.alt, summary: item.caption, date: "", content: "" });
   }
   return index;
 }
@@ -580,27 +581,32 @@ function runSearch(query) {
   }
 
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const typeBoost = {};
-  const typeNames = { updates: 1, articles: 1, papers: 1, gallery: 1 };
-  for (const t of terms) {
-    if (typeNames[t]) typeBoost[t] = 4;
-  }
-
   const scored = [];
 
   for (const item of searchIndex) {
-    const haystack = (item.title + " " + item.summary).toLowerCase();
-    const matches = terms.filter((t) => haystack.includes(t)).length;
-    if (matches === 0) continue;
+    const haystack = (item.title + " " + item.summary + " " + (item.content || "")).toLowerCase();
+    let termMatches = 0;
+    for (const t of terms) {
+      if (haystack.includes(t)) termMatches++;
+    }
+    
+    if (termMatches === 0) continue;
 
-    const exactTitle = item.title.toLowerCase().includes(query.toLowerCase()) ? 3 : 0;
-    const typeBonus = typeBoost[item.type] || 0;
-    const score = matches + exactTitle + typeBonus;
+    const queryLower = query.toLowerCase();
+    const exactTitle = item.title.toLowerCase().includes(queryLower) ? 5 : 0;
+    const exactSummary = item.summary.toLowerCase().includes(queryLower) ? 3 : 0;
+    const exactContent = (item.content || "").toLowerCase().includes(queryLower) ? 1 : 0;
+    
+    const score = (termMatches * 2) + exactTitle + exactSummary + exactContent;
 
-    const snippetStart = haystack.indexOf(terms[0]);
-    const snippet = snippetStart >= 0
-      ? item.summary.slice(Math.max(0, snippetStart - 20), snippetStart + 100) + (snippetStart + 100 < item.summary.length ? "..." : "")
-      : item.summary.slice(0, 100);
+    let snippet = item.summary.length > 100 ? item.summary.slice(0, 100) + "..." : item.summary;
+    if (exactContent && !exactSummary && !exactTitle) {
+      const contentLower = (item.content || "").toLowerCase();
+      const idx = contentLower.indexOf(queryLower);
+      if (idx >= 0) {
+        snippet = "..." + (item.content || "").slice(Math.max(0, idx - 20), idx + 80) + "...";
+      }
+    }
 
     scored.push({ item, score, snippet });
   }

@@ -3,44 +3,49 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: "method not allowed" });
   }
 
-  var apiKey = process.env.OPENROUTER_API_KEY;
-  var apiUrl = process.env.ASSISTANT_API_URL || "https://openrouter.ai/api/v1/chat/completions";
-  var modelsRaw = process.env.ASSISTANT_MODELS;
-  var systemPrompt = process.env.ASSISTANT_SYSTEM_PROMPT;
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiUrl = process.env.ASSISTANT_API_URL || "https://openrouter.ai/api/v1/chat/completions";
+  const modelsRaw = process.env.ASSISTANT_MODELS;
+  const systemPrompt = process.env.ASSISTANT_SYSTEM_PROMPT;
 
   if (!apiKey || !modelsRaw || !systemPrompt) {
     return res.status(200).json({ reply: "loner's agent is not configured yet. come back later." });
   }
 
-  var models = modelsRaw.split(",").map(function (m) { return m.trim(); });
-  var reasoning = process.env.ASSISTANT_REASONING !== "false";
-  var reasoningEffort = process.env.ASSISTANT_REASONING_EFFORT || "high";
-  var maxTokens = parseInt(process.env.ASSISTANT_MAX_TOKENS || "768", 10);
-  var temperature = parseFloat(process.env.ASSISTANT_TEMPERATURE || "0.7");
-  var referer = process.env.ASSISTANT_REFERER_URL || "https://lonelyguy.vercel.app";
-  var siteTitle = process.env.ASSISTANT_SITE_TITLE || "Lonely Guy";
+  const models = modelsRaw.split(",").map((m) => m.trim());
+  const reasoning = process.env.ASSISTANT_REASONING !== "false";
+  const reasoningEffort = process.env.ASSISTANT_REASONING_EFFORT || "high";
+  const maxTokens = parseInt(process.env.ASSISTANT_MAX_TOKENS || "768", 10);
+  const temperature = parseFloat(process.env.ASSISTANT_TEMPERATURE || "0.7");
+  const referer = process.env.ASSISTANT_REFERER_URL || "https://lonelyguy.vercel.app";
+  const siteTitle = process.env.ASSISTANT_SITE_TITLE || "Lonely Guy";
 
-  var body = req.body || {};
-  var messages = body.messages;
-  var context = body.context;
-  var currentTab = body.currentTab;
-  var wantStream = body.stream === true;
+  const body = req.body || {};
+  const messages = body.messages;
+  const context = body.context;
+  const currentTab = body.currentTab;
+  const wantStream = body.stream === true;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: "messages required" });
   }
 
-  var contextParts = [];
+  const contextParts = [];
   if (context) contextParts.push("site content:\n" + context);
   if (currentTab) contextParts.push("the user is currently on the '" + currentTab + "' tab.");
 
-  var openRouterMessages = [
-    { role: "system", content: systemPrompt },
-    { role: "user", content: contextParts.join("\n\n") || "no additional context" },
+  const contextString = contextParts.join("\n\n");
+  let fullSystemPrompt = systemPrompt;
+  if (contextString) {
+    fullSystemPrompt += "\n\nCONTEXT INFORMATION:\n" + contextString;
+  }
+
+  const openRouterMessages = [
+    { role: "system", content: fullSystemPrompt }
   ].concat(messages);
 
   async function tryModel(model) {
-    var requestBody = {
+    const requestBody = {
       model: model,
       messages: openRouterMessages,
       max_tokens: maxTokens,
@@ -52,11 +57,11 @@ module.exports = async (req, res) => {
       requestBody.reasoning = { effort: reasoningEffort };
     }
 
-    var controller = new AbortController();
-    var timeoutId = setTimeout(function () { controller.abort(); }, 20000);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => { controller.abort(); }, 20000);
 
     try {
-      var response = await fetch(apiUrl, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,12 +80,12 @@ module.exports = async (req, res) => {
     }
   }
 
-  var lastError = null;
+  let lastError = null;
 
-  for (var mi = 0; mi < models.length; mi++) {
-    var model = models[mi];
+  for (let mi = 0; mi < models.length; mi++) {
+    const model = models[mi];
     try {
-      var response = await tryModel(model);
+      const response = await tryModel(model);
 
       if (response.ok) {
         if (wantStream) {
@@ -91,10 +96,10 @@ module.exports = async (req, res) => {
       }
 
       if (response.status === 429) {
-        var retryAfter = response.headers.get("Retry-After") || response.headers.get("retry-after");
-        var waitMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : 1000;
+        const retryAfter = response.headers.get("Retry-After") || response.headers.get("retry-after");
+        const waitMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : 1000;
         if (waitMs > 0 && waitMs <= 5000) {
-          await new Promise(function (r) { setTimeout(r, waitMs); });
+          await new Promise((r) => setTimeout(r, waitMs));
         }
         lastError = model + " rate limited";
         continue;
@@ -113,8 +118,8 @@ module.exports = async (req, res) => {
 };
 
 async function jsonResponse(response, res) {
-  var data = await response.json();
-  var reply = (data.choices?.[0]?.message?.content || "").trim();
+  const data = await response.json();
+  const reply = (data.choices?.[0]?.message?.content || "").trim();
   if (!reply) {
     return res.status(200).json({ reply: "drew a blank there. try asking differently?" });
   }
@@ -128,30 +133,30 @@ async function streamResponse(response, res) {
     "Connection": "keep-alive",
   });
 
-  var reader = response.body.getReader();
-  var decoder = new TextDecoder();
-  var buffer = "";
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
 
   try {
     while (true) {
-      var result = await reader.read();
+      const result = await reader.read();
       if (result.done) break;
       buffer += decoder.decode(result.value, { stream: true });
 
-      var lines = buffer.split("\n");
+      const lines = buffer.split("\n");
       buffer = lines.pop() || "";
 
-      for (var li = 0; li < lines.length; li++) {
-        var line = lines[li].trim();
+      for (let li = 0; li < lines.length; li++) {
+        const line = lines[li].trim();
         if (!line || !line.startsWith("data: ")) continue;
-        var jsonStr = line.slice(6);
+        const jsonStr = line.slice(6);
         if (jsonStr === "[DONE]") {
           res.write("data: [DONE]\n\n");
           continue;
         }
         try {
-          var chunk = JSON.parse(jsonStr);
-          var token = chunk.choices?.[0]?.delta?.content || "";
+          const chunk = JSON.parse(jsonStr);
+          const token = chunk.choices?.[0]?.delta?.content || "";
           if (token) {
             res.write("data: " + JSON.stringify({ token: token }) + "\n\n");
           }

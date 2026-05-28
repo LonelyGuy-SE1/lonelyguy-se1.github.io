@@ -1,0 +1,10 @@
+{
+  "name": "lonelyguy-portfolio",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-content.js"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.0"
+  }
+}

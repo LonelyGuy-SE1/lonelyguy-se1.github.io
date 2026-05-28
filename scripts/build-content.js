@@ -1,5 +1,7 @@
 const fs = require("fs/promises");
+const fsSync = require("fs");
 const path = require("path");
+const sharp = require("sharp");
 
 const ROOT = path.resolve(__dirname, "..");
 const BASE_URL = "https://lonelyguy.vercel.app";
@@ -23,6 +25,52 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function toPictureHtml(html) {
+  return html.replace(
+    /<img src="(gallery\/[^"]+?)\.(png|jpe?g)" alt="([^"]*?)"(.*?)>/gi,
+    (match, path, ext, alt, extra) => {
+      return `<picture><source srcset="${path}.avif" type="image/avif"><source srcset="${path}.webp" type="image/webp"><img src="${path}.${ext}" alt="${alt}"${extra} loading="lazy"></picture>`;
+    }
+  );
+}
+
+async function convertImages() {
+  const galleryDir = path.join(ROOT, "gallery");
+  const targets = [];
+
+  try {
+    const files = await fs.readdir(galleryDir);
+    for (const f of files) {
+      if (/\.(png|jpe?g)$/i.test(f)) targets.push(path.join(galleryDir, f));
+    }
+  } catch {}
+  try {
+    const yuri = path.join(ROOT, "assets", "yuri.png");
+    if (fsSync.existsSync(yuri)) targets.push(yuri);
+  } catch {}
+
+  if (!targets.length) return;
+
+  for (const file of targets) {
+    const base = file.replace(/\.\w+$/, "");
+    const webpPath = base + ".webp";
+    const avifPath = base + ".avif";
+
+    const [webpExists, avifExists] = await Promise.all([
+      fs.access(webpPath).then(() => true).catch(() => false),
+      fs.access(avifPath).then(() => true).catch(() => false),
+    ]);
+
+    if (webpExists && avifExists) continue;
+
+    const img = sharp(file);
+    const meta = await img.metadata();
+    if (!webpExists) await img.webp({ quality: 80, effort: 6 }).toFile(webpPath);
+    if (!avifExists) await img.avif({ quality: 65, effort: 4 }).toFile(avifPath);
+    console.log(`  → ${path.basename(file)} → webp + avif`);
+  }
 }
 
 function normalizeAssetUrl(assetPath) {
@@ -162,7 +210,7 @@ async function readMarkdownCollection(directory) {
         dateLabel: parsed.dateLabel,
         summary: parsed.attributes.summary || fallbackSummary(parsed.body),
         image: normalizeAssetUrl(parsed.attributes.image || extractFirstImage(parsed.body)),
-        html: markdownToHtml(parsed.body),
+        html: toPictureHtml(markdownToHtml(parsed.body)),
       };
     }),
   );
@@ -173,7 +221,8 @@ async function readGallery() {
   const entries = await fs.readdir(GALLERY_DIR, { withFileTypes: true }).catch(() => []);
   const images = entries.filter((e) => {
     if (!e.isFile() || e.name.startsWith(".")) return false;
-    return [".png", ".jpg", ".jpeg", ".webp", ".gif"].includes(path.extname(e.name).toLowerCase());
+    const ext = path.extname(e.name).toLowerCase();
+    return ext !== ".webp" && ext !== ".avif" && [".png", ".jpg", ".jpeg", ".gif"].includes(ext);
   });
   const records = await Promise.all(
     images.map(async (entry) => {

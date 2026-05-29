@@ -8,38 +8,44 @@
     var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) conversation = JSON.parse(saved);
   } catch (e) {}
-
   function buildContext() {
-    var content = window.PORTFOLIO_CONTENT;
-    if (!content) return "";
     var parts = [];
+    document.querySelectorAll(".tab-panel").forEach(function(panel) {
+      if (panel.id && panel.innerText) {
+         parts.push("== SECTION: " + panel.id.replace("panel-", "").toUpperCase() + " ==\n" + panel.innerText.trim());
+      }
+    });
 
-    var sections = ["updates", "articles", "papers"];
-    for (var si = 0; si < sections.length; si++) {
-      var key = sections[si];
-      var items = content[key] || [];
-      parts.push("== " + key.toUpperCase() + " (" + items.length + " items) ==");
-      for (var ii = 0; ii < items.length; ii++) {
-        var item = items[ii];
-        parts.push("  - " + item.id + ": " + item.title + " (" + item.dateLabel + ") - " + (item.summary || ""));
+    var content = window.PORTFOLIO_CONTENT;
+    if (content) {
+      var sections = ["updates", "articles", "papers"];
+      for (var si = 0; si < sections.length; si++) {
+        var key = sections[si];
+        var items = content[key] || [];
+        parts.push("== CATALOG: " + key.toUpperCase() + " (" + items.length + " items) ==");
+        for (var ii = 0; ii < items.length; ii++) {
+          var item = items[ii];
+          parts.push("  - " + item.id + ": " + item.title + " (" + item.dateLabel + ") - " + (item.summary || ""));
+        }
+      }
+      
+      var gallery = content.gallery || [];
+      if (gallery.length) {
+        parts.push("== GALLERY (" + gallery.length + " images) ==");
+        for (var gi = 0; gi < gallery.length; gi++) {
+          parts.push("  - " + (gallery[gi].alt || gallery[gi].caption || ""));
+        }
+      }
+
+      var projects = content.projects || [];
+      if (projects.length) {
+        parts.push("== PROJECTS (" + projects.length + " repos) ==");
+        for (var pi = 0; pi < projects.length; pi++) {
+          parts.push("  - " + projects[pi].title);
+        }
       }
     }
-
-    var gallery = content.gallery || [];
-    parts.push("== GALLERY (" + gallery.length + " images) ==");
-    for (var gi = 0; gi < gallery.length; gi++) {
-      parts.push("  - " + (gallery[gi].alt || gallery[gi].caption || ""));
-    }
-
-    var projects = content.projects || [];
-    if (projects.length) {
-      parts.push("== PROJECTS (" + projects.length + " repos) ==");
-      for (var pi = 0; pi < projects.length; pi++) {
-        parts.push("  - " + projects[pi].title);
-      }
-    }
-
-    return parts.join("\n");
+    return parts.join("\n\n").slice(0, 30000);
   }
 
   function saveConversation() {
@@ -57,8 +63,11 @@
       "</button>",
       "<div id=\"assistant-panel\" class=\"assistant-panel\" hidden>",
       "<div class=\"assistant-head\">",
-      "<span class=\"assistant-name\">loner's agent</span>",
+      "<span class=\"assistant-name\">se1's agent</span>",
+      "<div>",
+      "<button id=\"assistant-clear\" class=\"assistant-close\" type=\"button\" aria-label=\"clear chat\" style=\"margin-right: 8px;\">clear</button>",
       "<button id=\"assistant-close\" class=\"assistant-close\" type=\"button\" aria-label=\"close\">close</button>",
+      "</div>",
       "</div>",
       "<div class=\"assistant-body\" id=\"assistant-body\">",
       "<div class=\"assistant-msg assistant-msg--bot\">hey! ask me anything about the site or the work here :)</div>",
@@ -312,6 +321,16 @@
 
     conversation.push({ role: "assistant", content: fullText });
     saveConversation();
+    body.scrollTop = body.scrollHeight;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", createUI);
+  } else {
+    createUI();
+  }
+})();
+);
     body.scrollTop = body.scrollHeight;
   }
 

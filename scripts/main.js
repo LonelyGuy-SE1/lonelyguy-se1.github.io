@@ -416,38 +416,37 @@ renderGallery(siteContent.gallery || []);
 async function fetchProjects() {
   const section = feedSections.projects;
   try {
-    const res = await fetch("projects.json");
+    const res = await fetch("https://api.github.com/users/LonelyGuy-SE1/repos?sort=updated&per_page=100");
     const repos = await res.json();
     if (!repos.length) {
-      section.list.innerHTML = `<p class="dynamic-note">no projects added yet.</p>`;
+      section.list.innerHTML = `<p class="dynamic-note">no projects found.</p>`;
       return;
     }
+    
+    const validRepos = repos.filter(repo => !repo.fork);
+
     const projects = await Promise.all(
-      repos.map(async ({ repo }) => {
-        const [owner, name] = repo.split("/");
-        const [infoRes, readmeRes] = await Promise.all([
-          fetch(`https://api.github.com/repos/${owner}/${name}`),
-          fetch(`https://api.github.com/repos/${owner}/${name}/readme`),
-        ]);
-        const info = await infoRes.json();
+      validRepos.map(async (repo) => {
         let readme = "";
         try {
+          const readmeRes = await fetch(`https://api.github.com/repos/${repo.full_name}/readme`);
           const readmeData = await readmeRes.json();
           if (readmeData.content) {
             readme = atob(readmeData.content.replace(/\n/g, ""));
           }
         } catch {}
         return {
-          id: repo,
-          title: info.name || repo,
-          summary: info.description || "No description",
+          id: repo.full_name,
+          title: repo.name,
+          summary: repo.description || "No description",
           html: readme,
-          url: info.html_url || `https://github.com/${repo}`,
+          url: repo.html_url,
         };
       })
     );
     feedRecords.projects = projects;
     renderProjectsList(projects);
+    if (typeof rebuildSearchIndex === "function") rebuildSearchIndex();
   } catch {
     section.list.innerHTML = `<p class="dynamic-note">failed to load projects.</p>`;
   }
@@ -554,8 +553,24 @@ if (searchTrigger) {
   });
 }
 
-function buildSearchIndex() {
+let searchIndex = [];
+
+function rebuildSearchIndex() {
   const index = [];
+  
+  document.querySelectorAll(".tab-panel").forEach(panel => {
+    const id = panel.id.replace("panel-", "");
+    if (["updates", "articles", "papers", "images", "projects"].includes(id)) return;
+    index.push({
+      type: "page",
+      id: id,
+      title: panel.querySelector("h2") ? panel.querySelector("h2").innerText : id,
+      summary: "portfolio section",
+      date: "",
+      content: panel.innerText.replace(/\s+/g, ' ')
+    });
+  });
+
   for (const type of ["updates", "articles", "papers"]) {
     for (const item of (siteContent[type] || [])) {
       const rawText = (item.html || "").replace(/<[^>]*>?/gm, " ");
@@ -565,10 +580,14 @@ function buildSearchIndex() {
   for (const item of (siteContent.gallery || [])) {
     index.push({ type: "gallery", id: item.url, title: item.alt, summary: item.caption, date: "", content: "" });
   }
-  return index;
+  for (const item of (feedRecords.projects || [])) {
+    const rawText = (item.html || "").replace(/<[^>]*>?/gm, " ");
+    index.push({ type: "projects", id: item.id, title: item.title, summary: item.summary, date: "", content: rawText });
+  }
+  searchIndex = index;
 }
 
-let searchIndex = buildSearchIndex();
+rebuildSearchIndex();
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -593,18 +612,18 @@ function runSearch(query) {
     if (termMatches === 0) continue;
 
     const queryLower = query.toLowerCase();
-    const exactTitle = item.title.toLowerCase().includes(queryLower) ? 5 : 0;
-    const exactSummary = item.summary.toLowerCase().includes(queryLower) ? 3 : 0;
-    const exactContent = (item.content || "").toLowerCase().includes(queryLower) ? 1 : 0;
+    const exactTitle = item.title.toLowerCase().includes(queryLower) ? 10 : 0;
+    const exactSummary = item.summary.toLowerCase().includes(queryLower) ? 5 : 0;
+    const exactContent = (item.content || "").toLowerCase().includes(queryLower) ? 2 : 0;
     
     const score = (termMatches * 2) + exactTitle + exactSummary + exactContent;
 
-    let snippet = item.summary.length > 100 ? item.summary.slice(0, 100) + "..." : item.summary;
+    let snippet = item.summary.length > 80 ? item.summary.slice(0, 80) + "..." : item.summary;
     if (exactContent && !exactSummary && !exactTitle) {
       const contentLower = (item.content || "").toLowerCase();
       const idx = contentLower.indexOf(queryLower);
       if (idx >= 0) {
-        snippet = "..." + (item.content || "").slice(Math.max(0, idx - 20), idx + 80) + "...";
+        snippet = "..." + (item.content || "").slice(Math.max(0, idx - 20), idx + 60).trim() + "...";
       }
     }
 
@@ -615,7 +634,8 @@ function runSearch(query) {
   const top = scored.slice(0, 8);
 
   if (!top.length) {
-    searchResults.hidden = true;
+    searchResults.innerHTML = `<div class="search-result-item" style="text-align: center; color: var(--muted);">no results found.</div>`;
+    searchResults.hidden = false;
     return;
   }
 
@@ -636,6 +656,10 @@ function runSearch(query) {
 }
 
 function navigateToSearchResult(type, id) {
+  if (type === "page") {
+    setActiveTab(id, true, true);
+    return;
+  }
   if (type === "gallery") {
     setActiveTab("images", true, true);
     return;

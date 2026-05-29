@@ -32,7 +32,7 @@ function toPictureHtml(html) {
     /<img src="(gallery\/[^"]+?)\.(png|jpe?g)" alt="([^"]*?)"(.*?)>/gi,
     (match, path, ext, alt, extra) => {
       return `<picture><source srcset="${path}.avif" type="image/avif"><source srcset="${path}.webp" type="image/webp"><img src="${path}.${ext}" alt="${alt}"${extra} loading="lazy"></picture>`;
-    }
+    },
   );
 }
 
@@ -59,16 +59,24 @@ async function convertImages() {
     const avifPath = base + ".avif";
 
     const [webpExists, avifExists] = await Promise.all([
-      fs.access(webpPath).then(() => true).catch(() => false),
-      fs.access(avifPath).then(() => true).catch(() => false),
+      fs
+        .access(webpPath)
+        .then(() => true)
+        .catch(() => false),
+      fs
+        .access(avifPath)
+        .then(() => true)
+        .catch(() => false),
     ]);
 
     if (webpExists && avifExists) continue;
 
     const img = sharp(file);
     const meta = await img.metadata();
-    if (!webpExists) await img.webp({ quality: 80, effort: 6 }).toFile(webpPath);
-    if (!avifExists) await img.avif({ quality: 65, effort: 4 }).toFile(avifPath);
+    if (!webpExists)
+      await img.webp({ quality: 80, effort: 6 }).toFile(webpPath);
+    if (!avifExists)
+      await img.avif({ quality: 65, effort: 4 }).toFile(avifPath);
     console.log(`  → ${path.basename(file)} → webp + avif`);
   }
 }
@@ -77,15 +85,19 @@ function normalizeAssetUrl(assetPath) {
   if (!assetPath) return "";
   const normalized = assetPath.trim().replace(/\\/g, "/");
   if (!normalized) return "";
-  if (/^https?:\/\//i.test(normalized) || normalized.startsWith("/")) return normalized;
-  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(normalized) && !normalized.includes("/")) {
+  if (/^https?:\/\//i.test(normalized) || normalized.startsWith("/"))
+    return normalized;
+  if (
+    /\.(png|jpe?g|webp|gif|svg)$/i.test(normalized) &&
+    !normalized.includes("/")
+  ) {
     return `gallery/${normalized}`;
   }
   return normalized;
 }
 
 function toRootRelativePaths(html) {
-  return html.replace(/(src="|srcset=")(gallery\/)/g, '$1/$2');
+  return html.replace(/(src="|srcset=")(gallery\/)/g, "$1/$2");
 }
 
 function inlineMarkdown(text) {
@@ -93,14 +105,16 @@ function inlineMarkdown(text) {
   return escaped
     .replace(
       /\[!\[([^\]]*)\]\(([^)]+)\)\]\(([^)]+)\)/g,
-      (_, alt, imgUrl, linkUrl) => `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noreferrer"><img src="${escapeHtml(imgUrl)}" alt="${alt}"></a>`,
+      (_, alt, imgUrl, linkUrl) =>
+        `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noreferrer"><img src="${escapeHtml(imgUrl)}" alt="${alt}"></a>`,
     )
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
       return `<img src="${escapeHtml(normalizeAssetUrl(src))}" alt="${alt}">`;
     })
     .replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      (_, text, url) => `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(text)}</a>`,
+      (_, text, url) =>
+        `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(text)}</a>`,
     )
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
@@ -124,15 +138,26 @@ function markdownToHtml(markdown) {
         return `<h${m[1].length}>${inlineMarkdown(m[2])}</h${m[1].length}>`;
       }
       if (block.split("\n").every((l) => /^[-*]\s/.test(l))) {
-        const items = block.split("\n").map((l) => l.replace(/^[-*]\s/, "")).map((l) => `<li>${inlineMarkdown(l)}</li>`).join("");
+        const items = block
+          .split("\n")
+          .map((l) => l.replace(/^[-*]\s/, ""))
+          .map((l) => `<li>${inlineMarkdown(l)}</li>`)
+          .join("");
         return `<ul>${items}</ul>`;
       }
       if (block.split("\n").every((l) => /^\d+\.\s/.test(l))) {
-        const items = block.split("\n").map((l) => l.replace(/^\d+\.\s/, "")).map((l) => `<li>${inlineMarkdown(l)}</li>`).join("");
+        const items = block
+          .split("\n")
+          .map((l) => l.replace(/^\d+\.\s/, ""))
+          .map((l) => `<li>${inlineMarkdown(l)}</li>`)
+          .join("");
         return `<ol>${items}</ol>`;
       }
       if (block.split("\n").every((l) => /^>\s?/.test(l))) {
-        const quote = block.split("\n").map((l) => l.replace(/^>\s?/, "")).join(" ");
+        const quote = block
+          .split("\n")
+          .map((l) => l.replace(/^>\s?/, ""))
+          .join(" ");
         return `<blockquote>${inlineMarkdown(quote)}</blockquote>`;
       }
       if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(block)) {
@@ -142,7 +167,10 @@ function markdownToHtml(markdown) {
       if (/^---$/.test(block.trim())) {
         return `<hr>`;
       }
-      const paragraph = block.split("\n").map((l) => inlineMarkdown(l)).join("<br>");
+      const paragraph = block
+        .split("\n")
+        .map((l) => inlineMarkdown(l))
+        .join("<br>");
       return `<p>${paragraph}</p>`;
     })
     .join("");
@@ -150,7 +178,8 @@ function markdownToHtml(markdown) {
 
 function parseFrontmatter(rawText, fallbackDate) {
   const text = normalizeLineEndings(rawText);
-  if (!text.startsWith("---\n")) return { attributes: {}, body: text.trim(), dateLabel: fallbackDate };
+  if (!text.startsWith("---\n"))
+    return { attributes: {}, body: text.trim(), dateLabel: fallbackDate };
   const m = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!m) return { attributes: {}, body: text.trim(), dateLabel: fallbackDate };
   const attributes = {};
@@ -159,7 +188,11 @@ function parseFrontmatter(rawText, fallbackDate) {
     if (sep === -1) continue;
     attributes[line.slice(0, sep).trim()] = line.slice(sep + 1).trim();
   }
-  return { attributes, body: m[2].trim(), dateLabel: attributes.date || fallbackDate };
+  return {
+    attributes,
+    body: m[2].trim(),
+    dateLabel: attributes.date || fallbackDate,
+  };
 }
 
 function toSlug(fileName) {
@@ -180,7 +213,10 @@ function fallbackSummary(markdownBody) {
   const line = normalizeLineEndings(markdownBody)
     .split(/\n+/)
     .map((l) => l.trim())
-    .find((l) => l && !l.startsWith("#") && !l.startsWith("-") && !l.startsWith("!"));
+    .find(
+      (l) =>
+        l && !l.startsWith("#") && !l.startsWith("-") && !l.startsWith("!"),
+    );
   return line || "no summary yet.";
 }
 
@@ -201,7 +237,9 @@ function altFromFilename(filename) {
 }
 
 async function readMarkdownCollection(directory) {
-  const entries = await fs.readdir(directory, { withFileTypes: true }).catch(() => []);
+  const entries = await fs
+    .readdir(directory, { withFileTypes: true })
+    .catch(() => []);
   const files = entries.filter((e) => e.isFile() && e.name.endsWith(".md"));
   const records = await Promise.all(
     files.map(async (entry) => {
@@ -212,11 +250,14 @@ async function readMarkdownCollection(directory) {
       const parsed = parseFrontmatter(rawText, fallbackDate);
       return {
         id: toSlug(entry.name),
-        title: parsed.attributes.title || formatFallbackTitle(toSlug(entry.name)),
+        title:
+          parsed.attributes.title || formatFallbackTitle(toSlug(entry.name)),
         date: parsed.attributes.date || fallbackDate,
         dateLabel: parsed.dateLabel,
         summary: parsed.attributes.summary || fallbackSummary(parsed.body),
-        image: normalizeAssetUrl(parsed.attributes.image || extractFirstImage(parsed.body)),
+        image: normalizeAssetUrl(
+          parsed.attributes.image || extractFirstImage(parsed.body),
+        ),
         html: toPictureHtml(markdownToHtml(parsed.body)),
       };
     }),
@@ -225,11 +266,17 @@ async function readMarkdownCollection(directory) {
 }
 
 async function readGallery() {
-  const entries = await fs.readdir(GALLERY_DIR, { withFileTypes: true }).catch(() => []);
+  const entries = await fs
+    .readdir(GALLERY_DIR, { withFileTypes: true })
+    .catch(() => []);
   const images = entries.filter((e) => {
     if (!e.isFile() || e.name.startsWith(".")) return false;
     const ext = path.extname(e.name).toLowerCase();
-    return ext !== ".webp" && ext !== ".avif" && [".png", ".jpg", ".jpeg", ".gif"].includes(ext);
+    return (
+      ext !== ".webp" &&
+      ext !== ".avif" &&
+      [".png", ".jpg", ".jpeg", ".gif"].includes(ext)
+    );
   });
   const records = await Promise.all(
     images.map(async (entry) => {
@@ -248,7 +295,9 @@ async function readGallery() {
 function makePageHtml(record, type, slug) {
   const url = `${BASE_URL}/${type}/${slug}/`;
   const imageUrl = record.image
-    ? (record.image.startsWith("http") ? record.image : `${BASE_URL}/${record.image}`)
+    ? record.image.startsWith("http")
+      ? record.image
+      : `${BASE_URL}/${record.image}`
     : `${BASE_URL}/assets/SE1.jpg`;
   const htmlContent = toRootRelativePaths(record.html);
   const articleType = type === "articles" ? "BlogPosting" : "Article";
@@ -272,9 +321,14 @@ function makePageHtml(record, type, slug) {
         "@type": "BreadcrumbList",
         "@id": `${url}#breadcrumb`,
         itemListElement: [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL },
-          { "@type": "ListItem", "position": 2, "name": type, "item": `${BASE_URL}/#${type}` },
-          { "@type": "ListItem", "position": 3, "name": record.title, "item": url },
+          { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: type,
+            item: `${BASE_URL}/#${type}`,
+          },
+          { "@type": "ListItem", position: 3, name: record.title, item: url },
         ],
       },
     ],
@@ -285,8 +339,8 @@ function makePageHtml(record, type, slug) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(record.title)} — Lonely Guy</title>
-    <meta name="description" content="${escapeHtml(record.summary)} — lonely guy's portfolio on reinforcement learning, robotics, and embodied ai." />
+    <title>${escapeHtml(record.title)} - Lonely Guy</title>
+    <meta name="description" content="${escapeHtml(record.summary)} - lonely guy's portfolio on reinforcement learning, robotics, and embodied ai." />
     <meta name="keywords" content="reinforcement learning, robotics, embodied AI, ${escapeHtml(record.title.toLowerCase())}" />
     <link rel="canonical" href="${url}" />
     <meta property="og:site_name" content="Lonely Guy" />
@@ -371,33 +425,53 @@ async function generatePages(updates, articles, papers) {
   for (const record of updates) {
     const dir = path.join(ROOT, "updates", record.id);
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(path.join(dir, "index.html"), makePageHtml(record, "updates", record.id), "utf8");
+    await fs.writeFile(
+      path.join(dir, "index.html"),
+      makePageHtml(record, "updates", record.id),
+      "utf8",
+    );
     console.log(`  → updates/${record.id}/index.html`);
   }
   for (const record of articles) {
     const dir = path.join(ROOT, "articles", record.id);
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(path.join(dir, "index.html"), makePageHtml(record, "articles", record.id), "utf8");
+    await fs.writeFile(
+      path.join(dir, "index.html"),
+      makePageHtml(record, "articles", record.id),
+      "utf8",
+    );
     console.log(`  → articles/${record.id}/index.html`);
   }
   for (const record of papers) {
     const dir = path.join(ROOT, "papers", record.id);
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(path.join(dir, "index.html"), makePageHtml(record, "papers", record.id), "utf8");
+    await fs.writeFile(
+      path.join(dir, "index.html"),
+      makePageHtml(record, "papers", record.id),
+      "utf8",
+    );
     console.log(`  → papers/${record.id}/index.html`);
   }
 }
 
 async function generateSitemap(updates, articles, papers) {
-  const entries = [`<url><loc>${BASE_URL}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`];
+  const entries = [
+    `<url><loc>${BASE_URL}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
+  ];
   for (const r of updates) {
-    entries.push(`<url><loc>${BASE_URL}/updates/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+    entries.push(
+      `<url><loc>${BASE_URL}/updates/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
+    );
   }
   for (const r of articles) {
-    entries.push(`<url><loc>${BASE_URL}/articles/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`);
+    entries.push(
+      `<url><loc>${BASE_URL}/articles/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`,
+    );
   }
   for (const r of papers) {
-    entries.push(`<url><loc>${BASE_URL}/papers/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`);
+    entries.push(
+      `<url><loc>${BASE_URL}/papers/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
+    );
   }
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -449,7 +523,9 @@ async function generateJsonFeed(articles) {
   const items = articles.map((r) => {
     const url = `${BASE_URL}/articles/${r.id}/`;
     const imageUrl = r.image
-      ? (r.image.startsWith("http") ? r.image : `${BASE_URL}/${r.image}`)
+      ? r.image.startsWith("http")
+        ? r.image
+        : `${BASE_URL}/${r.image}`
       : `${BASE_URL}/assets/SE1.jpg`;
     return {
       id: url,
@@ -473,7 +549,11 @@ async function generateJsonFeed(articles) {
     language: "en-US",
     items,
   };
-  await fs.writeFile(path.join(ROOT, "feed.json"), JSON.stringify(feed, null, 2), "utf8");
+  await fs.writeFile(
+    path.join(ROOT, "feed.json"),
+    JSON.stringify(feed, null, 2),
+    "utf8",
+  );
   console.log("  → feed.json");
 }
 
@@ -551,10 +631,7 @@ async function build() {
 
   // Generate feeds (articles only)
   console.log("generating feeds...");
-  await Promise.all([
-    generateRssFeed(articles),
-    generateJsonFeed(articles),
-  ]);
+  await Promise.all([generateRssFeed(articles), generateJsonFeed(articles)]);
 
   // Generate llms.txt
   console.log("generating llms.txt...");

@@ -16,7 +16,7 @@ lonely guy is a cs undergrad working on reinforcement learning, robotics simulat
 - [Teaching a 1.5B LLM to be a SOC Analyst (Without Burning Down the Network)](https://lonelyguy.vercel.app/articles/2026-05-01-llm-soc-analyst/): Fine-tuning a 1.5B LLM with GRPO to defend against realistic enterprise attack chains, and the unexpected lessons learned from reward hacking.
 
 ## Updates
-- [Project Moirai — Bare-Metal Embodied Control](https://lonelyguy.vercel.app/updates/2026-05-01-moirai/): Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.
+- [Project Moirai - Bare-Metal Embodied Control](https://lonelyguy.vercel.app/updates/2026-05-01-moirai/): Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.
 - [Hackathons + Humanoid Simulation + UAV Conference + Breakout](https://lonelyguy.vercel.app/updates/2026-04-11-updates/): Qualified for some interesting hackathons, Good progress is being done on training the humanoid robot + Will be attending a UAV conference + Breakout might have to wait a bit.
 - [playing around with an arm and a biped and rl](https://lonelyguy.vercel.app/updates/2026-03-18-biped/): wanted to test the update page, so though might as well log about the biped, this is more of a random update.
 

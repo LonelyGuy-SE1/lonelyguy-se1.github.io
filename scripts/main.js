@@ -428,11 +428,28 @@ async function fetchProjects() {
     const projects = await Promise.all(
       validRepos.map(async (repo) => {
         let readme = "";
+        let hasReadme = false;
         try {
           const readmeRes = await fetch(`https://api.github.com/repos/${repo.full_name}/readme`);
           const readmeData = await readmeRes.json();
           if (readmeData.content) {
-            readme = atob(readmeData.content.replace(/\n/g, ""));
+            readme = decodeURIComponent(escape(atob(readmeData.content.replace(/\n/g, ""))));
+            hasReadme = true;
+
+            const branch = repo.default_branch || "main";
+            const rawBase = `https://raw.githubusercontent.com/${repo.full_name}/${branch}/`;
+
+            // Fix relative markdown images (e.g. ![demo](docs/demo.gif))
+            readme = readme.replace(/!\[([^\]]*)\]\((?!http[s]?:\/\/|data:)([^)]+)\)/g, (match, alt, path) => {
+              const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+              return `![${alt}](${rawBase}${cleanPath})`;
+            });
+            
+            // Fix relative HTML images (e.g. <img src="docs/demo.gif">)
+            readme = readme.replace(/<img([^>]+)src=["'](?!http[s]?:\/\/|data:)([^"']+)["']/gi, (match, prefix, path) => {
+              const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+              return `<img${prefix}src="${rawBase}${cleanPath}"`;
+            });
           }
         } catch {}
         return {
@@ -441,9 +458,23 @@ async function fetchProjects() {
           summary: repo.description || "No description",
           html: readme,
           url: repo.html_url,
+          hasReadme,
+          stars: repo.stargazers_count || 0,
+          size: repo.size || 0
         };
       })
     );
+
+    // Smart Sorting: 
+    // 1. Must have a README
+    // 2. Highest stars
+    // 3. Largest size/complexity
+    projects.sort((a, b) => {
+      if (a.hasReadme !== b.hasReadme) return a.hasReadme ? -1 : 1;
+      if (a.stars !== b.stars) return b.stars - a.stars;
+      return b.size - a.size;
+    });
+
     feedRecords.projects = projects;
     renderProjectsList(projects);
     if (typeof rebuildSearchIndex === "function") rebuildSearchIndex();
@@ -531,7 +562,10 @@ let searchTimeout = null;
 function openSearch() {
   searchField.classList.add("search-field--open");
   searchTrigger.setAttribute("aria-expanded", "true");
-  setTimeout(function () { searchInput.focus(); }, 100);
+  setTimeout(function () { 
+    searchInput.focus(); 
+    if (!searchInput.value.trim()) runSearch("");
+  }, 100);
 }
 
 function closeSearch() {
@@ -595,7 +629,26 @@ function escapeRegExp(value) {
 
 function runSearch(query) {
   if (!query || query.length < 2) {
-    searchResults.hidden = true;
+    // Show recommendations if empty
+    const recommendations = searchIndex.filter(item => item.type === "articles" || item.type === "projects").slice(0, 5);
+    
+    if (recommendations.length > 0) {
+      searchResults.innerHTML = `<div style="padding: 0.5rem 0.75rem; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Recommended</div>` + recommendations
+        .map((rec) => {
+          return "<button class=\"search-result-item\" type=\"button\" data-search-type=\"" + escapeHtml(rec.type) + "\" data-search-id=\"" + escapeHtml(rec.id) + "\"><span class=\"search-result-type\">" + escapeHtml(rec.type === "articles" ? "blog" : rec.type) + "</span><strong>" + escapeHtml(rec.title) + "</strong></button>";
+        })
+        .join("");
+      
+      searchResults.querySelectorAll(".search-result-item").forEach((el) => {
+        el.addEventListener("click", () => {
+          closeSearch();
+          navigateToSearchResult(el.dataset.searchType, el.dataset.searchId);
+        });
+      });
+      searchResults.hidden = false;
+    } else {
+      searchResults.hidden = true;
+    }
     return;
   }
 

@@ -89,7 +89,7 @@ body::after {
 }
 
 ::selection {
-  background: var(--garnet);
+  background: var(--amber);
   color: var(--black-2);
 }
 

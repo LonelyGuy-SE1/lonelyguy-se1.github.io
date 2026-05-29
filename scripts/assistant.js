@@ -330,13 +330,3 @@
     createUI();
   }
 })();
-);
-    body.scrollTop = body.scrollHeight;
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", createUI);
-  } else {
-    createUI();
-  }
-})();

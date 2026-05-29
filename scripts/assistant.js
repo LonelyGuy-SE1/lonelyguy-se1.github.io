@@ -10,9 +10,14 @@
   } catch (e) {}
   function buildContext() {
     var parts = [];
-    document.querySelectorAll(".tab-panel").forEach(function(panel) {
+    document.querySelectorAll(".tab-panel").forEach(function (panel) {
       if (panel.id && panel.innerText) {
-         parts.push("== SECTION: " + panel.id.replace("panel-", "").toUpperCase() + " ==\n" + panel.innerText.trim());
+        parts.push(
+          "== SECTION: " +
+            panel.id.replace("panel-", "").toUpperCase() +
+            " ==\n" +
+            panel.innerText.trim(),
+        );
       }
     });
 
@@ -22,13 +27,28 @@
       for (var si = 0; si < sections.length; si++) {
         var key = sections[si];
         var items = content[key] || [];
-        parts.push("== CATALOG: " + key.toUpperCase() + " (" + items.length + " items) ==");
+        parts.push(
+          "== CATALOG: " +
+            key.toUpperCase() +
+            " (" +
+            items.length +
+            " items) ==",
+        );
         for (var ii = 0; ii < items.length; ii++) {
           var item = items[ii];
-          parts.push("  - " + item.id + ": " + item.title + " (" + item.dateLabel + ") - " + (item.summary || ""));
+          parts.push(
+            "  - " +
+              item.id +
+              ": " +
+              item.title +
+              " (" +
+              item.dateLabel +
+              ") - " +
+              (item.summary || ""),
+          );
         }
       }
-      
+
       var gallery = content.gallery || [];
       if (gallery.length) {
         parts.push("== GALLERY (" + gallery.length + " images) ==");
@@ -50,7 +70,10 @@
 
   function saveConversation() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation.slice(-MAX_HISTORY)));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(conversation.slice(-MAX_HISTORY)),
+      );
     } catch (e) {}
   }
 
@@ -58,23 +81,23 @@
     var container = document.createElement("div");
     container.id = "assistant-container";
     container.innerHTML = [
-      "<button id=\"assistant-toggle\" class=\"assistant-toggle\" type=\"button\" aria-label=\"ask loner's agent\" title=\"loner's agent\">",
-      "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg>",
+      '<button id="assistant-toggle" class="assistant-toggle" type="button" aria-label="ask loner\'s agent" title="loner\'s agent">',
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
       "</button>",
-      "<div id=\"assistant-panel\" class=\"assistant-panel\" hidden>",
-      "<div class=\"assistant-head\">",
-      "<span class=\"assistant-name\">se1's agent</span>",
+      '<div id="assistant-panel" class="assistant-panel" hidden>',
+      '<div class="assistant-head">',
+      '<span class="assistant-name">loner\'s agent</span>',
       "<div>",
-      "<button id=\"assistant-clear\" class=\"assistant-close\" type=\"button\" aria-label=\"clear chat\" style=\"margin-right: 8px;\">clear</button>",
-      "<button id=\"assistant-close\" class=\"assistant-close\" type=\"button\" aria-label=\"close\">close</button>",
+      '<button id="assistant-clear" class="assistant-close" type="button" aria-label="clear chat" style="margin-right: 8px;">clear</button>',
+      '<button id="assistant-close" class="assistant-close" type="button" aria-label="close">close</button>',
       "</div>",
       "</div>",
-      "<div class=\"assistant-body\" id=\"assistant-body\">",
-      "<div class=\"assistant-msg assistant-msg--bot\">hey! ask me anything about the site or the work here :)</div>",
+      '<div class="assistant-body" id="assistant-body">',
+      '<div class="assistant-msg assistant-msg--bot">hey! ask me anything about the site or the work here :)</div>',
       "</div>",
-      "<form id=\"assistant-form\" class=\"assistant-form\">",
-      "<input id=\"assistant-input\" class=\"assistant-input\" type=\"text\" placeholder=\"ask something...\" autocomplete=\"off\">",
-      "<button class=\"assistant-send\" type=\"submit\" aria-label=\"send\">send</button>",
+      '<form id="assistant-form" class="assistant-form">',
+      '<input id="assistant-input" class="assistant-input" type="text" placeholder="ask something..." autocomplete="off">',
+      '<button class="assistant-send" type="submit" aria-label="send">send</button>',
       "</form>",
       "</div>",
     ].join("");
@@ -83,6 +106,7 @@
     var toggle = document.getElementById("assistant-toggle");
     var panel = document.getElementById("assistant-panel");
     var closeBtn = document.getElementById("assistant-close");
+    var clearBtn = document.getElementById("assistant-clear");
     var form = document.getElementById("assistant-form");
     var input = document.getElementById("assistant-input");
     var body = document.getElementById("assistant-body");
@@ -93,7 +117,10 @@
       var isOpen = !panel.hidden;
       panel.hidden = isOpen;
       toggle.setAttribute("aria-expanded", String(!isOpen));
-      if (!isOpen) setTimeout(function () { input.focus(); }, 100);
+      if (!isOpen)
+        setTimeout(function () {
+          input.focus();
+        }, 100);
     });
 
     closeBtn.addEventListener("click", function () {
@@ -101,6 +128,17 @@
       toggle.setAttribute("aria-expanded", "false");
       toggle.focus();
     });
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        if (confirm("clear chat history?")) {
+          conversation = [];
+          saveConversation();
+          body.innerHTML =
+            '<div class="assistant-msg assistant-msg--bot">hey! ask me anything about the site or the work here :)</div>';
+        }
+      });
+    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -151,7 +189,9 @@
 
     while ((match = navRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
-        div.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        div.appendChild(
+          document.createTextNode(text.slice(lastIndex, match.index)),
+        );
       }
       actions.push({ type: match[1], id: match[2] || null });
       lastIndex = match.index + match[0].length;
@@ -169,7 +209,9 @@
           var btn = document.createElement("button");
           btn.className = "assistant-action-btn";
           btn.type = "button";
-          btn.textContent = action.id ? "\u2192 " + action.type + ": " + action.id : "\u2192 " + action.type;
+          btn.textContent = action.id
+            ? "\u2192 " + action.type + ": " + action.id
+            : "\u2192 " + action.type;
           btn.addEventListener("click", function () {
             if (typeof window.assistantNavigate === "function") {
               window.assistantNavigate(action.type, action.id);
@@ -226,26 +268,33 @@
     fetch(ASSISTANT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: recent, context: context, currentTab: currentTab, stream: true }),
-    }).then(async function (response) {
-      if (!response.ok) {
+      body: JSON.stringify({
+        messages: recent,
+        context: context,
+        currentTab: currentTab,
+        stream: true,
+      }),
+    })
+      .then(async function (response) {
+        if (!response.ok) {
+          hideTyping();
+          addBotMessage("couldnt reach the agent. try again?");
+          return;
+        }
+
+        var contentType = response.headers.get("Content-Type") || "";
+        if (contentType.includes("text/event-stream")) {
+          return handleStream(response);
+        }
+
         hideTyping();
-        addBotMessage("couldnt reach the agent. try again?");
-        return;
-      }
-
-      var contentType = response.headers.get("Content-Type") || "";
-      if (contentType.includes("text/event-stream")) {
-        return handleStream(response);
-      }
-
-      hideTyping();
-      var data = await response.json();
-      addBotMessage(data.reply || "couldnt get an answer. try again?");
-    }).catch(function () {
-      hideTyping();
-      addBotMessage("something went wrong. try again?");
-    });
+        var data = await response.json();
+        addBotMessage(data.reply || "couldnt get an answer. try again?");
+      })
+      .catch(function () {
+        hideTyping();
+        addBotMessage("something went wrong. try again?");
+      });
   }
 
   async function handleStream(response) {
@@ -307,7 +356,9 @@
           var btn = document.createElement("button");
           btn.className = "assistant-action-btn";
           btn.type = "button";
-          btn.textContent = action.id ? "\u2192 " + action.type + ": " + action.id : "\u2192 " + action.type;
+          btn.textContent = action.id
+            ? "\u2192 " + action.type + ": " + action.id
+            : "\u2192 " + action.type;
           btn.addEventListener("click", function () {
             if (typeof window.assistantNavigate === "function") {
               window.assistantNavigate(action.type, action.id);

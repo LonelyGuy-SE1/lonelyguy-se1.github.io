@@ -725,6 +725,10 @@ function navigateToSearchResult(type, id) {
 }
 
 if (searchInput) {
+  searchInput.addEventListener("focus", () => {
+    if (!searchInput.value.trim()) runSearch("");
+  });
+
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => runSearch(searchInput.value.trim()), 200);

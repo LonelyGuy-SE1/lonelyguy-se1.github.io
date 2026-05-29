@@ -215,7 +215,6 @@ summary,
   gap: 0.75rem;
   margin-left: auto;
   min-width: 0;
-  overflow: hidden;
 }
 
 .header-search {
@@ -262,6 +261,15 @@ summary,
 
 .search-field input::placeholder {
   color: var(--muted);
+}
+
+.search-field input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  height: 12px;
+  width: 12px;
+  background: var(--cinnabar);
+  clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+  cursor: pointer;
 }
 
 .search-trigger {

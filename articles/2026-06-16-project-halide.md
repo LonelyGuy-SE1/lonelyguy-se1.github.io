@@ -2,12 +2,12 @@
 title: Project Halide, Building A Small-Model Diagnostic Workbench For Damaged Film
 date: 2026-06-16
 summary: An open-weight film diagnostics workbench built around MiniCPM-V 4.6, Nemotron-Mini-4B, real negative failure cases, and a validator that became as important as the model.
-image: https://huggingface.co/spaces/build-small-hackathon/project-halide/resolve/main/assets/demo_poster.jpg
+image: https://lonelyguy.vercel.app/assets/halide/real-35mm-negative-banner.jpg
 ---
 
 Project Halide is a small-model diagnostic workbench for analog film scans. It takes a scan, negative photo, or contact-sheet crop, extracts visible defect evidence, validates the geometry, shows the result as an overlay, and writes a physical diagnosis with next steps.
 
-![Project Halide demo poster](https://huggingface.co/spaces/build-small-hackathon/project-halide/resolve/main/assets/demo_poster.jpg)
+![Real damaged 35mm negative strip used to evaluate Project Halide](https://lonelyguy.vercel.app/assets/halide/real-35mm-negative-banner.jpg)
 
 {% youtube https://youtu.be/DGJ2M1aQCrE?si=apzCiBZcIZWC1nFt %}
 
@@ -200,15 +200,15 @@ That regression mattered. It made the system less exciting on paper, but much mo
 
 ## The Demo Negative
 
-The public demo uses a real negative strip photo with visible residue, scratches, and stain-like areas.
+The public demo case uses a real 35mm negative strip photo with visible residue, scratches, glare, sprocket holes, and stain-like areas.
 
-Original demo scan:
+Real 35mm negative strip:
 
-![Original negative scan used in the Project Halide demo](https://huggingface.co/spaces/build-small-hackathon/project-halide/resolve/main/assets/demo_original.webp)
+![Real damaged 35mm negative strip](https://lonelyguy.vercel.app/assets/halide/real-35mm-negative.jpg)
 
 Validated overlay:
 
-![Validated overlay with Project Halide defect regions](https://huggingface.co/spaces/build-small-hackathon/project-halide/resolve/main/assets/demo_overlay.webp)
+![Validated overlay from Project Halide on the real 35mm negative strip](https://lonelyguy.vercel.app/assets/halide/real-35mm-negative-overlay.png)
 
 Official Space API result:
 

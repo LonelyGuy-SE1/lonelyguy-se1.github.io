@@ -149,6 +149,25 @@ function inlineMarkdown(text) {
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
+function extractYouTubeId(url) {
+  try {
+    const parsed = new URL(url.trim());
+    if (parsed.hostname === "youtu.be") {
+      return parsed.pathname.replace(/^\/+/, "").split("/")[0];
+    }
+    if (parsed.hostname.endsWith("youtube.com")) {
+      return parsed.searchParams.get("v") || parsed.pathname.split("/").pop();
+    }
+  } catch {}
+  return "";
+}
+
+function youtubeEmbedHtml(url) {
+  const id = extractYouTubeId(url);
+  if (!id || !/^[a-zA-Z0-9_-]{6,}$/.test(id)) return "";
+  return `<div class="reader-video"><iframe src="https://www.youtube.com/embed/${escapeHtml(id)}" title="YouTube video player" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+}
+
 function markdownToHtml(markdown) {
   const blocks = normalizeLineEndings(markdown)
     .split(/\n{2,}/)
@@ -157,6 +176,10 @@ function markdownToHtml(markdown) {
 
   return blocks
     .map((block) => {
+      const youtubeMatch = block.match(/^\{%\s*youtube\s+([^%]+?)\s*%\}$/i);
+      if (youtubeMatch) {
+        return youtubeEmbedHtml(youtubeMatch[1]);
+      }
       if (block.startsWith("```") && block.endsWith("```")) {
         const code = block.replace(/^```[\w-]*\n?/, "").replace(/\n?```$/, "");
         return `<pre><code>${escapeHtml(code)}</code></pre>`;

@@ -5,6 +5,12 @@ const sharp = require("sharp");
 
 const ROOT = path.resolve(__dirname, "..");
 const BASE_URL = "https://lonelyguy.vercel.app";
+const ROOT_URL = `${BASE_URL}/`;
+const SITE_NAME = "Lonely Guy";
+const SITE_AUTHOR = "SE1";
+const SITE_DESCRIPTION =
+  "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.";
+const PROJECTS_JSON = path.join(ROOT, "projects.json");
 
 const COLLECTION_DIRS = {
   updates: path.join(ROOT, "updates"),
@@ -13,6 +19,28 @@ const COLLECTION_DIRS = {
 };
 const GALLERY_DIR = path.join(ROOT, "gallery");
 const CONTENT_JS = path.join(__dirname, "content.js");
+
+function canonicalPath(pathname) {
+  if (!pathname || pathname === "/") return "/";
+  return "/" + String(pathname).replace(/^\/+|\/+$/g, "");
+}
+
+function canonicalUrl(pathname) {
+  const cleanPath = canonicalPath(pathname);
+  return cleanPath === "/" ? ROOT_URL : `${BASE_URL}${cleanPath}`;
+}
+
+function collectionUrl(type) {
+  return canonicalUrl(type);
+}
+
+function recordUrl(type, slug) {
+  return canonicalUrl(`${type}/${slug}`);
+}
+
+function externalAttrs(url) {
+  return /^https?:\/\//i.test(url) ? ' target="_blank" rel="noreferrer"' : "";
+}
 
 function normalizeLineEndings(value) {
   return value.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
@@ -136,6 +164,30 @@ function markdownToHtml(markdown) {
       if (/^#{1,6}\s/.test(block)) {
         const m = block.match(/^(#{1,6})\s(.+)$/);
         return `<h${m[1].length}>${inlineMarkdown(m[2])}</h${m[1].length}>`;
+      }
+      const tableLines = block.split("\n");
+      if (
+        tableLines.length >= 2 &&
+        tableLines.every((l) => l.includes("|")) &&
+        /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(tableLines[1])
+      ) {
+        const parseRow = (line) =>
+          line
+            .trim()
+            .replace(/^\|/, "")
+            .replace(/\|$/, "")
+            .split("|")
+            .map((cell) => cell.trim());
+        const headers = parseRow(tableLines[0]);
+        const rows = tableLines.slice(2).map(parseRow);
+        return `<table><thead><tr>${headers
+          .map((cell) => `<th>${inlineMarkdown(cell)}</th>`)
+          .join("")}</tr></thead><tbody>${rows
+          .map(
+            (row) =>
+              `<tr>${row.map((cell) => `<td>${inlineMarkdown(cell)}</td>`).join("")}</tr>`,
+          )
+          .join("")}</tbody></table>`;
       }
       if (block.split("\n").every((l) => /^[-*]\s/.test(l))) {
         const items = block
@@ -292,8 +344,37 @@ async function readGallery() {
   return records.sort((a, b) => b.date.localeCompare(a.date));
 }
 
+async function readProjects() {
+  let entries = [];
+  try {
+    entries = JSON.parse(await fs.readFile(PROJECTS_JSON, "utf8"));
+  } catch {
+    entries = [];
+  }
+
+  return entries
+    .filter((entry) => entry && entry.repo)
+    .map((entry) => {
+      const repo = String(entry.repo).trim();
+      const name = repo.split("/").pop();
+      const id = (entry.slug || name).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const url = `https://github.com/${repo}`;
+      const summary =
+        entry.summary || `GitHub repository for ${name}, part of lonely guy's work.`;
+      return {
+        id,
+        repo,
+        title: entry.title || name,
+        summary,
+        url,
+        dateLabel: entry.date || "project",
+        html: `<p>${escapeHtml(summary)}</p><p><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">open repository</a></p>`,
+      };
+    });
+}
+
 function makePageHtml(record, type, slug) {
-  const url = `${BASE_URL}/${type}/${slug}/`;
+  const url = recordUrl(type, slug);
   const imageUrl = record.image
     ? record.image.startsWith("http")
       ? record.image
@@ -326,7 +407,7 @@ function makePageHtml(record, type, slug) {
             "@type": "ListItem",
             position: 2,
             name: type,
-            item: `${BASE_URL}/#${type}`,
+            item: collectionUrl(type),
           },
           { "@type": "ListItem", position: 3, name: record.title, item: url },
         ],
@@ -341,7 +422,7 @@ function makePageHtml(record, type, slug) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(record.title)} - Lonely Guy</title>
     <meta name="description" content="${escapeHtml(record.summary)} - lonely guy's portfolio on reinforcement learning, robotics, and embodied ai." />
-    <meta name="keywords" content="reinforcement learning, robotics, embodied AI, ${escapeHtml(record.title.toLowerCase())}" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="${url}" />
     <meta property="og:site_name" content="Lonely Guy" />
     <meta property="og:title" content="${escapeHtml(record.title)}" />
@@ -356,9 +437,6 @@ function makePageHtml(record, type, slug) {
     <meta name="twitter:description" content="${escapeHtml(record.summary)}" />
     <meta name="twitter:image" content="${imageUrl}" />
     <link rel="icon" type="image/jpeg" href="../../assets/SE1.jpg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../../styles/main.css" />
     <script type="application/ld+json">${jsonLd}</script>
     <!-- Vercel Analytics -->
@@ -377,14 +455,14 @@ function makePageHtml(record, type, slug) {
 
     <header class="site-header">
       <div class="site-width header-inner">
-        <a class="brand" href="../../index.html">
-          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" />
+        <a class="brand" href="/">
+          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" width="640" height="640" />
           <span class="brand-copy"><strong>lonely guy</strong></span>
         </a>
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol class="breadcrumb-list">
-            <li><a href="../../index.html">home</a></li>
-            <li><a href="../../index.html#${type}">${type}</a></li>
+            <li><a href="/">home</a></li>
+            <li><a href="/${type}">${type}</a></li>
             <li aria-current="page">${escapeHtml(record.title)}</li>
           </ol>
         </nav>
@@ -398,7 +476,7 @@ function makePageHtml(record, type, slug) {
             <p class="reader-kicker">${escapeHtml(record.dateLabel)}</p>
             <h1>${escapeHtml(record.title)}</h1>
           </div>
-          <a href="../../index.html#${type}" class="reader-close">back</a>
+          <a href="/${type}" class="reader-close">back</a>
         </div>
         <div class="reader-body">${htmlContent}</div>
       </article>
@@ -421,7 +499,189 @@ function makePageHtml(record, type, slug) {
 </html>`;
 }
 
-async function generatePages(updates, articles, papers) {
+function makeCollectionPageHtml(type, title, description, records) {
+  const url = collectionUrl(type);
+  const items = records.length
+    ? records
+        .map((record) => {
+          const href =
+            type === "projects" ? recordUrl("projects", record.id) : recordUrl(type, record.id);
+          return `<li><a href="${href}">${escapeHtml(record.title)}</a><span>${escapeHtml(record.summary || "")}</span></li>`;
+        })
+        .join("")
+    : `<li><span>nothing published here yet.</span></li>`;
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: title,
+        description,
+        isPartOf: { "@id": `${BASE_URL}/#website` },
+        about: { "@id": `${BASE_URL}/#person` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: ROOT_URL },
+          { "@type": "ListItem", position: 2, name: title, item: url },
+        ],
+      },
+    ],
+  });
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${escapeHtml(title)} - Lonely Guy</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="${url}" />
+    <meta property="og:site_name" content="Lonely Guy" />
+    <meta property="og:title" content="${escapeHtml(title)} - Lonely Guy" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${url}" />
+    <meta property="og:image" content="${BASE_URL}/assets/SE1.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)} - Lonely Guy" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    <meta name="twitter:image" content="${BASE_URL}/assets/SE1.jpg" />
+    <link rel="icon" type="image/jpeg" href="../assets/SE1.jpg" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <script type="application/ld+json">${jsonLd}</script>
+</head>
+<body>
+    <a class="skip-link" href="#main">skip to main</a>
+    <header class="site-header">
+      <div class="site-width header-inner">
+        <a class="brand" href="/">
+          <img class="brand-mark" src="../assets/SE1.jpg" alt="" width="640" height="640" />
+          <span class="brand-copy"><strong>lonely guy</strong></span>
+        </a>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="/">home</a></li>
+            <li aria-current="page">${escapeHtml(type)}</li>
+          </ol>
+        </nav>
+      </div>
+    </header>
+    <main class="site-width static-page" id="main">
+      <article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">${escapeHtml(type)}</p>
+            <h1>${escapeHtml(title)}</h1>
+          </div>
+          <a href="/" class="reader-close">home</a>
+        </div>
+        <p class="static-page-summary">${escapeHtml(description)}</p>
+        <ol class="static-link-list">${items}</ol>
+      </article>
+    </main>
+    <footer class="site-footer">
+      <div class="site-width footer-inner">
+        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
+      </div>
+    </footer>
+</body>
+</html>`;
+}
+
+function makeProjectPageHtml(record) {
+  const url = recordUrl("projects", record.id);
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareSourceCode",
+        "@id": `${url}#project`,
+        name: record.title,
+        description: record.summary,
+        codeRepository: record.url,
+        author: { "@id": `${BASE_URL}/#person` },
+        isPartOf: { "@id": `${BASE_URL}/#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: ROOT_URL },
+          { "@type": "ListItem", position: 2, name: "projects", item: collectionUrl("projects") },
+          { "@type": "ListItem", position: 3, name: record.title, item: url },
+        ],
+      },
+    ],
+  });
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${escapeHtml(record.title)} - Lonely Guy</title>
+    <meta name="description" content="${escapeHtml(record.summary)}" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="${url}" />
+    <meta property="og:site_name" content="Lonely Guy" />
+    <meta property="og:title" content="${escapeHtml(record.title)}" />
+    <meta property="og:description" content="${escapeHtml(record.summary)}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="${url}" />
+    <meta property="og:image" content="${BASE_URL}/assets/SE1.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(record.title)}" />
+    <meta name="twitter:description" content="${escapeHtml(record.summary)}" />
+    <meta name="twitter:image" content="${BASE_URL}/assets/SE1.jpg" />
+    <link rel="icon" type="image/jpeg" href="../../assets/SE1.jpg" />
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <script type="application/ld+json">${jsonLd}</script>
+</head>
+<body>
+    <a class="skip-link" href="#main">skip to main</a>
+    <header class="site-header">
+      <div class="site-width header-inner">
+        <a class="brand" href="/">
+          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" width="640" height="640" />
+          <span class="brand-copy"><strong>lonely guy</strong></span>
+        </a>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="/">home</a></li>
+            <li><a href="/projects">projects</a></li>
+            <li aria-current="page">${escapeHtml(record.title)}</li>
+          </ol>
+        </nav>
+      </div>
+    </header>
+    <main class="site-width static-page" id="main">
+      <article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">${escapeHtml(record.repo)}</p>
+            <h1>${escapeHtml(record.title)}</h1>
+          </div>
+          <a href="/projects" class="reader-close">back</a>
+        </div>
+        <div class="reader-body">${record.html}</div>
+      </article>
+    </main>
+    <footer class="site-footer">
+      <div class="site-width footer-inner">
+        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
+      </div>
+    </footer>
+</body>
+</html>`;
+}
+
+async function generatePages(updates, articles, papers, projects) {
   for (const record of updates) {
     const dir = path.join(ROOT, "updates", record.id);
     await fs.mkdir(dir, { recursive: true });
@@ -452,25 +712,82 @@ async function generatePages(updates, articles, papers) {
     );
     console.log(`  → papers/${record.id}/index.html`);
   }
+  for (const record of projects) {
+    const dir = path.join(ROOT, "projects", record.id);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(
+      path.join(dir, "index.html"),
+      makeProjectPageHtml(record),
+      "utf8",
+    );
+    console.log(`  → projects/${record.id}/index.html`);
+  }
+
+  const collectionPages = [
+    [
+      "updates",
+      "Progress Updates",
+      "Short progress logs from lonely guy on reinforcement learning, robotics, embodied AI, and systems.",
+      updates,
+    ],
+    [
+      "articles",
+      "Articles",
+      "Longer technical writeups from lonely guy on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
+      articles,
+    ],
+    [
+      "papers",
+      "Papers",
+      "Published research and formal work from lonely guy.",
+      papers,
+    ],
+    [
+      "projects",
+      "Projects",
+      "Selected GitHub repositories from lonely guy.",
+      projects,
+    ],
+  ];
+
+  for (const [type, title, description, records] of collectionPages) {
+    const dir = path.join(ROOT, type);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(
+      path.join(dir, "index.html"),
+      makeCollectionPageHtml(type, title, description, records),
+      "utf8",
+    );
+    console.log(`  → ${type}/index.html`);
+  }
 }
 
-async function generateSitemap(updates, articles, papers) {
+async function generateSitemap(updates, articles, papers, projects) {
   const entries = [
-    `<url><loc>${BASE_URL}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
+    `<url><loc>${ROOT_URL}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
+    `<url><loc>${collectionUrl("updates")}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
+    `<url><loc>${collectionUrl("articles")}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
+    `<url><loc>${collectionUrl("papers")}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    `<url><loc>${collectionUrl("projects")}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
   ];
   for (const r of updates) {
     entries.push(
-      `<url><loc>${BASE_URL}/updates/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
+      `<url><loc>${recordUrl("updates", r.id)}</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
     );
   }
   for (const r of articles) {
     entries.push(
-      `<url><loc>${BASE_URL}/articles/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`,
+      `<url><loc>${recordUrl("articles", r.id)}</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`,
     );
   }
   for (const r of papers) {
     entries.push(
-      `<url><loc>${BASE_URL}/papers/${r.id}/</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
+      `<url><loc>${recordUrl("papers", r.id)}</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
+    );
+  }
+  for (const r of projects) {
+    entries.push(
+      `<url><loc>${recordUrl("projects", r.id)}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
     );
   }
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -488,7 +805,7 @@ function rssDate(dateStr) {
 
 async function generateRssFeed(articles) {
   const items = articles.map((r) => {
-    const url = `${BASE_URL}/articles/${r.id}/`;
+    const url = recordUrl("articles", r.id);
     const imageTag = r.image
       ? `<figure><img src="${r.image.startsWith("http") ? r.image : `${BASE_URL}/${r.image}`}" alt="" /></figure>`
       : "";
@@ -507,7 +824,7 @@ async function generateRssFeed(articles) {
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lonely Guy</title>
-    <link>${BASE_URL}/</link>
+    <link>${ROOT_URL}</link>
     <description>rl, robotics, world models, embodied ai, and system stuff.</description>
     <language>en-us</language>
     <lastBuildDate>${rssDate(new Date().toISOString())}</lastBuildDate>
@@ -521,7 +838,7 @@ ${items.join("\n")}
 
 async function generateJsonFeed(articles) {
   const items = articles.map((r) => {
-    const url = `${BASE_URL}/articles/${r.id}/`;
+    const url = recordUrl("articles", r.id);
     const imageUrl = r.image
       ? r.image.startsWith("http")
         ? r.image
@@ -536,16 +853,16 @@ async function generateJsonFeed(articles) {
       image: imageUrl,
       date_published: r.date + "T00:00:00Z",
       date_modified: r.date + "T00:00:00Z",
-      author: { name: "Lonely Guy", url: `${BASE_URL}/` },
+      author: { name: "Lonely Guy", url: ROOT_URL },
     };
   });
   const feed = {
     version: "https://jsonfeed.org/version/1.1",
     title: "Lonely Guy",
-    home_page_url: BASE_URL,
+    home_page_url: ROOT_URL,
     feed_url: `${BASE_URL}/feed.json`,
     description: "rl, robotics, world models, embodied ai, and system stuff.",
-    authors: [{ name: "Lonely Guy", url: BASE_URL }],
+    authors: [{ name: "Lonely Guy", url: ROOT_URL }],
     language: "en-US",
     items,
   };
@@ -557,7 +874,7 @@ async function generateJsonFeed(articles) {
   console.log("  → feed.json");
 }
 
-async function generateLlmsTxt(updates, articles, papers) {
+async function generateLlmsTxt(updates, articles, papers, projects) {
   let lines = [
     "# Lonely Guy",
     "> rl, robotics, world models, embodied ai, and system stuff.",
@@ -565,26 +882,26 @@ async function generateLlmsTxt(updates, articles, papers) {
     "lonely guy is a cs undergrad working on reinforcement learning, robotics simulation, world models, and embodied ai. the goal is autonomous robotic assistants.",
     "",
     "## Navigation",
-    "- Home: " + BASE_URL + "/",
-    "- Articles: " + BASE_URL + "/#articles",
-    "- Updates: " + BASE_URL + "/#updates",
-    "- Papers: " + BASE_URL + "/#papers",
+    "- Home: " + ROOT_URL,
+    "- Articles: " + collectionUrl("articles"),
+    "- Updates: " + collectionUrl("updates"),
+    "- Papers: " + collectionUrl("papers"),
+    "- Projects: " + collectionUrl("projects"),
     "- Gallery: " + BASE_URL + "/#images",
-    "- Projects: " + BASE_URL + "/#projects",
     "- Contact: " + BASE_URL + "/#contact",
     "",
   ];
   if (articles.length) {
     lines.push("## Articles");
     for (const r of articles) {
-      lines.push(`- [${r.title}](${BASE_URL}/articles/${r.id}/): ${r.summary}`);
+      lines.push(`- [${r.title}](${recordUrl("articles", r.id)}): ${r.summary}`);
     }
     lines.push("");
   }
   if (updates.length) {
     lines.push("## Updates");
     for (const r of updates) {
-      lines.push(`- [${r.title}](${BASE_URL}/updates/${r.id}/): ${r.summary}`);
+      lines.push(`- [${r.title}](${recordUrl("updates", r.id)}): ${r.summary}`);
     }
     lines.push("");
   }
@@ -592,6 +909,13 @@ async function generateLlmsTxt(updates, articles, papers) {
     lines.push("## Papers");
     for (const r of papers) {
       lines.push(`- ${r.title}: ${r.summary}`);
+    }
+    lines.push("");
+  }
+  if (projects.length) {
+    lines.push("## Projects");
+    for (const r of projects) {
+      lines.push(`- [${r.title}](${recordUrl("projects", r.id)}): ${r.summary}`);
     }
     lines.push("");
   }
@@ -605,29 +929,67 @@ async function generateLlmsTxt(updates, articles, papers) {
   console.log("  → llms.txt");
 }
 
+function makeHomeSeoLinks(updates, articles, papers, projects) {
+  const list = (label, href, records, type) => {
+    const itemLinks = records
+      .slice(0, 5)
+      .map((record) => {
+        const url = type === "projects" ? recordUrl("projects", record.id) : recordUrl(type, record.id);
+        return `<li><a href="${url}">${escapeHtml(record.title)}</a></li>`;
+      })
+      .join("");
+    return `<section class="about-link-group"><h3><a href="${href}">${escapeHtml(label)}</a></h3><ul>${itemLinks || "<li>coming soon</li>"}</ul></section>`;
+  };
+
+  return [
+    '<nav class="about-link-grid" aria-label="indexable site links">',
+    list("articles", collectionUrl("articles"), articles, "articles"),
+    list("updates", collectionUrl("updates"), updates, "updates"),
+    list("papers", collectionUrl("papers"), papers, "papers"),
+    list("projects", collectionUrl("projects"), projects, "projects"),
+    "</nav>",
+  ].join("\n");
+}
+
+async function updateHomepageSeoLinks(updates, articles, papers, projects) {
+  const indexPath = path.join(ROOT, "index.html");
+  let html = await fs.readFile(indexPath, "utf8");
+  const start = "<!-- SEO_LINKS_START -->";
+  const end = "<!-- SEO_LINKS_END -->";
+  const startIndex = html.indexOf(start);
+  const endIndex = html.indexOf(end);
+  if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) return;
+
+  const replacement = `${start}\n${makeHomeSeoLinks(updates, articles, papers, projects)}\n${end}`;
+  html = html.slice(0, startIndex) + replacement + html.slice(endIndex + end.length);
+  await fs.writeFile(indexPath, html, "utf8");
+  console.log("  → index.html seo links");
+}
+
 async function build() {
   console.log("building content...");
 
-  const [updates, articles, papers, gallery] = await Promise.all([
+  const [updates, articles, papers, gallery, projects] = await Promise.all([
     readMarkdownCollection(COLLECTION_DIRS.updates),
     readMarkdownCollection(COLLECTION_DIRS.articles),
     readMarkdownCollection(COLLECTION_DIRS.papers),
     readGallery(),
+    readProjects(),
   ]);
 
   // Write content.js for the SPA
-  const content = { updates, articles, papers, gallery };
+  const content = { updates, articles, papers, gallery, projects };
   const output = `window.PORTFOLIO_CONTENT = ${JSON.stringify(content, null, 2)};\n`;
   await fs.writeFile(CONTENT_JS, output, "utf8");
   console.log("  → scripts/content.js");
 
   // Generate standalone pages
   console.log("generating pages...");
-  await generatePages(updates, articles, papers);
+  await generatePages(updates, articles, papers, projects);
 
   // Generate sitemap
   console.log("generating sitemap...");
-  await generateSitemap(updates, articles, papers);
+  await generateSitemap(updates, articles, papers, projects);
 
   // Generate feeds (articles only)
   console.log("generating feeds...");
@@ -635,7 +997,11 @@ async function build() {
 
   // Generate llms.txt
   console.log("generating llms.txt...");
-  await generateLlmsTxt(updates, articles, papers);
+  await generateLlmsTxt(updates, articles, papers, projects);
+
+  // Keep crawler-visible homepage links in sync
+  console.log("updating homepage links...");
+  await updateHomepageSeoLinks(updates, articles, papers, projects);
 
   console.log("done.");
 }

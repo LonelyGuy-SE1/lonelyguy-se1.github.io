@@ -187,8 +187,8 @@ function escapeAttr(value) {
 
 function stripHtml(value) {
   return String(value || "")
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script\b[\s\S]*?<\/script(?:\s+[^>]*)?\s*>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style(?:\s+[^>]*)?\s*>/gi, " ")
     .replace(/<[^>]*>/g, " ")
     .replace(/\s+/g, " ")
     .trim();

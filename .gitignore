@@ -1,5 +1,46 @@
 node_modules/
 *.log
-.env
 
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+secrets.*
+*.secret
+*.secrets
+*.pem
+*.key
+*.p12
+*.pfx
+client_secret*.json
+credentials*.json
+token*.json
+service-account*.json
+gsc-credentials*.json
+google-application-credentials*.json
+
+# Deployment/provider local state
 .vercel
+
+# Private workspaces, drafts, and local-only notes
+.nottracked/
+.private/
+private/
+private-notes/
+personal/
+personal-notes/
+drafts/
+_drafts/
+
+# Generated local reports/caches
+.seo-reports/
+.lighthouseci/
+.cache/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

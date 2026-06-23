@@ -1,53 +1,175 @@
+const crypto = require("crypto");
 const fs = require("fs/promises");
 const fsSync = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 
 const ROOT = path.resolve(__dirname, "..");
-const BASE_URL = "https://lonelyguy.vercel.app";
-const ROOT_URL = `${BASE_URL}/`;
-const SITE_NAME = "Lonely Guy";
-const SITE_AUTHOR = "SE1";
-const SITE_DESCRIPTION =
-  "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.";
+const CONFIG_PATH = path.join(ROOT, "site.config.json");
 const PROJECTS_JSON = path.join(ROOT, "projects.json");
+const CONTENT_JS = path.join(__dirname, "content.js");
+const BUILD_DIR = path.join(ROOT, "assets", "build");
+const SEARCH_INDEX_JSON = path.join(ROOT, "search-index.json");
+const SITE_INDEX_JSON = path.join(ROOT, "site-index.json");
 
 const COLLECTION_DIRS = {
   updates: path.join(ROOT, "updates"),
   articles: path.join(ROOT, "articles"),
   papers: path.join(ROOT, "papers"),
 };
+
 const GALLERY_DIR = path.join(ROOT, "gallery");
-const CONTENT_JS = path.join(__dirname, "content.js");
+
+const STATIC_PAGES = [
+  {
+    id: "now",
+    path: "/now",
+    title: "Now",
+    description:
+      "What SE1 is actively studying and building right now across reinforcement learning, LLMs, robotics simulation, and world models.",
+    kicker: "current focus",
+    sections: [
+      {
+        title: "Reinforcement learning",
+        body: "Working from fundamentals toward modern deep RL, with the long-term goal of reliable autonomous control for robots.",
+      },
+      {
+        title: "LLMs and agents",
+        body: "Studying the path from classical language modeling to transformers and small agentic systems, especially where models can reason inside controlled environments.",
+      },
+      {
+        title: "Robotics simulation",
+        body: "Hands-on exploration across MuJoCo, Simulink/Simscape, Isaac Lab, Gazebo, ROS, and custom environment design.",
+      },
+      {
+        title: "World models",
+        body: "Exploring compact predictive models that could make reinforcement learning more sample efficient for embodied systems.",
+      },
+    ],
+  },
+  {
+    id: "stack",
+    path: "/stack",
+    title: "Stack",
+    description:
+      "A practical skill map for lonely guy across programming, machine learning, robotics simulation, systems, and deployment.",
+    kicker: "skill map",
+    sections: [
+      {
+        title: "Languages and formats",
+        body: "Python, C/C++, Java, JavaScript, HTML, CSS, URDF, MJCF, and the low-level interfaces needed to move between simulation and real systems.",
+      },
+      {
+        title: "AI and ML",
+        body: "Reinforcement learning, deep learning, supervised and unsupervised learning, LLM basics, transformers, Gymnasium, PyTorch-style workflows, Hugging Face, NumPy, pandas, and visualization.",
+      },
+      {
+        title: "Robotics and embedded systems",
+        body: "MuJoCo, MATLAB, Simulink, Simscape Multibody, Gazebo, Isaac Lab, ROS, Arduino, Raspberry Pi, sensors, and embedded C/C++ practice.",
+      },
+      {
+        title: "Systems thinking",
+        body: "Deterministic runtimes, quantized deployment, cache-aware inference, API design, and the habit of turning vague agent ideas into testable environments.",
+      },
+    ],
+  },
+  {
+    id: "path",
+    path: "/path",
+    title: "Path",
+    description:
+      "The long-term direction behind the portfolio: research, embodied AI, autonomous robotic assistants, and systems that can leave the demo stage.",
+    kicker: "direction",
+    sections: [
+      {
+        title: "Near term",
+        body: "Build stronger reinforcement-learning intuition, ship public technical write-ups, and turn projects into reproducible artifacts with benchmarks and demos.",
+      },
+      {
+        title: "Research direction",
+        body: "Work toward embodied AI systems that combine world models, reinforcement learning, low-level control, and reliable deployment.",
+      },
+      {
+        title: "Long-term obsession",
+        body: "Autonomous robotic assistants that are useful, inspectable, and close enough to real life that the work cannot hide behind pretty demos.",
+      },
+    ],
+  },
+  {
+    id: "contact",
+    path: "/contact",
+    title: "Contact",
+    description:
+      "Canonical links and contact routes for lonely guy across GitHub, X, Hugging Face, ORCID, LinkedIn, email, and Discord.",
+    kicker: "links",
+    sections: [],
+  },
+];
+
+function normalizeBaseUrl(value) {
+  return String(value || "https://lonelyguy.vercel.app").replace(/\/+$/, "");
+}
+
+async function loadSiteConfig() {
+  const defaults = {
+    baseUrl: "https://lonelyguy.vercel.app",
+    siteName: "Lonely Guy",
+    shortName: "Lonely Guy",
+    description:
+      "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
+    author: { name: "SE1", alternateName: "Lonely Guy", sameAs: [], knowsAbout: [] },
+    seo: {
+      defaultTitle:
+        "Lonely Guy - RL, Robotics, Embodied AI & Systems Portfolio",
+      defaultDescription:
+        "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems. portfolio with blogs, projects, and research.",
+      defaultImage: "/assets/SE1.jpg",
+      twitterHandle: "@lonelyguyse1",
+      language: "en-US",
+      locale: "en_US",
+      themeColor: "#0b0504",
+    },
+    analytics: { vercelAnalytics: true, vercelSpeedInsights: true },
+    socials: [],
+    gsc: { propertyUrl: "https://lonelyguy.vercel.app/" },
+  };
+
+  try {
+    const parsed = JSON.parse(await fs.readFile(CONFIG_PATH, "utf8"));
+    return {
+      ...defaults,
+      ...parsed,
+      baseUrl: normalizeBaseUrl(parsed.baseUrl || defaults.baseUrl),
+      author: { ...defaults.author, ...(parsed.author || {}) },
+      seo: { ...defaults.seo, ...(parsed.seo || {}) },
+      analytics: { ...defaults.analytics, ...(parsed.analytics || {}) },
+      gsc: { ...defaults.gsc, ...(parsed.gsc || {}) },
+    };
+  } catch {
+    return defaults;
+  }
+}
 
 function canonicalPath(pathname) {
   if (!pathname || pathname === "/") return "/";
   return "/" + String(pathname).replace(/^\/+|\/+$/g, "");
 }
 
-function canonicalUrl(pathname) {
+function canonicalUrl(config, pathname) {
   const cleanPath = canonicalPath(pathname);
-  return cleanPath === "/" ? ROOT_URL : `${BASE_URL}${cleanPath}`;
+  return cleanPath === "/" ? `${config.baseUrl}/` : `${config.baseUrl}${cleanPath}`;
 }
 
-function collectionUrl(type) {
-  return canonicalUrl(type);
+function collectionUrl(config, type) {
+  return canonicalUrl(config, type);
 }
 
-function recordUrl(type, slug) {
-  return canonicalUrl(`${type}/${slug}`);
-}
-
-function externalAttrs(url) {
-  return /^https?:\/\//i.test(url) ? ' target="_blank" rel="noreferrer"' : "";
-}
-
-function normalizeLineEndings(value) {
-  return value.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
+function recordUrl(config, type, slug) {
+  return canonicalUrl(config, `${type}/${slug}`);
 }
 
 function escapeHtml(value) {
-  return String(value)
+  return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -55,66 +177,47 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function toPictureHtml(html) {
-  return html.replace(
-    /<img src="(gallery\/[^"]+?)\.(png|jpe?g)" alt="([^"]*?)"(.*?)>/gi,
-    (match, path, ext, alt, extra) => {
-      return `<picture><source srcset="${path}.avif" type="image/avif"><source srcset="${path}.webp" type="image/webp"><img src="${path}.${ext}" alt="${alt}"${extra} loading="lazy"></picture>`;
-    },
-  );
+function escapeXml(value) {
+  return escapeHtml(value);
 }
 
-async function convertImages() {
-  const galleryDir = path.join(ROOT, "gallery");
-  const targets = [];
+function escapeAttr(value) {
+  return escapeHtml(value).replaceAll("\n", " ");
+}
 
-  try {
-    const files = await fs.readdir(galleryDir);
-    for (const f of files) {
-      if (/\.(png|jpe?g)$/i.test(f)) targets.push(path.join(galleryDir, f));
-    }
-  } catch {}
-  try {
-    const yuri = path.join(ROOT, "assets", "yuri.png");
-    if (fsSync.existsSync(yuri)) targets.push(yuri);
-  } catch {}
+function stripHtml(value) {
+  return String(value || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-  if (!targets.length) return;
+function normalizeLineEndings(value) {
+  return String(value || "").replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
+}
 
-  for (const file of targets) {
-    const base = file.replace(/\.\w+$/, "");
-    const webpPath = base + ".webp";
-    const avifPath = base + ".avif";
+function externalAttrs(url) {
+  return /^https?:\/\//i.test(url) ? ' target="_blank" rel="noreferrer"' : "";
+}
 
-    const [webpExists, avifExists] = await Promise.all([
-      fs
-        .access(webpPath)
-        .then(() => true)
-        .catch(() => false),
-      fs
-        .access(avifPath)
-        .then(() => true)
-        .catch(() => false),
-    ]);
+function toSlug(fileName) {
+  return fileName.replace(/\.[^.]+$/, "");
+}
 
-    if (webpExists && avifExists) continue;
-
-    const img = sharp(file);
-    const meta = await img.metadata();
-    if (!webpExists)
-      await img.webp({ quality: 80, effort: 6 }).toFile(webpPath);
-    if (!avifExists)
-      await img.avif({ quality: 65, effort: 4 }).toFile(avifPath);
-    console.log(`  → ${path.basename(file)} → webp + avif`);
-  }
+function formatFallbackTitle(slug) {
+  const withoutDate = slug.replace(/^\d{4}-\d{2}-\d{2}[-_]?/, "");
+  return (withoutDate || slug).replace(/[-_]/g, " ");
 }
 
 function normalizeAssetUrl(assetPath) {
   if (!assetPath) return "";
-  const normalized = assetPath.trim().replace(/\\/g, "/");
+  const normalized = String(assetPath).trim().replace(/\\/g, "/");
   if (!normalized) return "";
-  if (/^https?:\/\//i.test(normalized) || normalized.startsWith("/"))
+  if (/^https?:\/\//i.test(normalized) || normalized.startsWith("/")) {
     return normalized;
+  }
   if (
     /\.(png|jpe?g|webp|gif|svg)$/i.test(normalized) &&
     !normalized.includes("/")
@@ -124,8 +227,16 @@ function normalizeAssetUrl(assetPath) {
   return normalized;
 }
 
-function toRootRelativePaths(html) {
-  return html.replace(/(src="|srcset=")(gallery\/)/g, "$1/$2");
+function toRootPath(assetPath) {
+  if (!assetPath || /^https?:\/\//i.test(assetPath)) return assetPath;
+  return "/" + String(assetPath).replace(/^\/+/, "");
+}
+
+function absoluteImageUrl(config, image) {
+  const fallback = config.seo.defaultImage || "/assets/SE1.jpg";
+  const raw = normalizeAssetUrl(image || fallback);
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return `${config.baseUrl}${toRootPath(raw)}`;
 }
 
 function inlineMarkdown(text) {
@@ -134,15 +245,15 @@ function inlineMarkdown(text) {
     .replace(
       /\[!\[([^\]]*)\]\(([^)]+)\)\]\(([^)]+)\)/g,
       (_, alt, imgUrl, linkUrl) =>
-        `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noreferrer"><img src="${escapeHtml(imgUrl)}" alt="${alt}"></a>`,
+        `<a href="${escapeAttr(linkUrl)}"${externalAttrs(linkUrl)}><img src="${escapeAttr(normalizeAssetUrl(imgUrl))}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async"></a>`,
     )
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
-      return `<img src="${escapeHtml(normalizeAssetUrl(src))}" alt="${alt}">`;
+      return `<img src="${escapeAttr(normalizeAssetUrl(src))}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async">`;
     })
     .replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      (_, text, url) =>
-        `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(text)}</a>`,
+      (_, label, url) =>
+        `<a href="${escapeAttr(url)}"${externalAttrs(url)}>${escapeHtml(label)}</a>`,
     )
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
@@ -165,7 +276,7 @@ function extractYouTubeId(url) {
 function youtubeEmbedHtml(url) {
   const id = extractYouTubeId(url);
   if (!id || !/^[a-zA-Z0-9_-]{6,}$/.test(id)) return "";
-  return `<div class="reader-video"><iframe src="https://www.youtube.com/embed/${escapeHtml(id)}" title="YouTube video player" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+  return `<div class="reader-video"><iframe src="https://www.youtube-nocookie.com/embed/${escapeAttr(id)}" title="Video player" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
 }
 
 function markdownToHtml(markdown) {
@@ -177,17 +288,18 @@ function markdownToHtml(markdown) {
   return blocks
     .map((block) => {
       const youtubeMatch = block.match(/^\{%\s*youtube\s+([^%]+?)\s*%\}$/i);
-      if (youtubeMatch) {
-        return youtubeEmbedHtml(youtubeMatch[1]);
-      }
+      if (youtubeMatch) return youtubeEmbedHtml(youtubeMatch[1]);
+
       if (block.startsWith("```") && block.endsWith("```")) {
         const code = block.replace(/^```[\w-]*\n?/, "").replace(/\n?```$/, "");
         return `<pre><code>${escapeHtml(code)}</code></pre>`;
       }
+
       if (/^#{1,6}\s/.test(block)) {
         const m = block.match(/^(#{1,6})\s(.+)$/);
         return `<h${m[1].length}>${inlineMarkdown(m[2])}</h${m[1].length}>`;
       }
+
       const tableLines = block.split("\n");
       if (
         tableLines.length >= 2 &&
@@ -212,22 +324,23 @@ function markdownToHtml(markdown) {
           )
           .join("")}</tbody></table>`;
       }
+
       if (block.split("\n").every((l) => /^[-*]\s/.test(l))) {
-        const items = block
+        return `<ul>${block
           .split("\n")
           .map((l) => l.replace(/^[-*]\s/, ""))
           .map((l) => `<li>${inlineMarkdown(l)}</li>`)
-          .join("");
-        return `<ul>${items}</ul>`;
+          .join("")}</ul>`;
       }
+
       if (block.split("\n").every((l) => /^\d+\.\s/.test(l))) {
-        const items = block
+        return `<ol>${block
           .split("\n")
           .map((l) => l.replace(/^\d+\.\s/, ""))
           .map((l) => `<li>${inlineMarkdown(l)}</li>`)
-          .join("");
-        return `<ol>${items}</ol>`;
+          .join("")}</ol>`;
       }
+
       if (block.split("\n").every((l) => /^>\s?/.test(l))) {
         const quote = block
           .split("\n")
@@ -235,13 +348,14 @@ function markdownToHtml(markdown) {
           .join(" ");
         return `<blockquote>${inlineMarkdown(quote)}</blockquote>`;
       }
+
       if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(block)) {
         const m = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-        return `<div class="reader-media"><img src="${escapeHtml(normalizeAssetUrl(m[2]))}" alt="${escapeHtml(m[1])}"></div>`;
+        return `<div class="reader-media"><img src="${escapeAttr(normalizeAssetUrl(m[2]))}" alt="${escapeAttr(m[1])}" loading="lazy" decoding="async"></div>`;
       }
-      if (/^---$/.test(block.trim())) {
-        return `<hr>`;
-      }
+
+      if (/^---$/.test(block.trim())) return "<hr>";
+
       const paragraph = block
         .split("\n")
         .map((l) => inlineMarkdown(l))
@@ -253,30 +367,33 @@ function markdownToHtml(markdown) {
 
 function parseFrontmatter(rawText, fallbackDate) {
   const text = normalizeLineEndings(rawText);
-  if (!text.startsWith("---\n"))
+  if (!text.startsWith("---\n")) {
     return { attributes: {}, body: text.trim(), dateLabel: fallbackDate };
+  }
   const m = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!m) return { attributes: {}, body: text.trim(), dateLabel: fallbackDate };
   const attributes = {};
   for (const line of m[1].split("\n")) {
     const sep = line.indexOf(":");
     if (sep === -1) continue;
-    attributes[line.slice(0, sep).trim()] = line.slice(sep + 1).trim();
+    const key = line.slice(0, sep).trim();
+    const value = line.slice(sep + 1).trim();
+    if (["tags", "keywords"].includes(key)) {
+      attributes[key] = value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    } else if (["featured"].includes(key)) {
+      attributes[key] = /^(true|yes|1)$/i.test(value);
+    } else {
+      attributes[key] = value;
+    }
   }
   return {
     attributes,
     body: m[2].trim(),
     dateLabel: attributes.date || fallbackDate,
   };
-}
-
-function toSlug(fileName) {
-  return fileName.replace(/\.[^.]+$/, "");
-}
-
-function formatFallbackTitle(slug) {
-  const withoutDate = slug.replace(/^\d{4}-\d{2}-\d{2}[-_]?/, "");
-  return (withoutDate || slug).replace(/[-_]/g, " ");
 }
 
 function extractFirstImage(markdownBody) {
@@ -290,25 +407,129 @@ function fallbackSummary(markdownBody) {
     .map((l) => l.trim())
     .find(
       (l) =>
-        l && !l.startsWith("#") && !l.startsWith("-") && !l.startsWith("!"),
+        l &&
+        !l.startsWith("#") &&
+        !l.startsWith("-") &&
+        !l.startsWith("!") &&
+        !l.startsWith("{%"),
     );
-  return line || "no summary yet.";
+  return line || "No summary yet.";
 }
 
-function altFromFilename(filename) {
-  const slug = filename.replace(/\.[^.]+$/, "");
-  const parts = slug.split(".").filter(Boolean);
-  if (parts.length <= 2) return parts.join(" ");
-  return parts
-    .map((p, i) => {
-      if (i === 0) return p;
-      if (p === "breakout") return "breakout";
-      if (p === "preprocessing") return "preprocessing";
-      if (p === "graph") return "training graph";
-      if (p === "result") return "result";
-      return p;
-    })
-    .join(" ");
+function readingTime(markdownBody) {
+  const words = normalizeLineEndings(markdownBody)
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[^\w\s-]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 220));
+}
+
+function toPictureHtml(html) {
+  return html.replace(
+    /<img src="((?:gallery|assets)\/[^"]+?)\.(png|jpe?g)" alt="([^"]*?)"(.*?)>/gi,
+    (match, assetPath, ext, alt, extra) => {
+      const rootPath = toRootPath(`${assetPath}.${ext}`);
+      const avif = toRootPath(`${assetPath}.avif`);
+      const webp = toRootPath(`${assetPath}.webp`);
+      const attrs = /loading=/.test(extra) ? extra : `${extra} loading="lazy"`;
+      const decoded = /decoding=/.test(attrs) ? attrs : `${attrs} decoding="async"`;
+      return `<picture><source srcset="${avif}" type="image/avif"><source srcset="${webp}" type="image/webp"><img src="${rootPath}" alt="${alt}"${decoded}></picture>`;
+    },
+  );
+}
+
+function toRootRelativePaths(html) {
+  return html
+    .replace(/(src="|srcset=")(gallery\/)/g, "$1/$2")
+    .replace(/(src="|srcset=")(assets\/)/g, "$1/$2");
+}
+
+async function collectImageTargets(directory) {
+  const targets = [];
+  const entries = await fs
+    .readdir(directory, { withFileTypes: true })
+    .catch(() => []);
+  for (const entry of entries) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === "icons" || entry.name === "build") continue;
+      targets.push(...(await collectImageTargets(fullPath)));
+    } else if (/\.(png|jpe?g)$/i.test(entry.name)) {
+      targets.push(fullPath);
+    }
+  }
+  return targets;
+}
+
+async function convertImages() {
+  const targets = [
+    ...(await collectImageTargets(GALLERY_DIR)),
+    ...(await collectImageTargets(path.join(ROOT, "assets"))),
+  ];
+
+  for (const file of targets) {
+    const base = file.replace(/\.\w+$/, "");
+    const webpPath = base + ".webp";
+    const avifPath = base + ".avif";
+    const [webpExists, avifExists] = await Promise.all([
+      fs
+        .access(webpPath)
+        .then(() => true)
+        .catch(() => false),
+      fs
+        .access(avifPath)
+        .then(() => true)
+        .catch(() => false),
+    ]);
+
+    if (webpExists && avifExists) continue;
+
+    const img = sharp(file);
+    if (!webpExists) await img.clone().webp({ quality: 80, effort: 6 }).toFile(webpPath);
+    if (!avifExists) await img.clone().avif({ quality: 65, effort: 4 }).toFile(avifPath);
+    console.log(`  -> ${path.relative(ROOT, file)} -> webp + avif`);
+  }
+
+  await generateHeroImageVariants();
+}
+
+async function generateHeroImageVariants() {
+  const source = path.join(ROOT, "assets", "yuri.png");
+  if (!fsSync.existsSync(source)) return;
+  for (const width of [480, 720]) {
+    const base = path.join(ROOT, "assets", `yuri-${width}`);
+    const webpPath = `${base}.webp`;
+    const avifPath = `${base}.avif`;
+    const [webpExists, avifExists] = await Promise.all([
+      fs
+        .access(webpPath)
+        .then(() => true)
+        .catch(() => false),
+      fs
+        .access(avifPath)
+        .then(() => true)
+        .catch(() => false),
+    ]);
+    const img = sharp(source).resize({ width, withoutEnlargement: true });
+    if (!webpExists) await img.clone().webp({ quality: 80, effort: 6 }).toFile(webpPath);
+    if (!avifExists) await img.clone().avif({ quality: 65, effort: 4 }).toFile(avifPath);
+    if (!webpExists || !avifExists) console.log(`  -> assets/yuri-${width} -> webp + avif`);
+  }
+}
+
+async function imageMetadata(publicPath) {
+  if (!publicPath || /^https?:\/\//i.test(publicPath) || /\.svg$/i.test(publicPath)) {
+    return {};
+  }
+  const filePath = path.join(ROOT, publicPath.replace(/^\/+/, ""));
+  try {
+    const meta = await sharp(filePath).metadata();
+    return { width: meta.width, height: meta.height };
+  } catch {
+    return {};
+  }
 }
 
 async function readMarkdownCollection(directory) {
@@ -323,21 +544,48 @@ async function readMarkdownCollection(directory) {
       const rawText = await fs.readFile(filePath, "utf8");
       const fallbackDate = stats.mtime.toISOString().slice(0, 10);
       const parsed = parseFrontmatter(rawText, fallbackDate);
+      const body = parsed.body || "";
+      const html = toPictureHtml(markdownToHtml(body));
+      const image = normalizeAssetUrl(
+        parsed.attributes.image ||
+          parsed.attributes.ogImage ||
+          extractFirstImage(body),
+      );
       return {
-        id: toSlug(entry.name),
+        id: parsed.attributes.slug || toSlug(entry.name),
         title:
           parsed.attributes.title || formatFallbackTitle(toSlug(entry.name)),
         date: parsed.attributes.date || fallbackDate,
+        updated: parsed.attributes.updated || parsed.attributes.date || fallbackDate,
         dateLabel: parsed.dateLabel,
-        summary: parsed.attributes.summary || fallbackSummary(parsed.body),
-        image: normalizeAssetUrl(
-          parsed.attributes.image || extractFirstImage(parsed.body),
-        ),
-        html: toPictureHtml(markdownToHtml(parsed.body)),
+        summary: parsed.attributes.summary || fallbackSummary(body),
+        seoTitle: parsed.attributes.seoTitle || "",
+        seoDescription: parsed.attributes.seoDescription || "",
+        canonical: parsed.attributes.canonical || "",
+        tags: parsed.attributes.tags || [],
+        featured: parsed.attributes.featured || false,
+        readingTime: parsed.attributes.readingTime || readingTime(body),
+        image,
+        imageMeta: await imageMetadata(image),
+        html,
+        text: stripHtml(html),
       };
     }),
   );
   return records.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function altFromFilename(filename) {
+  const slug = filename.replace(/\.[^.]+$/, "");
+  return slug
+    .split(".")
+    .filter(Boolean)
+    .map((part) => {
+      if (part === "graph") return "training graph";
+      if (part === "result") return "result";
+      return part;
+    })
+    .join(" ");
 }
 
 async function readGallery() {
@@ -355,16 +603,28 @@ async function readGallery() {
   });
   const records = await Promise.all(
     images.map(async (entry) => {
-      const stats = await fs.stat(path.join(GALLERY_DIR, entry.name));
+      const fullPath = path.join(GALLERY_DIR, entry.name);
+      const stats = await fs.stat(fullPath);
+      const publicPath = `gallery/${encodeURIComponent(entry.name)}`;
       return {
-        url: `gallery/${encodeURIComponent(entry.name)}`,
+        url: publicPath,
         alt: altFromFilename(entry.name),
         caption: altFromFilename(entry.name),
         date: stats.mtime.toISOString(),
+        imageMeta: await imageMetadata(publicPath),
       };
     }),
   );
   return records.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function normalizeList(value) {
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 async function readProjects() {
@@ -375,462 +635,893 @@ async function readProjects() {
     entries = [];
   }
 
-  return entries
-    .filter((entry) => entry && entry.repo)
-    .map((entry) => {
-      const repo = String(entry.repo).trim();
-      const name = repo.split("/").pop();
-      const id = (entry.slug || name).toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const url = `https://github.com/${repo}`;
-      const summary =
-        entry.summary || `GitHub repository for ${name}, part of lonely guy's work.`;
-      return {
-        id,
-        repo,
-        title: entry.title || name,
-        summary,
-        url,
-        dateLabel: entry.date || "project",
-        html: `<p>${escapeHtml(summary)}</p><p><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">open repository</a></p>`,
-      };
-    });
+  const projects = await Promise.all(
+    entries
+      .filter((entry) => entry && entry.title)
+      .map(async (entry) => {
+        const repo = String(entry.repo || "").trim();
+        const repoName = repo ? repo.split("/").pop() : entry.title;
+        const slug =
+          entry.slug ||
+          repoName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        const url = repo ? `https://github.com/${repo}` : "";
+        const html = toPictureHtml(markdownToHtml(entry.body || entry.summary || ""));
+        const image = normalizeAssetUrl(entry.ogImage || entry.images?.[0]?.src || "");
+        return {
+          id: slug,
+          slug,
+          repo,
+          title: entry.title,
+          summary:
+            entry.summary ||
+            (repo ? `GitHub repository for ${repoName}, part of SE1's work.` : ""),
+          status: entry.status || "project",
+          featured: Boolean(entry.featured),
+          tags: normalizeList(entry.tags),
+          stack: normalizeList(entry.stack),
+          metrics: normalizeList(entry.metrics),
+          role: entry.role || "",
+          demo: entry.demo || "",
+          paper: entry.paper || "",
+          video: entry.video || "",
+          article: entry.article || "",
+          url,
+          images: Array.isArray(entry.images) ? entry.images : [],
+          image,
+          imageMeta: await imageMetadata(image),
+          started: entry.started || "",
+          updated: entry.updated || entry.started || new Date().toISOString().slice(0, 10),
+          date: entry.updated || entry.started || new Date().toISOString().slice(0, 10),
+          dateLabel: entry.status || "project",
+          html,
+          text: stripHtml(html),
+        };
+      }),
+  );
+
+  return projects.sort((a, b) => {
+    if (a.featured !== b.featured) return a.featured ? -1 : 1;
+    return b.updated.localeCompare(a.updated);
+  });
 }
 
-function makePageHtml(record, type, slug) {
-  const url = recordUrl(type, slug);
-  const imageUrl = record.image
-    ? record.image.startsWith("http")
-      ? record.image
-      : `${BASE_URL}/${record.image}`
-    : `${BASE_URL}/assets/SE1.jpg`;
-  const htmlContent = toRootRelativePaths(record.html);
-  const articleType = type === "articles" ? "BlogPosting" : "Article";
-  const jsonLd = JSON.stringify({
+function analyticsScripts(config) {
+  const parts = [];
+  if (config.analytics?.vercelAnalytics) {
+    parts.push(`<script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>`);
+  }
+  if (config.analytics?.vercelSpeedInsights) {
+    parts.push(`<script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>`);
+  }
+  return parts.join("\n");
+}
+
+function siteGraphJsonLd(config) {
+  return {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": articleType,
-        "@id": `${url}#post`,
-        headline: record.title,
-        description: record.summary,
-        image: imageUrl,
-        datePublished: record.date,
-        dateModified: record.date,
-        author: { "@id": `${BASE_URL}/#person` },
-        publisher: { "@id": `${BASE_URL}/#person` },
-        mainEntityOfPage: { "@type": "WebPage", "@id": url },
-        isPartOf: { "@id": `${BASE_URL}/#website` },
+        "@type": "Person",
+        "@id": `${config.baseUrl}/#person`,
+        name: config.author.name,
+        alternateName: config.author.alternateName,
+        url: config.baseUrl,
+        email: config.author.email,
+        jobTitle: config.author.jobTitle,
+        description: config.author.description,
+        sameAs: config.author.sameAs || [],
+        knowsAbout: config.author.knowsAbout || [],
       },
       {
-        "@type": "BreadcrumbList",
-        "@id": `${url}#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: type,
-            item: collectionUrl(type),
+        "@type": "WebSite",
+        "@id": `${config.baseUrl}/#website`,
+        url: `${config.baseUrl}/`,
+        name: config.siteName,
+        description: config.description,
+        publisher: { "@id": `${config.baseUrl}/#person` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${config.baseUrl}/search?q={search_term_string}`,
           },
-          { "@type": "ListItem", position: 3, name: record.title, item: url },
-        ],
+          "query-input": "required name=search_term_string",
+        },
       },
     ],
-  });
+  };
+}
 
+function breadcrumbsJsonLd(config, crumbs) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: crumb.name,
+      item: crumb.url,
+    })),
+  };
+}
+
+function itemListJsonLd(items) {
+  return {
+    "@type": "ItemList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: item.url,
+    })),
+  };
+}
+
+function metadataHead(config, page, assets, jsonLdGraph = []) {
+  const pathName = page.path || "/";
+  const title = page.title || config.seo.defaultTitle;
+  const fullTitle = page.rawTitle
+    ? title
+    : title === config.seo.defaultTitle
+      ? title
+      : (config.seo.titleTemplate || "%s - SE1").replace("%s", title);
+  const description = page.description || config.seo.defaultDescription;
+  const canonical = page.canonical || canonicalUrl(config, pathName);
+  const image = absoluteImageUrl(config, page.image);
+  const type = page.type || "website";
+  const robots = page.robots || "index, follow, max-image-preview:large";
+  const graph = siteGraphJsonLd(config);
+  graph["@graph"].push(...jsonLdGraph);
+
+  return `<meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${escapeHtml(fullTitle)}</title>
+    <meta name="description" content="${escapeAttr(description)}" />
+    <meta name="author" content="${escapeAttr(config.author.name)}" />
+    <meta name="robots" content="${escapeAttr(robots)}" />
+    <meta name="theme-color" content="${escapeAttr(config.seo.themeColor)}" />
+    <link rel="canonical" href="${escapeAttr(canonical)}" />
+    <meta property="og:site_name" content="${escapeAttr(config.siteName)}" />
+    <meta property="og:title" content="${escapeAttr(fullTitle)}" />
+    <meta property="og:description" content="${escapeAttr(description)}" />
+    <meta property="og:type" content="${escapeAttr(type)}" />
+    <meta property="og:url" content="${escapeAttr(canonical)}" />
+    <meta property="og:image" content="${escapeAttr(image)}" />
+    <meta property="og:locale" content="${escapeAttr(config.seo.locale)}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="${escapeAttr(config.seo.twitterHandle)}" />
+    <meta name="twitter:creator" content="${escapeAttr(config.seo.twitterHandle)}" />
+    <meta name="twitter:title" content="${escapeAttr(fullTitle)}" />
+    <meta name="twitter:description" content="${escapeAttr(description)}" />
+    <meta name="twitter:image" content="${escapeAttr(image)}" />
+    ${page.date ? `<meta property="article:published_time" content="${escapeAttr(page.date)}" />` : ""}
+    ${page.updated ? `<meta property="article:modified_time" content="${escapeAttr(page.updated)}" />` : ""}
+    <link rel="alternate" type="application/rss+xml" title="${escapeAttr(config.siteName)} - Articles" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="${escapeAttr(config.siteName)} - Articles" href="/feed.json" />
+    <link rel="icon" type="image/jpeg" href="/assets/SE1.jpg" />
+    <link rel="stylesheet" href="${assets.css}" />
+    <script type="application/ld+json">${JSON.stringify(graph)}</script>
+    ${analyticsScripts(config)}`;
+}
+
+function headerHtml(activePath = "") {
+  const links = [
+    ["/", "home"],
+    ["/now", "now"],
+    ["/stack", "stack"],
+    ["/path", "path"],
+    ["/updates", "updates"],
+    ["/articles", "blogs"],
+    ["/papers", "papers"],
+    ["/gallery", "gallery"],
+    ["/projects", "projects"],
+    ["/contact", "contact"],
+  ];
+  return `<header class="site-header">
+      <div class="site-width header-inner">
+        <a class="brand" href="/">
+          <img class="brand-mark" src="/assets/SE1.jpg" alt="" width="640" height="640" decoding="async" />
+          <span class="brand-copy"><strong>lonely guy</strong></span>
+        </a>
+        <nav class="header-nav static-header-nav" aria-label="Main">
+          ${links
+            .map(([href, label]) => {
+              const current = activePath === href ? ' aria-current="page"' : "";
+              return `<a class="tab-button" href="${href}"${current}>${label}</a>`;
+            })
+            .join("")}
+        </nav>
+      </div>
+    </header>`;
+}
+
+function footerHtml(config) {
+  return `<footer class="site-footer" id="footer">
+      <div class="site-width footer-inner">
+        <p class="footer-kicker">built for the long run</p>
+        <blockquote class="footer-quote">
+          "part imagination and part curiosity. in short, truth itself."
+        </blockquote>
+        <div class="footer-meta">
+          <span>${escapeHtml(config.shortName)} keeps building toward embodied AI systems.</span>
+          <a href="/">back to home</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 ${escapeHtml(config.shortName)}. All rights reserved.</p>
+      </div>
+    </footer>`;
+}
+
+function shell(config, assets, page, body, jsonLdGraph = [], extraScripts = "") {
   return `<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(record.title)} - Lonely Guy</title>
-    <meta name="description" content="${escapeHtml(record.summary)} - lonely guy's portfolio on reinforcement learning, robotics, and embodied ai." />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href="${url}" />
-    <meta property="og:site_name" content="Lonely Guy" />
-    <meta property="og:title" content="${escapeHtml(record.title)}" />
-    <meta property="og:description" content="${escapeHtml(record.summary)}" />
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content="${url}" />
-    <meta property="og:image" content="${imageUrl}" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lonelyguyse1" />
-    <meta name="twitter:creator" content="@lonelyguyse1" />
-    <meta name="twitter:title" content="${escapeHtml(record.title)}" />
-    <meta name="twitter:description" content="${escapeHtml(record.summary)}" />
-    <meta name="twitter:image" content="${imageUrl}" />
-    <link rel="icon" type="image/jpeg" href="../../assets/SE1.jpg" />
-    <link rel="stylesheet" href="../../styles/main.css" />
-    <script type="application/ld+json">${jsonLd}</script>
-    <!-- Vercel Analytics -->
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <!-- Vercel Speed Insights -->
-    <script>
-      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+    ${metadataHead(config, page, assets, jsonLdGraph)}
 </head>
 <body>
     <a class="skip-link" href="#main">skip to main</a>
-
-    <header class="site-header">
-      <div class="site-width header-inner">
-        <a class="brand" href="/">
-          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" width="640" height="640" />
-          <span class="brand-copy"><strong>lonely guy</strong></span>
-        </a>
-        <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <ol class="breadcrumb-list">
-            <li><a href="/">home</a></li>
-            <li><a href="/${type}">${type}</a></li>
-            <li aria-current="page">${escapeHtml(record.title)}</li>
-          </ol>
-        </nav>
-      </div>
-    </header>
-
-    <main class="site-width" id="main">
-      <article>
-        <div class="reader-head">
-          <div>
-            <p class="reader-kicker">${escapeHtml(record.dateLabel)}</p>
-            <h1>${escapeHtml(record.title)}</h1>
-          </div>
-          <a href="/${type}" class="reader-close">back</a>
-        </div>
-        <div class="reader-body">${htmlContent}</div>
-      </article>
+    ${headerHtml(page.path)}
+    <main class="site-width static-page" id="main">
+      ${body}
     </main>
-
-    <footer class="site-footer">
-      <div class="site-width footer-inner">
-        <p class="footer-kicker">stuck in my head while making this</p>
-        <blockquote class="footer-quote">
-          &ldquo;Your enemy is a resilient one. The thing you all oppose isn&rsquo;t just me. Nor is it heretics. It&rsquo;s part imagination and part curiosity. In short, it&rsquo;s truth itself&rdquo;
-        </blockquote>
-        <div class="footer-meta">
-          <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
-          <a href="../../index.html">back to home</a>
-        </div>
-        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
-      </div>
-    </footer>
+    ${footerHtml(config)}
+    ${extraScripts}
+    <script defer src="${assets.assistant}"></script>
 </body>
 </html>`;
 }
 
-function makeCollectionPageHtml(type, title, description, records) {
-  const url = collectionUrl(type);
-  const items = records.length
+function renderTagList(items, className = "meta-chip-list") {
+  if (!items || !items.length) return "";
+  return `<ul class="${className}">${items
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("")}</ul>`;
+}
+
+function renderLinkPills(links) {
+  const valid = links.filter((link) => link && link.href);
+  if (!valid.length) return "";
+  return `<div class="reader-head-actions">${valid
+    .map(
+      (link) =>
+        `<a href="${escapeAttr(link.href)}"${externalAttrs(link.href)}>${escapeHtml(link.label)}</a>`,
+    )
+    .join("")}</div>`;
+}
+
+function makeArticlePageHtml(config, assets, record, type) {
+  const url = recordUrl(config, type, record.id);
+  const imageUrl = absoluteImageUrl(config, record.image);
+  const schemaType = type === "articles" ? "BlogPosting" : "Article";
+  const collectionTitle =
+    type === "articles" ? "Articles" : type === "updates" ? "Updates" : "Papers";
+  const jsonLd = [
+    {
+      "@type": schemaType,
+      "@id": `${url}#post`,
+      headline: record.title,
+      description: record.summary,
+      image: imageUrl,
+      datePublished: record.date,
+      dateModified: record.updated || record.date,
+      author: { "@id": `${config.baseUrl}/#person` },
+      publisher: { "@id": `${config.baseUrl}/#person` },
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+      keywords: record.tags || [],
+      timeRequired: `PT${record.readingTime || 1}M`,
+    },
+    breadcrumbsJsonLd(config, [
+      { name: "Home", url: canonicalUrl(config, "/") },
+      { name: collectionTitle, url: collectionUrl(config, type) },
+      { name: record.title, url },
+    ]),
+  ];
+  const body = `<article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">${escapeHtml(record.dateLabel)}${record.readingTime ? ` / ${escapeHtml(record.readingTime)} min read` : ""}</p>
+            <h1>${escapeHtml(record.title)}</h1>
+          </div>
+          ${renderLinkPills([{ label: `back to ${type}`, href: `/${type}` }])}
+        </div>
+        <p class="static-page-summary">${escapeHtml(record.summary)}</p>
+        ${renderTagList(record.tags)}
+        <div class="reader-body">${toRootRelativePaths(record.html)}</div>
+      </article>`;
+  return shell(
+    config,
+    assets,
+    {
+      path: canonicalPath(`${type}/${record.id}`),
+      title: record.seoTitle || record.title,
+      description: record.seoDescription || record.summary,
+      type: "article",
+      image: record.image,
+      date: record.date,
+      updated: record.updated || record.date,
+      canonical: record.canonical || url,
+    },
+    body,
+    jsonLd,
+  );
+}
+
+function projectLinks(record) {
+  return [
+    { label: "source", href: record.url },
+    { label: "demo", href: record.demo },
+    { label: "article", href: record.article },
+    { label: "paper", href: record.paper },
+    { label: "video", href: record.video },
+  ].filter((item) => item.href);
+}
+
+function projectMediaHtml(record) {
+  if (!record.images?.length) return "";
+  return `<div class="project-media-grid">${record.images
+    .map((image) => {
+      const src = normalizeAssetUrl(image.src);
+      const root = toRootPath(src);
+      const base = root.replace(/\.(png|jpe?g)$/i, "");
+      const picture = /\.(png|jpe?g)$/i.test(root)
+        ? `<picture><source srcset="${base}.avif" type="image/avif"><source srcset="${base}.webp" type="image/webp"><img src="${root}" alt="${escapeAttr(image.alt || record.title)}" loading="lazy" decoding="async"></picture>`
+        : `<img src="${escapeAttr(src)}" alt="${escapeAttr(image.alt || record.title)}" loading="lazy" decoding="async">`;
+      return `<figure>${picture}<figcaption>${escapeHtml(image.alt || record.title)}</figcaption></figure>`;
+    })
+    .join("")}</div>`;
+}
+
+function stackBoardHtml() {
+  return `<div class="stack-board" aria-label="skill stack">
+          <article class="stack-card stack-card--primary">
+            <div class="stack-card-head">
+              <span class="stack-glyph">RL</span>
+              <div>
+                <h2>ai / learning side</h2>
+                <p>where most of the current attention is going.</p>
+              </div>
+            </div>
+            <div class="shield-row">
+              <span class="skill-shield skill-shield--hot"><b>RL</b> reinforcement learning</span>
+              <span class="skill-shield"><b>DL</b> deep learning</span>
+              <span class="skill-shield"><b>LLM</b> transformers</span>
+              <span class="skill-shield"><b>GYM</b> gymnasium</span>
+              <span class="skill-shield"><b>HF</b> hugging face</span>
+              <span class="skill-shield"><b>SK</b> scikit-learn</span>
+            </div>
+            <p>
+              supervised / unsupervised learning, rl, deep learning, llm basics,
+              transformers, encoders, decoders, rnns, and the messy experimental
+              tooling around them.
+            </p>
+          </article>
+
+          <article class="stack-card">
+            <div class="stack-card-head">
+              <span class="stack-glyph">CODE</span>
+              <div>
+                <h2>languages + formats</h2>
+                <p>stuff used to express models, systems, and simulations.</p>
+              </div>
+            </div>
+            <div class="shield-row">
+              <span class="skill-shield skill-shield--hot"><b>PY</b> python</span>
+              <span class="skill-shield"><b>C++</b> embedded c/c++</span>
+              <span class="skill-shield"><b>JV</b> java</span>
+              <span class="skill-shield"><b>JS</b> javascript</span>
+              <span class="skill-shield"><b>URDF</b> robot format</span>
+              <span class="skill-shield"><b>MJCF</b> mujoco format</span>
+            </div>
+          </article>
+
+          <article class="stack-card">
+            <div class="stack-card-head">
+              <span class="stack-glyph">BOT</span>
+              <div>
+                <h2>robotics / sim / embedded</h2>
+                <p>simulators, control intuition, and hardware-side basics.</p>
+              </div>
+            </div>
+            <div class="shield-row">
+              <span class="skill-shield skill-shield--hot"><b>MJ</b> mujoco</span>
+              <span class="skill-shield"><b>SIM</b> simulink</span>
+              <span class="skill-shield"><b>ISAAC</b> isaac lab</span>
+              <span class="skill-shield"><b>ROS</b> ros</span>
+              <span class="skill-shield"><b>ARD</b> arduino</span>
+              <span class="skill-shield"><b>PI</b> raspberry pi</span>
+            </div>
+          </article>
+
+          <article class="stack-card stack-card--wide">
+            <div class="stack-card-head">
+              <span class="stack-glyph">SYS</span>
+              <div>
+                <h2>infra / build / distributed side</h2>
+                <p>the workbench around experiments and deployment.</p>
+              </div>
+            </div>
+            <div class="shield-row">
+              <span class="skill-shield"><b>GIT</b> git / github</span>
+              <span class="skill-shield"><b>CI</b> github actions</span>
+              <span class="skill-shield"><b>NB</b> jupyter / colab</span>
+              <span class="skill-shield"><b>API</b> fastapi</span>
+              <span class="skill-shield"><b>DOC</b> docker</span>
+              <span class="skill-shield"><b>DIST</b> parallax</span>
+            </div>
+            <p>
+              also spent a good chunk of time on blockchain architecture, dapps,
+              daos, and tokenomics. had its time, taught a lot, not the center
+              of gravity right now.
+            </p>
+          </article>
+        </div>
+
+        <p class="stack-note">
+          still not treating this as a certificate wall. skills are weird, they
+          decay, improve, and change shape. judge me more by projects, writeups,
+          and a conversation.
+        </p>`;
+}
+
+function makeProjectPageHtml(config, assets, record) {
+  const url = recordUrl(config, "projects", record.id);
+  const jsonLd = [
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": `${url}#project`,
+      name: record.title,
+      description: record.summary,
+      codeRepository: record.url || undefined,
+      programmingLanguage: record.stack,
+      keywords: record.tags,
+      author: { "@id": `${config.baseUrl}/#person` },
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+    },
+    breadcrumbsJsonLd(config, [
+      { name: "Home", url: canonicalUrl(config, "/") },
+      { name: "Projects", url: collectionUrl(config, "projects") },
+      { name: record.title, url },
+    ]),
+  ];
+  if (record.video) {
+    jsonLd.push({
+      "@type": "VideoObject",
+      name: `${record.title} walkthrough`,
+      description: record.summary,
+      uploadDate: record.updated,
+      contentUrl: record.video,
+      thumbnailUrl: absoluteImageUrl(config, record.image),
+    });
+  }
+
+  const body = `<article>
+        <div class="reader-head project-hero-head">
+          <div>
+            <p class="reader-kicker">${escapeHtml(record.status)}</p>
+            <h1>${escapeHtml(record.title)}</h1>
+          </div>
+          ${renderLinkPills(projectLinks(record).concat([{ label: "all projects", href: "/projects" }]))}
+        </div>
+        <p class="static-page-summary">${escapeHtml(record.summary)}</p>
+        ${renderTagList(record.tags)}
+        <dl class="project-facts">
+          ${record.role ? `<div><dt>role</dt><dd>${escapeHtml(record.role)}</dd></div>` : ""}
+          ${record.stack?.length ? `<div><dt>stack</dt><dd>${escapeHtml(record.stack.join(", "))}</dd></div>` : ""}
+          ${record.metrics?.length ? `<div><dt>proof</dt><dd><ul>${record.metrics.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}</ul></dd></div>` : ""}
+        </dl>
+        ${projectMediaHtml(record)}
+        <div class="reader-body">${toRootRelativePaths(record.html)}</div>
+      </article>`;
+  return shell(
+    config,
+    assets,
+    {
+      path: canonicalPath(`projects/${record.id}`),
+      title: record.title,
+      description: record.summary,
+      type: "article",
+      image: record.image,
+      date: record.started,
+      updated: record.updated,
+    },
+    body,
+    jsonLd,
+  );
+}
+
+function makeCollectionPageHtml(config, assets, type, title, description, records) {
+  const url = collectionUrl(config, type);
+  const itemLinks = records.length
     ? records
         .map((record) => {
-          const href =
-            type === "projects" ? recordUrl("projects", record.id) : recordUrl(type, record.id);
-          return `<li><a href="${href}">${escapeHtml(record.title)}</a><span>${escapeHtml(record.summary || "")}</span></li>`;
+          const href = type === "projects" ? recordUrl(config, "projects", record.id) : recordUrl(config, type, record.id);
+          const meta =
+            type === "projects"
+              ? record.status
+              : [record.dateLabel, record.readingTime ? `${record.readingTime} min read` : ""]
+                  .filter(Boolean)
+                  .join(" / ");
+          return `<li>
+            <a href="${href}"><strong>${escapeHtml(record.title)}</strong></a>
+            <span>${escapeHtml(meta || "")}</span>
+            <p>${escapeHtml(record.summary || "")}</p>
+          </li>`;
         })
         .join("")
-    : `<li><span>nothing published here yet.</span></li>`;
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "CollectionPage",
-        "@id": `${url}#webpage`,
-        url,
-        name: title,
-        description,
-        isPartOf: { "@id": `${BASE_URL}/#website` },
-        about: { "@id": `${BASE_URL}/#person` },
-      },
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${url}#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: ROOT_URL },
-          { "@type": "ListItem", position: 2, name: title, item: url },
-        ],
-      },
-    ],
-  });
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(title)} - Lonely Guy</title>
-    <meta name="description" content="${escapeHtml(description)}" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href="${url}" />
-    <meta property="og:site_name" content="Lonely Guy" />
-    <meta property="og:title" content="${escapeHtml(title)} - Lonely Guy" />
-    <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${url}" />
-    <meta property="og:image" content="${BASE_URL}/assets/SE1.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(title)} - Lonely Guy" />
-    <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${BASE_URL}/assets/SE1.jpg" />
-    <link rel="icon" type="image/jpeg" href="../assets/SE1.jpg" />
-    <link rel="stylesheet" href="../styles/main.css" />
-    <script type="application/ld+json">${jsonLd}</script>
-</head>
-<body>
-    <a class="skip-link" href="#main">skip to main</a>
-    <header class="site-header">
-      <div class="site-width header-inner">
-        <a class="brand" href="/">
-          <img class="brand-mark" src="../assets/SE1.jpg" alt="" width="640" height="640" />
-          <span class="brand-copy"><strong>lonely guy</strong></span>
-        </a>
-        <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <ol class="breadcrumb-list">
-            <li><a href="/">home</a></li>
-            <li aria-current="page">${escapeHtml(type)}</li>
-          </ol>
-        </nav>
-      </div>
-    </header>
-    <main class="site-width static-page" id="main">
-      <article>
+    : `<li><span>Nothing published here yet.</span></li>`;
+  const jsonLd = [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: title,
+      description,
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+      about: { "@id": `${config.baseUrl}/#person` },
+    },
+    itemListJsonLd(
+      records.map((r) => ({
+        name: r.title,
+        url: type === "projects" ? recordUrl(config, "projects", r.id) : recordUrl(config, type, r.id),
+      })),
+    ),
+    breadcrumbsJsonLd(config, [
+      { name: "Home", url: canonicalUrl(config, "/") },
+      { name: title, url },
+    ]),
+  ];
+  const body = `<article>
         <div class="reader-head">
           <div>
             <p class="reader-kicker">${escapeHtml(type)}</p>
             <h1>${escapeHtml(title)}</h1>
           </div>
-          <a href="/" class="reader-close">home</a>
+          ${renderLinkPills([{ label: "home", href: "/" }])}
         </div>
         <p class="static-page-summary">${escapeHtml(description)}</p>
-        <ol class="static-link-list">${items}</ol>
-      </article>
-    </main>
-    <footer class="site-footer">
-      <div class="site-width footer-inner">
-        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
-      </div>
-    </footer>
-</body>
-</html>`;
+        <ol class="static-link-list">${itemLinks}</ol>
+      </article>`;
+  return shell(
+    config,
+    assets,
+    { path: canonicalPath(type), title, description },
+    body,
+    jsonLd,
+  );
 }
 
-function makeProjectPageHtml(record) {
-  const url = recordUrl("projects", record.id);
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareSourceCode",
-        "@id": `${url}#project`,
-        name: record.title,
-        description: record.summary,
-        codeRepository: record.url,
-        author: { "@id": `${BASE_URL}/#person` },
-        isPartOf: { "@id": `${BASE_URL}/#website` },
-      },
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${url}#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: ROOT_URL },
-          { "@type": "ListItem", position: 2, name: "projects", item: collectionUrl("projects") },
-          { "@type": "ListItem", position: 3, name: record.title, item: url },
-        ],
-      },
-    ],
-  });
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(record.title)} - Lonely Guy</title>
-    <meta name="description" content="${escapeHtml(record.summary)}" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href="${url}" />
-    <meta property="og:site_name" content="Lonely Guy" />
-    <meta property="og:title" content="${escapeHtml(record.title)}" />
-    <meta property="og:description" content="${escapeHtml(record.summary)}" />
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content="${url}" />
-    <meta property="og:image" content="${BASE_URL}/assets/SE1.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(record.title)}" />
-    <meta name="twitter:description" content="${escapeHtml(record.summary)}" />
-    <meta name="twitter:image" content="${BASE_URL}/assets/SE1.jpg" />
-    <link rel="icon" type="image/jpeg" href="../../assets/SE1.jpg" />
-    <link rel="stylesheet" href="../../styles/main.css" />
-    <script type="application/ld+json">${jsonLd}</script>
-</head>
-<body>
-    <a class="skip-link" href="#main">skip to main</a>
-    <header class="site-header">
-      <div class="site-width header-inner">
-        <a class="brand" href="/">
-          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" width="640" height="640" />
-          <span class="brand-copy"><strong>lonely guy</strong></span>
-        </a>
-        <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <ol class="breadcrumb-list">
-            <li><a href="/">home</a></li>
-            <li><a href="/projects">projects</a></li>
-            <li aria-current="page">${escapeHtml(record.title)}</li>
-          </ol>
-        </nav>
-      </div>
-    </header>
-    <main class="site-width static-page" id="main">
-      <article>
+function makeStaticInfoPage(config, assets, page) {
+  const url = canonicalUrl(config, page.path);
+  let bodyContent = "";
+  if (page.id === "contact") {
+    bodyContent = `<ul class="social-list static-contact-list">${config.socials
+      .map(
+        (social) =>
+          `<li><span>${escapeHtml(social.label)}</span><a href="${escapeAttr(social.url)}" target="_blank" rel="${escapeAttr(social.rel || "noreferrer")} noreferrer">${escapeHtml(social.url.replace(/^https?:\/\//, ""))}</a></li>`,
+      )
+      .join("")}
+      <li><span>email</span><a href="mailto:${escapeAttr(config.author.email)}">${escapeHtml(config.author.email)}</a></li>
+      <li><span>backup email</span><a href="mailto:${escapeAttr(config.author.secondaryEmail)}">${escapeHtml(config.author.secondaryEmail)}</a></li>
+      <li><span>discord</span><span>lonelyguy_se1</span></li>
+    </ul>`;
+  } else if (page.id === "stack") {
+    bodyContent = stackBoardHtml();
+  } else {
+    bodyContent = `<div class="static-section-grid">${page.sections
+      .map(
+        (section) =>
+          `<section><h2>${escapeHtml(section.title)}</h2><p>${escapeHtml(section.body)}</p></section>`,
+      )
+      .join("")}</div>`;
+  }
+  const jsonLd = [
+    {
+      "@type": "ProfilePage",
+      "@id": `${url}#webpage`,
+      url,
+      name: page.title,
+      description: page.description,
+      mainEntity: { "@id": `${config.baseUrl}/#person` },
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+    },
+    breadcrumbsJsonLd(config, [
+      { name: "Home", url: canonicalUrl(config, "/") },
+      { name: page.title, url },
+    ]),
+  ];
+  const body = `<article>
         <div class="reader-head">
           <div>
-            <p class="reader-kicker">${escapeHtml(record.repo)}</p>
-            <h1>${escapeHtml(record.title)}</h1>
+            <p class="reader-kicker">${escapeHtml(page.kicker)}</p>
+            <h1>${escapeHtml(page.title)}</h1>
           </div>
-          <a href="/projects" class="reader-close">back</a>
+          ${renderLinkPills([{ label: "home", href: "/" }])}
         </div>
-        <div class="reader-body">${record.html}</div>
-      </article>
-    </main>
-    <footer class="site-footer">
-      <div class="site-width footer-inner">
-        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
-      </div>
-    </footer>
-</body>
-</html>`;
+        <p class="static-page-summary">${escapeHtml(page.description)}</p>
+        ${bodyContent}
+      </article>`;
+  return shell(config, assets, page, body, jsonLd);
 }
 
-async function generatePages(updates, articles, papers, projects) {
+function makeGalleryPageHtml(config, assets, gallery) {
+  const url = canonicalUrl(config, "/gallery");
+  const jsonLd = [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: "Gallery",
+      description:
+        "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+    },
+    itemListJsonLd(
+      gallery.map((item) => ({
+        name: item.caption,
+        url: `${config.baseUrl}${toRootPath(item.url)}`,
+      })),
+    ),
+    ...gallery.slice(0, 12).map((item) => ({
+      "@type": "ImageObject",
+      contentUrl: `${config.baseUrl}${toRootPath(item.url)}`,
+      caption: item.caption,
+      creator: { "@id": `${config.baseUrl}/#person` },
+    })),
+    breadcrumbsJsonLd(config, [
+      { name: "Home", url: canonicalUrl(config, "/") },
+      { name: "Gallery", url },
+    ]),
+  ];
+  const grid = gallery.length
+    ? gallery
+        .map((item) => {
+          const root = toRootPath(item.url);
+          const base = root.replace(/\.(png|jpe?g)$/i, "");
+          return `<figure class="gallery-item">
+            <picture><source srcset="${base}.avif" type="image/avif"><source srcset="${base}.webp" type="image/webp"><img src="${root}" alt="${escapeAttr(item.alt)}" loading="lazy" decoding="async"></picture>
+            <figcaption>${escapeHtml(item.caption)}</figcaption>
+          </figure>`;
+        })
+        .join("")
+    : `<p class="dynamic-note">No images added yet.</p>`;
+  const body = `<article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">visual log</p>
+            <h1>Gallery</h1>
+          </div>
+          ${renderLinkPills([{ label: "home", href: "/" }])}
+        </div>
+        <p class="static-page-summary">Visual artifacts from robotics, reinforcement learning, environment design, and build notes.</p>
+        <div class="gallery-grid static-gallery-grid">${grid}</div>
+      </article>`;
+  return shell(
+    config,
+    assets,
+    {
+      path: "/gallery",
+      title: "Gallery",
+      description:
+        "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+    },
+    body,
+    jsonLd,
+  );
+}
+
+function makeSearchPageHtml(config, assets) {
+  const url = canonicalUrl(config, "/search");
+  const jsonLd = [
+    {
+      "@type": "SearchResultsPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: "Search",
+      description: "Search SE1's portfolio, projects, articles, updates, and gallery.",
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+    },
+    breadcrumbsJsonLd(config, [
+      { name: "Home", url: canonicalUrl(config, "/") },
+      { name: "Search", url },
+    ]),
+  ];
+  const body = `<article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">site search</p>
+            <h1>Search</h1>
+          </div>
+          ${renderLinkPills([{ label: "home", href: "/" }])}
+        </div>
+        <p class="static-page-summary">Search the public archive of projects, articles, updates, images, and pages.</p>
+        <form class="static-search-form" action="/search" method="get">
+          <label class="visually-hidden" for="static-search-input">Search query</label>
+          <input id="static-search-input" name="q" type="search" placeholder="world models, cybersec, dqn..." autocomplete="off" />
+          <button type="submit">search</button>
+        </form>
+        <div class="static-search-results" id="static-search-results" aria-live="polite"></div>
+      </article>`;
+  const script = `<script>
+    (function () {
+      var input = document.getElementById("static-search-input");
+      var results = document.getElementById("static-search-results");
+      var params = new URLSearchParams(window.location.search);
+      var q = params.get("q") || "";
+      input.value = q;
+      function escapeHtml(value) {
+        return String(value || "").replace(/[&<>"']/g, function (ch) {
+          return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch];
+        });
+      }
+      function render(query, index) {
+        var terms = query.toLowerCase().split(/\\s+/).filter(Boolean);
+        if (!terms.length) {
+          results.innerHTML = '<p class="dynamic-note">Type a query to search the archive.</p>';
+          return;
+        }
+        var scored = index.map(function (item) {
+          var haystack = (item.title + " " + item.summary + " " + item.content).toLowerCase();
+          var matches = terms.filter(function (term) { return haystack.indexOf(term) !== -1; }).length;
+          var score = matches * 3 + (item.title.toLowerCase().indexOf(query.toLowerCase()) !== -1 ? 8 : 0);
+          return { item: item, score: score };
+        }).filter(function (row) { return row.score > 0; }).sort(function (a, b) { return b.score - a.score; }).slice(0, 20);
+        results.innerHTML = scored.length ? '<ol class="static-link-list">' + scored.map(function (row) {
+          return '<li><a href="' + escapeHtml(row.item.url) + '"><strong>' + escapeHtml(row.item.title) + '</strong></a><span>' + escapeHtml(row.item.type) + '</span><p>' + escapeHtml(row.item.summary) + '</p></li>';
+        }).join('') + '</ol>' : '<p class="dynamic-note">No results found.</p>';
+      }
+      fetch("/search-index.json").then(function (res) { return res.json(); }).then(function (index) { render(q, index); });
+    })();
+  </script>`;
+  return shell(
+    config,
+    assets,
+    {
+      path: "/search",
+      title: "Search",
+      description: "Search SE1's portfolio, projects, articles, updates, and gallery.",
+    },
+    body,
+    jsonLd,
+    script,
+  );
+}
+
+async function writePage(routePath, html) {
+  const clean = canonicalPath(routePath);
+  const dir = clean === "/" ? ROOT : path.join(ROOT, clean.replace(/^\/+/, ""));
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(path.join(dir, "index.html"), html, "utf8");
+  console.log(`  -> ${clean === "/" ? "index.html" : `${clean.slice(1)}/index.html`}`);
+}
+
+async function generatePages(config, assets, updates, articles, papers, gallery, projects) {
   for (const record of updates) {
-    const dir = path.join(ROOT, "updates", record.id);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(
-      path.join(dir, "index.html"),
-      makePageHtml(record, "updates", record.id),
-      "utf8",
-    );
-    console.log(`  → updates/${record.id}/index.html`);
+    await writePage(`/updates/${record.id}`, makeArticlePageHtml(config, assets, record, "updates"));
   }
   for (const record of articles) {
-    const dir = path.join(ROOT, "articles", record.id);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(
-      path.join(dir, "index.html"),
-      makePageHtml(record, "articles", record.id),
-      "utf8",
-    );
-    console.log(`  → articles/${record.id}/index.html`);
+    await writePage(`/articles/${record.id}`, makeArticlePageHtml(config, assets, record, "articles"));
   }
   for (const record of papers) {
-    const dir = path.join(ROOT, "papers", record.id);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(
-      path.join(dir, "index.html"),
-      makePageHtml(record, "papers", record.id),
-      "utf8",
-    );
-    console.log(`  → papers/${record.id}/index.html`);
+    await writePage(`/papers/${record.id}`, makeArticlePageHtml(config, assets, record, "papers"));
   }
   for (const record of projects) {
-    const dir = path.join(ROOT, "projects", record.id);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(
-      path.join(dir, "index.html"),
-      makeProjectPageHtml(record),
-      "utf8",
-    );
-    console.log(`  → projects/${record.id}/index.html`);
+    await writePage(`/projects/${record.id}`, makeProjectPageHtml(config, assets, record));
   }
 
-  const collectionPages = [
-    [
+  await writePage(
+    "/updates",
+    makeCollectionPageHtml(
+      config,
+      assets,
       "updates",
       "Progress Updates",
-      "Short progress logs from lonely guy on reinforcement learning, robotics, embodied AI, and systems.",
+      "Short progress logs from SE1 on reinforcement learning, robotics, embodied AI, and systems.",
       updates,
-    ],
-    [
+    ),
+  );
+  await writePage(
+    "/articles",
+    makeCollectionPageHtml(
+      config,
+      assets,
       "articles",
       "Articles",
-      "Longer technical writeups from lonely guy on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
+      "Longer technical write-ups from SE1 on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
       articles,
-    ],
-    [
+    ),
+  );
+  await writePage(
+    "/papers",
+    makeCollectionPageHtml(
+      config,
+      assets,
       "papers",
       "Papers",
-      "Published research and formal work from lonely guy.",
+      "Published research, formal papers, preprints, and academically structured work from SE1 as the portfolio grows.",
       papers,
-    ],
-    [
+    ),
+  );
+  await writePage(
+    "/projects",
+    makeCollectionPageHtml(
+      config,
+      assets,
       "projects",
       "Projects",
-      "Selected GitHub repositories from lonely guy.",
+      "Selected project case studies from SE1 across embodied AI, RL, LLM agents, vision, systems, and simulation.",
       projects,
-    ],
-  ];
+    ),
+  );
+  await writePage("/gallery", makeGalleryPageHtml(config, assets, gallery));
+  await writePage("/search", makeSearchPageHtml(config, assets));
 
-  for (const [type, title, description, records] of collectionPages) {
-    const dir = path.join(ROOT, type);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(
-      path.join(dir, "index.html"),
-      makeCollectionPageHtml(type, title, description, records),
-      "utf8",
-    );
-    console.log(`  → ${type}/index.html`);
+  for (const page of STATIC_PAGES.filter((p) => p.id !== "contact")) {
+    await writePage(page.path, makeStaticInfoPage(config, assets, page));
   }
+  await writePage("/contact", makeStaticInfoPage(config, assets, STATIC_PAGES.find((p) => p.id === "contact")));
 }
 
-async function generateSitemap(updates, articles, papers, projects) {
+function sitemapEntry(config, pathname, options = {}) {
+  const imageTags = (options.images || [])
+    .filter(Boolean)
+    .filter((image) => {
+      const raw = image.src || image;
+      return !/^https?:\/\//i.test(raw) || String(raw).startsWith(config.baseUrl);
+    })
+    .map((image) => {
+      const loc = absoluteImageUrl(config, image.src || image);
+      const caption = image.alt || image.caption || "";
+      return `<image:image><image:loc>${escapeXml(loc)}</image:loc>${caption ? `<image:caption>${escapeXml(caption)}</image:caption>` : ""}</image:image>`;
+    })
+    .join("");
+  return `<url><loc>${escapeXml(canonicalUrl(config, pathname))}</loc>${options.lastmod ? `<lastmod>${escapeXml(options.lastmod)}</lastmod>` : ""}<changefreq>${options.changefreq || "monthly"}</changefreq><priority>${options.priority || "0.7"}</priority>${imageTags}</url>`;
+}
+
+async function generateSitemap(config, updates, articles, papers, gallery, projects) {
   const entries = [
-    `<url><loc>${ROOT_URL}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
-    `<url><loc>${collectionUrl("updates")}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
-    `<url><loc>${collectionUrl("articles")}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
-    `<url><loc>${collectionUrl("papers")}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
-    `<url><loc>${collectionUrl("projects")}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
+    sitemapEntry(config, "/", { changefreq: "weekly", priority: "1.0" }),
+    sitemapEntry(config, "/now", { changefreq: "monthly", priority: "0.8" }),
+    sitemapEntry(config, "/stack", { changefreq: "monthly", priority: "0.7" }),
+    sitemapEntry(config, "/path", { changefreq: "monthly", priority: "0.7" }),
+    sitemapEntry(config, "/contact", { changefreq: "yearly", priority: "0.6" }),
+    sitemapEntry(config, "/search", { changefreq: "monthly", priority: "0.4" }),
+    sitemapEntry(config, "/gallery", {
+      changefreq: "monthly",
+      priority: "0.7",
+      images: gallery.map((item) => ({ src: item.url, caption: item.caption })),
+    }),
+    sitemapEntry(config, "/updates", { changefreq: "weekly", priority: "0.8" }),
+    sitemapEntry(config, "/articles", { changefreq: "weekly", priority: "0.8" }),
+    sitemapEntry(config, "/papers", { changefreq: "monthly", priority: "0.6" }),
+    sitemapEntry(config, "/projects", { changefreq: "monthly", priority: "0.8" }),
   ];
-  for (const r of updates) {
-    entries.push(
-      `<url><loc>${recordUrl("updates", r.id)}</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
-    );
-  }
-  for (const r of articles) {
-    entries.push(
-      `<url><loc>${recordUrl("articles", r.id)}</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`,
-    );
-  }
-  for (const r of papers) {
-    entries.push(
-      `<url><loc>${recordUrl("papers", r.id)}</loc><lastmod>${r.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
-    );
-  }
-  for (const r of projects) {
-    entries.push(
-      `<url><loc>${recordUrl("projects", r.id)}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
-    );
-  }
+  for (const r of updates) entries.push(sitemapEntry(config, `/updates/${r.id}`, { lastmod: r.updated || r.date, priority: "0.7", images: r.image ? [{ src: r.image }] : [] }));
+  for (const r of articles) entries.push(sitemapEntry(config, `/articles/${r.id}`, { lastmod: r.updated || r.date, priority: "0.9", images: r.image ? [{ src: r.image }] : [] }));
+  for (const r of papers) entries.push(sitemapEntry(config, `/papers/${r.id}`, { lastmod: r.updated || r.date, priority: "0.8", images: r.image ? [{ src: r.image }] : [] }));
+  for (const r of projects) entries.push(sitemapEntry(config, `/projects/${r.id}`, { lastmod: r.updated, priority: r.featured ? "0.85" : "0.7", images: r.images || [] }));
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${entries.join("\n")}
 </urlset>`;
   await fs.writeFile(path.join(ROOT, "sitemap.xml"), xml, "utf8");
-  console.log("  → sitemap.xml");
+  console.log("  -> sitemap.xml");
 }
 
 function rssDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toUTCString();
+  return new Date(dateStr).toUTCString();
 }
 
-async function generateRssFeed(articles) {
+async function generateRssFeed(config, articles) {
   const items = articles.map((r) => {
-    const url = recordUrl("articles", r.id);
+    const url = recordUrl(config, "articles", r.id);
     const imageTag = r.image
-      ? `<figure><img src="${r.image.startsWith("http") ? r.image : `${BASE_URL}/${r.image}`}" alt="" /></figure>`
+      ? `<figure><img src="${absoluteImageUrl(config, r.image)}" alt="" /></figure>`
       : "";
     return `    <item>
       <title><![CDATA[${r.title}]]></title>
@@ -839,158 +1530,348 @@ async function generateRssFeed(articles) {
       <pubDate>${rssDate(r.date)}</pubDate>
       <description><![CDATA[${r.summary}]]></description>
       <content:encoded><![CDATA[${imageTag}${toRootRelativePaths(r.html)}]]></content:encoded>
-      <author>lonelyguyse1@gmail.com (Lonely Guy)</author>
+      <author>${escapeHtml(config.author.email || "")} (${escapeHtml(config.author.name)})</author>
     </item>`;
   });
-
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Lonely Guy</title>
-    <link>${ROOT_URL}</link>
-    <description>rl, robotics, world models, embodied ai, and system stuff.</description>
-    <language>en-us</language>
+    <title>${escapeHtml(config.siteName)}</title>
+    <link>${canonicalUrl(config, "/")}</link>
+    <description>${escapeHtml(config.description)}</description>
+    <language>${escapeHtml(config.seo.language)}</language>
     <lastBuildDate>${rssDate(new Date().toISOString())}</lastBuildDate>
-    <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${config.baseUrl}/feed.xml" rel="self" type="application/rss+xml" />
 ${items.join("\n")}
   </channel>
 </rss>`;
   await fs.writeFile(path.join(ROOT, "feed.xml"), xml, "utf8");
-  console.log("  → feed.xml");
+  console.log("  -> feed.xml");
 }
 
-async function generateJsonFeed(articles) {
+async function generateJsonFeed(config, articles) {
   const items = articles.map((r) => {
-    const url = recordUrl("articles", r.id);
-    const imageUrl = r.image
-      ? r.image.startsWith("http")
-        ? r.image
-        : `${BASE_URL}/${r.image}`
-      : `${BASE_URL}/assets/SE1.jpg`;
+    const url = recordUrl(config, "articles", r.id);
     return {
       id: url,
       url,
       title: r.title,
       summary: r.summary,
       content_html: toRootRelativePaths(r.html),
-      image: imageUrl,
-      date_published: r.date + "T00:00:00Z",
-      date_modified: r.date + "T00:00:00Z",
-      author: { name: "Lonely Guy", url: ROOT_URL },
+      image: absoluteImageUrl(config, r.image),
+      date_published: `${r.date}T00:00:00Z`,
+      date_modified: `${r.updated || r.date}T00:00:00Z`,
+      tags: r.tags,
+      author: { name: config.author.name, url: canonicalUrl(config, "/") },
     };
   });
   const feed = {
     version: "https://jsonfeed.org/version/1.1",
-    title: "Lonely Guy",
-    home_page_url: ROOT_URL,
-    feed_url: `${BASE_URL}/feed.json`,
-    description: "rl, robotics, world models, embodied ai, and system stuff.",
-    authors: [{ name: "Lonely Guy", url: ROOT_URL }],
-    language: "en-US",
+    title: config.siteName,
+    home_page_url: canonicalUrl(config, "/"),
+    feed_url: `${config.baseUrl}/feed.json`,
+    description: config.description,
+    authors: [{ name: config.author.name, url: canonicalUrl(config, "/") }],
+    language: config.seo.language,
     items,
   };
-  await fs.writeFile(
-    path.join(ROOT, "feed.json"),
-    JSON.stringify(feed, null, 2),
-    "utf8",
-  );
-  console.log("  → feed.json");
+  await fs.writeFile(path.join(ROOT, "feed.json"), JSON.stringify(feed, null, 2), "utf8");
+  console.log("  -> feed.json");
 }
 
-async function generateLlmsTxt(updates, articles, papers, projects) {
-  let lines = [
-    "# Lonely Guy",
-    "> rl, robotics, world models, embodied ai, and system stuff.",
+function makeSearchRecords(config, updates, articles, papers, gallery, projects) {
+  const records = [
+    {
+      type: "page",
+      title: "Home",
+      summary: config.description,
+      url: "/",
+      content: config.author.description || "",
+    },
+    ...STATIC_PAGES.map((page) => ({
+      type: "page",
+      title: page.title,
+      summary: page.description,
+      url: page.path,
+      content: page.sections.map((section) => `${section.title} ${section.body}`).join(" "),
+    })),
+    {
+      type: "page",
+      title: "Gallery",
+      summary: "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+      url: "/gallery",
+      content: gallery.map((item) => item.caption).join(" "),
+    },
+  ];
+  for (const [type, items] of [
+    ["updates", updates],
+    ["articles", articles],
+    ["papers", papers],
+  ]) {
+    for (const item of items) {
+      records.push({
+        type,
+        title: item.title,
+        summary: item.summary,
+        url: canonicalPath(`${type}/${item.id}`),
+        date: item.date,
+        tags: item.tags || [],
+        content: item.text || "",
+      });
+    }
+  }
+  for (const item of projects) {
+    records.push({
+      type: "projects",
+      title: item.title,
+      summary: item.summary,
+      url: canonicalPath(`projects/${item.id}`),
+      date: item.updated,
+      tags: item.tags || [],
+      content: [item.text, item.stack?.join(" "), item.metrics?.join(" ")].filter(Boolean).join(" "),
+    });
+  }
+  for (const item of gallery) {
+    records.push({
+      type: "gallery",
+      title: item.caption,
+      summary: item.alt,
+      url: "/gallery",
+      content: item.url,
+    });
+  }
+  return records;
+}
+
+async function generateMachineIndexes(config, updates, articles, papers, gallery, projects) {
+  const searchRecords = makeSearchRecords(config, updates, articles, papers, gallery, projects);
+  await fs.writeFile(SEARCH_INDEX_JSON, JSON.stringify(searchRecords, null, 2), "utf8");
+  const siteIndex = {
+    site: {
+      name: config.siteName,
+      url: canonicalUrl(config, "/"),
+      description: config.description,
+      author: config.author,
+    },
+    generatedAt: new Date().toISOString(),
+    routes: searchRecords.map((record) => ({
+      type: record.type,
+      title: record.title,
+      url: canonicalUrl(config, record.url),
+      summary: record.summary,
+      tags: record.tags || [],
+      date: record.date || "",
+    })),
+  };
+  await fs.writeFile(SITE_INDEX_JSON, JSON.stringify(siteIndex, null, 2), "utf8");
+  console.log("  -> search-index.json");
+  console.log("  -> site-index.json");
+}
+
+async function generateLlmsTxt(config, updates, articles, papers, projects) {
+  const lines = [
+    `# ${config.siteName}`,
+    `> ${config.description}`,
     "",
-    "lonely guy is a cs undergrad working on reinforcement learning, robotics simulation, world models, and embodied ai. the goal is autonomous robotic assistants.",
+    `${config.author.name} (${config.author.alternateName}) is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.`,
     "",
     "## Navigation",
-    "- Home: " + ROOT_URL,
-    "- Articles: " + collectionUrl("articles"),
-    "- Updates: " + collectionUrl("updates"),
-    "- Papers: " + collectionUrl("papers"),
-    "- Projects: " + collectionUrl("projects"),
-    "- Gallery: " + BASE_URL + "/#images",
-    "- Contact: " + BASE_URL + "/#contact",
+    `- Home: ${canonicalUrl(config, "/")}`,
+    `- Now: ${canonicalUrl(config, "/now")}`,
+    `- Stack: ${canonicalUrl(config, "/stack")}`,
+    `- Path: ${canonicalUrl(config, "/path")}`,
+    `- Projects: ${collectionUrl(config, "projects")}`,
+    `- Articles: ${collectionUrl(config, "articles")}`,
+    `- Updates: ${collectionUrl(config, "updates")}`,
+    `- Papers: ${collectionUrl(config, "papers")}`,
+    `- Gallery: ${canonicalUrl(config, "/gallery")}`,
+    `- Search index JSON: ${config.baseUrl}/search-index.json`,
+    `- Site index JSON: ${config.baseUrl}/site-index.json`,
     "",
   ];
+  if (projects.length) {
+    lines.push("## Projects");
+    for (const r of projects) lines.push(`- [${r.title}](${recordUrl(config, "projects", r.id)}): ${r.summary}`);
+    lines.push("");
+  }
   if (articles.length) {
     lines.push("## Articles");
-    for (const r of articles) {
-      lines.push(`- [${r.title}](${recordUrl("articles", r.id)}): ${r.summary}`);
-    }
+    for (const r of articles) lines.push(`- [${r.title}](${recordUrl(config, "articles", r.id)}): ${r.summary}`);
     lines.push("");
   }
   if (updates.length) {
     lines.push("## Updates");
-    for (const r of updates) {
-      lines.push(`- [${r.title}](${recordUrl("updates", r.id)}): ${r.summary}`);
-    }
+    for (const r of updates) lines.push(`- [${r.title}](${recordUrl(config, "updates", r.id)}): ${r.summary}`);
     lines.push("");
   }
   if (papers.length) {
     lines.push("## Papers");
-    for (const r of papers) {
-      lines.push(`- ${r.title}: ${r.summary}`);
-    }
-    lines.push("");
-  }
-  if (projects.length) {
-    lines.push("## Projects");
-    for (const r of projects) {
-      lines.push(`- [${r.title}](${recordUrl("projects", r.id)}): ${r.summary}`);
-    }
+    for (const r of papers) lines.push(`- [${r.title}](${recordUrl(config, "papers", r.id)}): ${r.summary}`);
     lines.push("");
   }
   lines.push("## Profiles");
-  lines.push(`- [GitHub](https://github.com/LonelyGuy-SE1)`);
-  lines.push(`- [Hugging Face](https://huggingface.co/Lonelyguyse1)`);
-  lines.push(`- [ORCID](https://orcid.org/0009-0000-7221-863X)`);
-  lines.push(`- [LinkedIn](https://www.linkedin.com/in/greeshmasurya/)`);
-
+  for (const social of config.socials || []) lines.push(`- [${social.label}](${social.url})`);
   await fs.writeFile(path.join(ROOT, "llms.txt"), lines.join("\n"), "utf8");
-  console.log("  → llms.txt");
+  console.log("  -> llms.txt");
 }
 
-function makeHomeSeoLinks(updates, articles, papers, projects) {
+async function hashAndCopyAsset(sourcePath, publicName) {
+  let content = await fs.readFile(sourcePath);
+  if (path.extname(publicName) === ".css") {
+    content = Buffer.from(
+      content
+        .toString("utf8")
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/\s*([{}:;,>])\s*/g, "$1")
+        .replace(/\s+/g, " ")
+        .replace(/;}/g, "}")
+        .trim(),
+      "utf8",
+    );
+  }
+  const hash = crypto.createHash("sha256").update(content).digest("hex").slice(0, 10);
+  const ext = path.extname(publicName);
+  const base = publicName.slice(0, -ext.length);
+  const fileName = `${base}.${hash}${ext}`;
+  await fs.mkdir(BUILD_DIR, { recursive: true });
+  await fs.writeFile(path.join(BUILD_DIR, fileName), content);
+  return `/assets/build/${fileName}`;
+}
+
+async function generateAssetManifest() {
+  await fs.rm(BUILD_DIR, { recursive: true, force: true });
+  await fs.mkdir(BUILD_DIR, { recursive: true });
+  const manifest = {
+    css: await hashAndCopyAsset(path.join(ROOT, "styles", "main.css"), "main.css"),
+    content: await hashAndCopyAsset(CONTENT_JS, "content.js"),
+    main: await hashAndCopyAsset(path.join(ROOT, "scripts", "main.js"), "main.js"),
+    assistant: await hashAndCopyAsset(path.join(ROOT, "scripts", "assistant.js"), "assistant.js"),
+  };
+  await fs.writeFile(path.join(BUILD_DIR, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+  console.log("  -> assets/build/manifest.json");
+  return manifest;
+}
+
+function makeHomeSeoLinks(config, updates, articles, papers, projects) {
   const list = (label, href, records, type) => {
     const itemLinks = records
-      .slice(0, 5)
+      .slice(0, 6)
       .map((record) => {
-        const url = type === "projects" ? recordUrl("projects", record.id) : recordUrl(type, record.id);
+        const url = type === "projects" ? recordUrl(config, "projects", record.id) : recordUrl(config, type, record.id);
         return `<li><a href="${url}">${escapeHtml(record.title)}</a></li>`;
       })
       .join("");
-    return `<section class="about-link-group"><h3><a href="${href}">${escapeHtml(label)}</a></h3><ul>${itemLinks || "<li>coming soon</li>"}</ul></section>`;
+    return `<section class="about-link-group"><p class="about-link-title"><a href="${href}">${escapeHtml(label)}</a></p><ul>${itemLinks || "<li>coming soon</li>"}</ul></section>`;
   };
-
   return [
     '<nav class="about-link-grid" aria-label="indexable site links">',
-    list("articles", collectionUrl("articles"), articles, "articles"),
-    list("updates", collectionUrl("updates"), updates, "updates"),
-    list("papers", collectionUrl("papers"), papers, "papers"),
-    list("projects", collectionUrl("projects"), projects, "projects"),
+    list("projects", collectionUrl(config, "projects"), projects, "projects"),
+    list("articles", collectionUrl(config, "articles"), articles, "articles"),
+    list("updates", collectionUrl(config, "updates"), updates, "updates"),
+    list("papers", collectionUrl(config, "papers"), papers, "papers"),
     "</nav>",
   ].join("\n");
 }
 
-async function updateHomepageSeoLinks(updates, articles, papers, projects) {
+function updateHeadJsonLd(html, config, projects, articles) {
+  const graph = siteGraphJsonLd(config);
+  graph["@graph"].push(
+    {
+      "@type": "ProfilePage",
+      "@id": `${config.baseUrl}/#webpage`,
+      url: canonicalUrl(config, "/"),
+      name: config.seo.defaultTitle,
+      description: config.seo.defaultDescription,
+      mainEntity: { "@id": `${config.baseUrl}/#person` },
+      isPartOf: { "@id": `${config.baseUrl}/#website` },
+    },
+    itemListJsonLd([
+      ...projects.slice(0, 4).map((p) => ({ name: p.title, url: recordUrl(config, "projects", p.id) })),
+      ...articles.slice(0, 3).map((a) => ({ name: a.title, url: recordUrl(config, "articles", a.id) })),
+    ]),
+    breadcrumbsJsonLd(config, [{ name: "Home", url: canonicalUrl(config, "/") }]),
+  );
+
+  const replacement = `<!-- JSON-LD: site-wide entity graph -->
+    <script type="application/ld+json">
+      ${JSON.stringify(graph, null, 6)}
+    </script>`;
+  return html.replace(
+    /<!-- JSON-LD: site-wide entity graph -->\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+    replacement,
+  );
+}
+
+async function updateHomepage(config, assets, updates, articles, papers, projects) {
   const indexPath = path.join(ROOT, "index.html");
   let html = await fs.readFile(indexPath, "utf8");
+
+  html = html
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(config.seo.defaultTitle)}</title>`)
+    .replace(
+      /<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/,
+      `<meta name="description" content="${escapeAttr(config.seo.defaultDescription)}" />`,
+    )
+    .replace(/<meta name="author" content="[^"]*"\s*\/>/, `<meta name="author" content="${escapeAttr(config.author.name)}" />`)
+    .replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${canonicalUrl(config, "/")}" />`)
+    .replace(/\s*<meta name="google-site-verification" content="[^"]*"\s*\/>\n?/, "\n")
+    .replace(/<meta property="og:site_name" content="[^"]*"\s*\/>/, `<meta property="og:site_name" content="${escapeAttr(config.siteName)}" />`)
+    .replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:title" content="${escapeAttr(config.seo.defaultTitle)}" />`)
+    .replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:description" content="${escapeAttr(config.seo.defaultDescription)}" />`)
+    .replace(/<meta property="og:url" content="[^"]*"\s*\/>/, `<meta property="og:url" content="${canonicalUrl(config, "/")}" />`)
+    .replace(/<meta\s+property="og:image"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:image" content="${absoluteImageUrl(config)}" />`)
+    .replace(/<meta name="twitter:site" content="[^"]*"\s*\/>/, `<meta name="twitter:site" content="${escapeAttr(config.seo.twitterHandle)}" />`)
+    .replace(/<meta name="twitter:creator" content="[^"]*"\s*\/>/, `<meta name="twitter:creator" content="${escapeAttr(config.seo.twitterHandle)}" />`)
+    .replace(/<meta\s+name="twitter:title"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:title" content="${escapeAttr(config.seo.defaultTitle)}" />`)
+    .replace(/<meta\s+name="twitter:description"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:description" content="${escapeAttr(config.seo.defaultDescription)}" />`)
+    .replace(/<meta\s+name="twitter:image"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:image" content="${absoluteImageUrl(config)}" />`);
+
+  html = updateHeadJsonLd(html, config, projects, articles);
+
+  const speculationRules = `<!-- Speculation Rules: conservative same-origin prerender -->
+    <script type="speculationrules">
+      {
+        "prerender": [
+          { "where": { "href_matches": "/articles/*" }, "eagerness": "conservative" },
+          { "where": { "href_matches": "/projects/*" }, "eagerness": "conservative" }
+        ],
+        "prefetch": [
+          { "where": { "href_matches": "/articles" }, "eagerness": "conservative" },
+          { "where": { "href_matches": "/projects" }, "eagerness": "conservative" }
+        ]
+      }
+    </script>`;
+  html = html.replace(/<!-- Speculation Rules:[\s\S]*?<\/script>/, speculationRules);
+
+  html = html
+    .replace(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com" \/>\s*/g, "")
+    .replace(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin \/>\s*/g, "")
+    .replace(/\s*<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?rel="stylesheet"\s*\/>\n?/g, "\n")
+    .replace(/<link rel="stylesheet" href="(?:styles\/main\.css|\/assets\/build\/main\.[^"]+\.css)" \/>/, `<link rel="stylesheet" href="${assets.css}" />`)
+    .replace(/\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/marked\/marked\.min\.js"><\/script>\n?/g, "\n")
+    .replace(/<script(?:\s+defer)? src="(?:scripts\/content\.js|\/assets\/build\/content\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.content}"></script>`)
+    .replace(/<script(?:\s+defer)? src="(?:scripts\/main\.js|\/assets\/build\/main\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.main}"></script>`)
+    .replace(/<script(?:\s+defer)? src="(?:scripts\/assistant\.js|\/assets\/build\/assistant\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.assistant}"></script>`);
+
   const start = "<!-- SEO_LINKS_START -->";
   const end = "<!-- SEO_LINKS_END -->";
-  const startIndex = html.indexOf(start);
-  const endIndex = html.indexOf(end);
-  if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) return;
+  const seoLinks = `${start}\n${makeHomeSeoLinks(config, updates, articles, papers, projects)}\n${end}`;
+  if (html.includes(start) && html.includes(end)) {
+    const startIndex = html.indexOf(start);
+    const endIndex = html.indexOf(end);
+    html = html.slice(0, startIndex) + seoLinks + html.slice(endIndex + end.length);
+  }
 
-  const replacement = `${start}\n${makeHomeSeoLinks(updates, articles, papers, projects)}\n${end}`;
-  html = html.slice(0, startIndex) + replacement + html.slice(endIndex + end.length);
   await fs.writeFile(indexPath, html, "utf8");
-  console.log("  → index.html seo links");
+  console.log("  -> index.html metadata/assets");
 }
 
 async function build() {
   console.log("building content...");
+  const config = await loadSiteConfig();
+
+  console.log("converting images...");
+  await convertImages();
 
   const [updates, articles, papers, gallery, projects] = await Promise.all([
     readMarkdownCollection(COLLECTION_DIRS.updates),
@@ -1000,33 +1881,35 @@ async function build() {
     readProjects(),
   ]);
 
-  // Write content.js for the SPA
   const content = { updates, articles, papers, gallery, projects };
-  const output = `window.PORTFOLIO_CONTENT = ${JSON.stringify(content, null, 2)};\n`;
-  await fs.writeFile(CONTENT_JS, output, "utf8");
-  console.log("  → scripts/content.js");
+  await fs.writeFile(CONTENT_JS, `window.PORTFOLIO_CONTENT=${JSON.stringify(content)};\n`, "utf8");
+  console.log("  -> scripts/content.js");
 
-  // Generate standalone pages
+  console.log("hashing assets...");
+  const assets = await generateAssetManifest();
+
   console.log("generating pages...");
-  await generatePages(updates, articles, papers, projects);
+  await generatePages(config, assets, updates, articles, papers, gallery, projects);
 
-  // Generate sitemap
   console.log("generating sitemap...");
-  await generateSitemap(updates, articles, papers, projects);
+  await generateSitemap(config, updates, articles, papers, gallery, projects);
 
-  // Generate feeds (articles only)
   console.log("generating feeds...");
-  await Promise.all([generateRssFeed(articles), generateJsonFeed(articles)]);
+  await Promise.all([generateRssFeed(config, articles), generateJsonFeed(config, articles)]);
 
-  // Generate llms.txt
+  console.log("generating machine indexes...");
+  await generateMachineIndexes(config, updates, articles, papers, gallery, projects);
+
   console.log("generating llms.txt...");
-  await generateLlmsTxt(updates, articles, papers, projects);
+  await generateLlmsTxt(config, updates, articles, papers, projects);
 
-  // Keep crawler-visible homepage links in sync
-  console.log("updating homepage links...");
-  await updateHomepageSeoLinks(updates, articles, papers, projects);
+  console.log("updating homepage...");
+  await updateHomepage(config, assets, updates, articles, papers, projects);
 
   console.log("done.");
 }
 
-build();
+build().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

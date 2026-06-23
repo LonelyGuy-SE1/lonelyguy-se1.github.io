@@ -1,2 +1,137 @@
-[{"repo":"LonelyGuy-SE1/Breakout-DQN"}
-,{"repo":"LonelyGuy-SE1/EcomEnv"}]
+[
+  {
+    "title": "Project Halide",
+    "slug": "project-halide",
+    "summary": "Small-model diagnostic workbench for damaged film scans using MiniCPM-V, Nemotron-Mini, strict validation, overlays, telemetry, and a Gradio light-table UI.",
+    "status": "public demo",
+    "featured": true,
+    "tags": ["vision", "small models", "diagnostics", "gradio", "validation"],
+    "stack": ["Python", "MiniCPM-V 4.6", "Nemotron-Mini-4B", "Gradio", "SQLite", "Hugging Face Spaces", "Modal"],
+    "repo": "LonelyGuy-SE1/Project-Halide",
+    "demo": "https://huggingface.co/spaces/build-small-hackathon/project-halide",
+    "video": "https://youtu.be/DGJ2M1aQCrE",
+    "article": "/articles/2026-06-16-project-halide",
+    "images": [
+      {
+        "src": "assets/halide/real-35mm-negative-banner.jpg",
+        "alt": "Damaged 35mm negative used to evaluate Project Halide"
+      },
+      {
+        "src": "assets/halide/halide-app.png",
+        "alt": "Project Halide diagnostic workbench interface"
+      }
+    ],
+    "metrics": [
+      "55 deterministic local tests",
+      "7-9 validated defects on the public demo negative",
+      "79 edge artifacts filtered in the official Space run",
+      "GPU runtime validated on ZeroGPU A10G and T4 mirrors"
+    ],
+    "role": "Designed and built the full pipeline: model orchestration, schema validation, artifact filtering, overlay generation, history, UI, and evaluation notes.",
+    "started": "2026-06-01",
+    "updated": "2026-06-16",
+    "body": "Project Halide is a diagnostic workbench for analog film scans. It does not try to magically restore the image. It extracts visible defect evidence, validates geometry, draws overlays, and writes a physical diagnosis that a human can inspect.\n\nThe important engineering choice is that the model is not treated as the final authority. MiniCPM-V proposes candidate defects, then a validator rejects malformed boxes, unsupported labels, edge artifacts, sprocket-lane noise, duplicates, and weak false positives before Nemotron-Mini writes the report.\n\nThe product lesson is simple: for messy real-world vision tasks, the validator and the UI are as important as the model. The interface exposes dropped boxes, edge artifacts, classical assist counts, raw JSON, and history so the user can judge uncertainty instead of being asked to trust a black box."
+  },
+  {
+    "title": "Cybersec OpenEnv",
+    "slug": "cybersec-openenv",
+    "summary": "Long-horizon cyber-defense POMDP for training and evaluating small LLM SOC agents with GRPO, realistic attack chains, and reward-hacking resistant containment incentives.",
+    "status": "public research prototype",
+    "featured": true,
+    "tags": ["llm agents", "reinforcement learning", "cybersecurity", "pomdp", "grpo"],
+    "stack": ["Python", "Qwen2.5-1.5B-Instruct", "TRL", "Unsloth", "Gymnasium-style env", "Hugging Face", "Colab T4"],
+    "repo": "LonelyGuy-SE1/cybersec_env",
+    "demo": "https://huggingface.co/spaces/Lonelyguyse1/cybersec",
+    "article": "/articles/2026-05-01-llm-soc-analyst",
+    "images": [
+      {
+        "src": "https://raw.githubusercontent.com/LonelyGuy-SE1/cybersec_env/main/assets/aggregate_performance.png",
+        "alt": "Aggregate before and after GRPO performance across training and held-out cyber scenarios"
+      },
+      {
+        "src": "gallery/env.cybersec.png",
+        "alt": "Cybersec OpenEnv environment visualization"
+      }
+    ],
+    "metrics": [
+      "98.3% valid action rate after training",
+      "97.1% schema compliance",
+      "0.0% monitor fallback rate",
+      "+2.43 mean return versus heuristic on held-out cloud_metadata_ssrf"
+    ],
+    "role": "Built the environment, attacker scenarios, reward channels, GRPO training loop, evaluation protocol, and technical write-up.",
+    "started": "2026-04-01",
+    "updated": "2026-05-01",
+    "body": "Cybersec OpenEnv asks whether a small local LLM can learn useful defensive behavior in a realistic long-horizon cyber environment. The setup models delayed alerts, partial observability, containment cost, adaptive attacker timing, and valid JSON actions.\n\nThe project became interesting when the model found reward exploits: isolate everything, or isolate the root asset at tick zero. The fix was not a bigger model. The fix was a better environment and an evidence-based containment reward that makes investigation before containment the winning strategy.\n\nThe held-out result matters most: the trained policy improved over the heuristic on a scenario it never saw during training. That suggests the model learned a transferable defensive pattern rather than memorizing attack graphs."
+  },
+  {
+    "title": "Moirai",
+    "slug": "moirai",
+    "summary": "Bare-metal C++ inference runtime concept for deploying quantized reinforcement-learning control policies with deterministic memory, packed weights, and CPU-cache-aware execution.",
+    "status": "private in progress",
+    "featured": true,
+    "tags": ["robotics", "rl deployment", "systems", "quantization", "edge inference"],
+    "stack": ["C++", "AVX2", "Quantization-aware training", "RL control policies", "Static memory arenas"],
+    "repo": "",
+    "article": "/updates/2026-05-01-moirai",
+    "images": [],
+    "metrics": [
+      "Zero heap allocation target",
+      "2-bit packed policy weights",
+      "Fixed-shape MLP runtime",
+      "Microsecond-level determinism goal"
+    ],
+    "role": "Designing the runtime architecture, quantization path, memory model, and benchmarking plan.",
+    "started": "2026-05-01",
+    "updated": "2026-05-01",
+    "body": "Moirai is the systems side of the embodied AI goal: train reinforcement-learning policies in flexible tooling, then deploy them on constrained hardware without dragging a full ML framework into the robot.\n\nThe design target is a specialized runtime for fixed-shape control MLPs: no heap allocation, compact ternary or 2-bit weights, cache-resident policy data, and explicit vectorized kernels. It is intentionally narrow because robots need predictable latency more than a generalized inference server.\n\nThe source stays private while the training and quantization methodology stabilizes, but the direction is clear: make policy execution small, inspectable, deterministic, and close to the metal."
+  },
+  {
+    "title": "Breakout-DQN",
+    "slug": "breakout-dqn",
+    "summary": "From-scratch Atari Breakout DQN study for building intuition around deep RL, preprocessing, replay, target networks, and early DeepMind-style agent design.",
+    "status": "learning project",
+    "featured": false,
+    "tags": ["reinforcement learning", "dqn", "atari", "pytorch", "gymnasium"],
+    "stack": ["Python", "PyTorch", "Gymnasium", "OpenCV-style preprocessing", "Matplotlib"],
+    "repo": "LonelyGuy-SE1/Breakout-DQN",
+    "images": [
+      {
+        "src": "gallery/atari.breakout.png",
+        "alt": "Atari Breakout game frame"
+      },
+      {
+        "src": "gallery/atari.breakout.preprocessing.png",
+        "alt": "Preprocessed Breakout observation frame"
+      }
+    ],
+    "metrics": [
+      "Frame preprocessing pipeline",
+      "Replay-buffer based value learning",
+      "Target-network training loop"
+    ],
+    "role": "Implemented the learning loop to understand DQN mechanics from first principles.",
+    "started": "2026-03-01",
+    "updated": "2026-04-11",
+    "body": "Breakout-DQN is a deliberate first-principles RL project. The point is not to beat every public benchmark. The point is to understand the mechanics behind the early Atari agents: frame preprocessing, action repeat, replay buffers, target networks, value updates, and the instability that appears when any piece is wrong.\n\nThe project belongs in the portfolio because it shows the learning path behind the bigger robotics and world-model ambitions."
+  },
+  {
+    "title": "EcomEnv",
+    "slug": "ecomenv",
+    "summary": "Experimental environment for modeling e-commerce decisions as an agent problem, useful for practicing environment design, reward shaping, and simulation thinking.",
+    "status": "prototype",
+    "featured": false,
+    "tags": ["simulation", "environment design", "rl", "agents"],
+    "stack": ["Python", "Environment design", "Reward shaping"],
+    "repo": "LonelyGuy-SE1/EcomEnv",
+    "images": [],
+    "metrics": [
+      "Custom environment structure",
+      "Agent-facing state and reward design"
+    ],
+    "role": "Designed and prototyped the environment.",
+    "started": "2026-03-01",
+    "updated": "2026-04-01",
+    "body": "EcomEnv is a smaller simulation project focused on the shape of agent environments: what the state exposes, what actions mean, how rewards can distort behavior, and how to make a toy system useful for learning.\n\nIt sits alongside the cyber and robotics work as practice in turning messy real-world workflows into controlled agent loops."
+  }
+]

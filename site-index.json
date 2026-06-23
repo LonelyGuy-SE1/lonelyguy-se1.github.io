@@ -1,0 +1,257 @@
+{
+  "site": {
+    "name": "Lonely Guy",
+    "url": "https://lonelyguy.vercel.app/",
+    "description": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
+    "author": {
+      "name": "SE1",
+      "alternateName": "Lonely Guy",
+      "sameAs": [
+        "https://github.com/LonelyGuy-SE1",
+        "https://x.com/lonelyguyse1",
+        "https://huggingface.co/Lonelyguyse1",
+        "https://orcid.org/0009-0000-7221-863X",
+        "https://www.linkedin.com/in/greeshmasurya/"
+      ],
+      "knowsAbout": [
+        "Reinforcement Learning",
+        "Robotics",
+        "Embodied AI",
+        "World Models",
+        "Deep Learning",
+        "Decentralized Systems",
+        "Systems",
+        "Large Language Models"
+      ],
+      "email": "lonelyguy.se1@gmail.com",
+      "secondaryEmail": "brawlers.assemble@gmail.com",
+      "description": "CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
+      "jobTitle": "CS undergraduate, embodied AI builder",
+      "location": "India"
+    }
+  },
+  "generatedAt": "2026-06-18T13:07:01.705Z",
+  "routes": [
+    {
+      "type": "page",
+      "title": "Home",
+      "url": "https://lonelyguy.vercel.app/",
+      "summary": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "page",
+      "title": "Now",
+      "url": "https://lonelyguy.vercel.app/now",
+      "summary": "What SE1 is actively studying and building right now across reinforcement learning, LLMs, robotics simulation, and world models.",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "page",
+      "title": "Stack",
+      "url": "https://lonelyguy.vercel.app/stack",
+      "summary": "A practical skill map for lonely guy across programming, machine learning, robotics simulation, systems, and deployment.",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "page",
+      "title": "Path",
+      "url": "https://lonelyguy.vercel.app/path",
+      "summary": "The long-term direction behind the portfolio: research, embodied AI, autonomous robotic assistants, and systems that can leave the demo stage.",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "page",
+      "title": "Contact",
+      "url": "https://lonelyguy.vercel.app/contact",
+      "summary": "Canonical links and contact routes for lonely guy across GitHub, X, Hugging Face, ORCID, LinkedIn, email, and Discord.",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "page",
+      "title": "Gallery",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "updates",
+      "title": "Project Moirai - Bare-Metal Embodied Control",
+      "url": "https://lonelyguy.vercel.app/updates/2026-05-01-moirai",
+      "summary": "Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.",
+      "tags": [],
+      "date": "2026-05-01"
+    },
+    {
+      "type": "updates",
+      "title": "Hackathons + Humanoid Simulation + UAV Conference + Breakout",
+      "url": "https://lonelyguy.vercel.app/updates/2026-04-11-updates",
+      "summary": "Qualified for some interesting hackathons, Good progress is being done on training the humanoid robot + Will be attending a UAV conference + Breakout might have to wait a bit.",
+      "tags": [],
+      "date": "2026-04-11"
+    },
+    {
+      "type": "updates",
+      "title": "playing around with an arm and a biped and rl",
+      "url": "https://lonelyguy.vercel.app/updates/2026-03-18-biped",
+      "summary": "wanted to test the update page, so though might as well log about the biped, this is more of a random update.",
+      "tags": [],
+      "date": "2026-03-18"
+    },
+    {
+      "type": "articles",
+      "title": "Project Halide, Building A Small-Model Diagnostic Workbench For Damaged Film",
+      "url": "https://lonelyguy.vercel.app/articles/2026-06-16-project-halide",
+      "summary": "An open-weight film diagnostics workbench built around MiniCPM-V 4.6, Nemotron-Mini-4B, real negative failure cases, and a validator that became as important as the model.",
+      "tags": [],
+      "date": "2026-06-16"
+    },
+    {
+      "type": "articles",
+      "title": "Teaching a 1.5B LLM to be a SOC Analyst (Without Burning Down the Network)",
+      "url": "https://lonelyguy.vercel.app/articles/2026-05-01-llm-soc-analyst",
+      "summary": "Fine-tuning a 1.5B LLM with GRPO to defend against realistic enterprise attack chains, and the unexpected lessons learned from reward hacking.",
+      "tags": [],
+      "date": "2026-05-01"
+    },
+    {
+      "type": "projects",
+      "title": "Project Halide",
+      "url": "https://lonelyguy.vercel.app/projects/project-halide",
+      "summary": "Small-model diagnostic workbench for damaged film scans using MiniCPM-V, Nemotron-Mini, strict validation, overlays, telemetry, and a Gradio light-table UI.",
+      "tags": [
+        "vision",
+        "small models",
+        "diagnostics",
+        "gradio",
+        "validation"
+      ],
+      "date": "2026-06-16"
+    },
+    {
+      "type": "projects",
+      "title": "Cybersec OpenEnv",
+      "url": "https://lonelyguy.vercel.app/projects/cybersec-openenv",
+      "summary": "Long-horizon cyber-defense POMDP for training and evaluating small LLM SOC agents with GRPO, realistic attack chains, and reward-hacking resistant containment incentives.",
+      "tags": [
+        "llm agents",
+        "reinforcement learning",
+        "cybersecurity",
+        "pomdp",
+        "grpo"
+      ],
+      "date": "2026-05-01"
+    },
+    {
+      "type": "projects",
+      "title": "Moirai",
+      "url": "https://lonelyguy.vercel.app/projects/moirai",
+      "summary": "Bare-metal C++ inference runtime concept for deploying quantized reinforcement-learning control policies with deterministic memory, packed weights, and CPU-cache-aware execution.",
+      "tags": [
+        "robotics",
+        "rl deployment",
+        "systems",
+        "quantization",
+        "edge inference"
+      ],
+      "date": "2026-05-01"
+    },
+    {
+      "type": "projects",
+      "title": "Breakout-DQN",
+      "url": "https://lonelyguy.vercel.app/projects/breakout-dqn",
+      "summary": "From-scratch Atari Breakout DQN study for building intuition around deep RL, preprocessing, replay, target networks, and early DeepMind-style agent design.",
+      "tags": [
+        "reinforcement learning",
+        "dqn",
+        "atari",
+        "pytorch",
+        "gymnasium"
+      ],
+      "date": "2026-04-11"
+    },
+    {
+      "type": "projects",
+      "title": "EcomEnv",
+      "url": "https://lonelyguy.vercel.app/projects/ecomenv",
+      "summary": "Experimental environment for modeling e-commerce decisions as an agent problem, useful for practicing environment design, reward shaping, and simulation thinking.",
+      "tags": [
+        "simulation",
+        "environment design",
+        "rl",
+        "agents"
+      ],
+      "date": "2026-04-01"
+    },
+    {
+      "type": "gallery",
+      "title": "env cybersec",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "env cybersec",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "humanoid circuit",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "humanoid circuit",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "clanker pose",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "clanker pose",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "biped arm result",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "biped arm result",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "biped arm",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "biped arm",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "biped arm training graph",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "biped arm training graph",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "atari breakout preprocessing",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "atari breakout preprocessing",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "atari breakout",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "atari breakout",
+      "tags": [],
+      "date": ""
+    }
+  ]
+}

@@ -4,79 +4,81 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Moirai - Bare-Metal Embodied Control - Lonely Guy</title>
-    <meta name="description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics. - lonely guy's portfolio on reinforcement learning, robotics, and embodied ai." />
+    <meta name="description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics." />
+    <meta name="author" content="SE1" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#0b0504" />
     <link rel="canonical" href="https://lonelyguy.vercel.app/updates/2026-05-01-moirai" />
     <meta property="og:site_name" content="Lonely Guy" />
-    <meta property="og:title" content="Project Moirai - Bare-Metal Embodied Control" />
+    <meta property="og:title" content="Project Moirai - Bare-Metal Embodied Control - Lonely Guy" />
     <meta property="og:description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics." />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://lonelyguy.vercel.app/updates/2026-05-01-moirai" />
     <meta property="og:image" content="https://lonelyguy.vercel.app/assets/SE1.jpg" />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lonelyguyse1" />
     <meta name="twitter:creator" content="@lonelyguyse1" />
-    <meta name="twitter:title" content="Project Moirai - Bare-Metal Embodied Control" />
+    <meta name="twitter:title" content="Project Moirai - Bare-Metal Embodied Control - Lonely Guy" />
     <meta name="twitter:description" content="Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics." />
     <meta name="twitter:image" content="https://lonelyguy.vercel.app/assets/SE1.jpg" />
-    <link rel="icon" type="image/jpeg" href="../../assets/SE1.jpg" />
-    <link rel="stylesheet" href="../../styles/main.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai#post","headline":"Project Moirai - Bare-Metal Embodied Control","description":"Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.","image":"https://lonelyguy.vercel.app/assets/SE1.jpg","datePublished":"2026-05-01","dateModified":"2026-05-01","author":{"@id":"https://lonelyguy.vercel.app/#person"},"publisher":{"@id":"https://lonelyguy.vercel.app/#person"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai"},"isPartOf":{"@id":"https://lonelyguy.vercel.app/#website"}},{"@type":"BreadcrumbList","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://lonelyguy.vercel.app"},{"@type":"ListItem","position":2,"name":"updates","item":"https://lonelyguy.vercel.app/updates"},{"@type":"ListItem","position":3,"name":"Project Moirai - Bare-Metal Embodied Control","item":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai"}]}]}</script>
-    <!-- Vercel Analytics -->
+    <meta property="article:published_time" content="2026-05-01" />
+    <meta property="article:modified_time" content="2026-05-01" />
+    <link rel="alternate" type="application/rss+xml" title="Lonely Guy - Articles" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Lonely Guy - Articles" href="/feed.json" />
+    <link rel="icon" type="image/jpeg" href="/assets/SE1.jpg" />
+    <link rel="stylesheet" href="/assets/build/main.93f75a4897.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://lonelyguy.vercel.app/#person","name":"SE1","alternateName":"Lonely Guy","url":"https://lonelyguy.vercel.app","email":"lonelyguy.se1@gmail.com","jobTitle":"CS undergraduate, embodied AI builder","description":"CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.","sameAs":["https://github.com/LonelyGuy-SE1","https://x.com/lonelyguyse1","https://huggingface.co/Lonelyguyse1","https://orcid.org/0009-0000-7221-863X","https://www.linkedin.com/in/greeshmasurya/"],"knowsAbout":["Reinforcement Learning","Robotics","Embodied AI","World Models","Deep Learning","Decentralized Systems","Systems","Large Language Models"]},{"@type":"WebSite","@id":"https://lonelyguy.vercel.app/#website","url":"https://lonelyguy.vercel.app/","name":"Lonely Guy","description":"se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.","publisher":{"@id":"https://lonelyguy.vercel.app/#person"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://lonelyguy.vercel.app/search?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"Article","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai#post","headline":"Project Moirai - Bare-Metal Embodied Control","description":"Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.","image":"https://lonelyguy.vercel.app/assets/SE1.jpg","datePublished":"2026-05-01","dateModified":"2026-05-01","author":{"@id":"https://lonelyguy.vercel.app/#person"},"publisher":{"@id":"https://lonelyguy.vercel.app/#person"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai"},"isPartOf":{"@id":"https://lonelyguy.vercel.app/#website"},"keywords":[],"timeRequired":"PT1M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://lonelyguy.vercel.app/"},{"@type":"ListItem","position":2,"name":"Updates","item":"https://lonelyguy.vercel.app/updates"},{"@type":"ListItem","position":3,"name":"Project Moirai - Bare-Metal Embodied Control","item":"https://lonelyguy.vercel.app/updates/2026-05-01-moirai"}]}]}</script>
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-    <!-- Vercel Speed Insights -->
-    <script>
+<script>
       window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
     <a class="skip-link" href="#main">skip to main</a>
-
     <header class="site-header">
       <div class="site-width header-inner">
         <a class="brand" href="/">
-          <img class="brand-mark" src="../../assets/SE1.jpg" alt="" width="640" height="640" />
+          <img class="brand-mark" src="/assets/SE1.jpg" alt="" width="640" height="640" decoding="async" />
           <span class="brand-copy"><strong>lonely guy</strong></span>
         </a>
-        <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <ol class="breadcrumb-list">
-            <li><a href="/">home</a></li>
-            <li><a href="/updates">updates</a></li>
-            <li aria-current="page">Project Moirai - Bare-Metal Embodied Control</li>
-          </ol>
+        <nav class="header-nav static-header-nav" aria-label="Main">
+          <a class="tab-button" href="/">home</a><a class="tab-button" href="/now">now</a><a class="tab-button" href="/stack">stack</a><a class="tab-button" href="/path">path</a><a class="tab-button" href="/updates">updates</a><a class="tab-button" href="/articles">blogs</a><a class="tab-button" href="/papers">papers</a><a class="tab-button" href="/gallery">gallery</a><a class="tab-button" href="/projects">projects</a><a class="tab-button" href="/contact">contact</a>
         </nav>
       </div>
     </header>
-
-    <main class="site-width" id="main">
+    <main class="site-width static-page" id="main">
       <article>
         <div class="reader-head">
           <div>
-            <p class="reader-kicker">2026-05-01</p>
+            <p class="reader-kicker">2026-05-01 / 1 min read</p>
             <h1>Project Moirai - Bare-Metal Embodied Control</h1>
           </div>
-          <a href="/updates" class="reader-close">back</a>
+          <div class="reader-head-actions"><a href="/updates">back to updates</a></div>
         </div>
+        <p class="static-page-summary">Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.</p>
+        
         <div class="reader-body"><p>so i started a new project called <strong>Moirai</strong>... been really into this idea of running continuous control RL policies on edge hardware without the bloat of standard ml frameworks.</p><p>basically, most ml frameworks are built for cloud gpus, not for constrained robots. the latency is kinda crazy. so my goal is to get microsecond-level determinism on commodity cpus, completely bypassing floating-point matrix mul.</p><p>right now im architecting an end-to-end pipeline to train and deploy 1.58-bit (ternary-weight) reinforcement learning policies. the deployment layer is a custom bare-metal c++ inference runtime. by packing neural weights into high-density 2-bit structures and using raw avx2 compiler intrinsics, im replacing heavy fp32 gemm operations with fast integer dot products.</p><p>the architecture has three strict constraints:</p><ul><li><strong>Zero heap allocation</strong>: a statically allocated memory arena guarantees deterministic execution without os garbage collection spikes</li><li><strong>Cache residency</strong>: 2-bit packing ensures the active continuous control policy stays entirely in the cpu&#39;s l1/l2 cache</li><li><strong>rl-specific topologies</strong>: unlike generalized llm quantization engines, this runtime is aggressively unrolled and specialized for fixed-shape mlps</li></ul><p>the repo is strictly private while i finalize the mathematical stability of the quantization-aware training (qat) methodology. benchmarks and source code will be released publicly once the core engine is done.</p><p>back to the metal :))</p></div>
       </article>
     </main>
-
-    <footer class="site-footer">
+    <footer class="site-footer" id="footer">
       <div class="site-width footer-inner">
-        <p class="footer-kicker">stuck in my head while making this</p>
+        <p class="footer-kicker">built for the long run</p>
         <blockquote class="footer-quote">
-          &ldquo;Your enemy is a resilient one. The thing you all oppose isn&rsquo;t just me. Nor is it heretics. It&rsquo;s part imagination and part curiosity. In short, it&rsquo;s truth itself&rdquo;
+          "part imagination and part curiosity. in short, truth itself."
         </blockquote>
         <div class="footer-meta">
-          <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
-          <a href="../../index.html">back to home</a>
+          <span>Lonely Guy keeps building toward embodied AI systems.</span>
+          <a href="/">back to home</a>
         </div>
         <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
       </div>
     </footer>
+    
+    <script defer src="/assets/build/assistant.c475eacf6b.js"></script>
 </body>
 </html>

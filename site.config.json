@@ -1,0 +1,79 @@
+{
+  "baseUrl": "https://lonelyguy.vercel.app",
+  "futureCanonicalDomain": "",
+  "siteName": "Lonely Guy",
+  "shortName": "Lonely Guy",
+  "author": {
+    "name": "SE1",
+    "alternateName": "Lonely Guy",
+    "email": "lonelyguy.se1@gmail.com",
+    "secondaryEmail": "brawlers.assemble@gmail.com",
+    "description": "CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
+    "jobTitle": "CS undergraduate, embodied AI builder",
+    "location": "India",
+    "sameAs": [
+      "https://github.com/LonelyGuy-SE1",
+      "https://x.com/lonelyguyse1",
+      "https://huggingface.co/Lonelyguyse1",
+      "https://orcid.org/0009-0000-7221-863X",
+      "https://www.linkedin.com/in/greeshmasurya/"
+    ],
+    "knowsAbout": [
+      "Reinforcement Learning",
+      "Robotics",
+      "Embodied AI",
+      "World Models",
+      "Deep Learning",
+      "Decentralized Systems",
+      "Systems",
+      "Large Language Models"
+    ]
+  },
+  "description": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
+  "seo": {
+    "defaultTitle": "Lonely Guy - RL, Robotics, Embodied AI & Systems Portfolio",
+    "titleTemplate": "%s - Lonely Guy",
+    "defaultDescription": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems. portfolio with blogs, projects, and research.",
+    "defaultImage": "/assets/SE1.jpg",
+    "twitterHandle": "@lonelyguyse1",
+    "language": "en-US",
+    "locale": "en_US",
+    "themeColor": "#0b0504"
+  },
+  "analytics": {
+    "vercelAnalytics": true,
+    "vercelSpeedInsights": true
+  },
+  "gsc": {
+    "propertyUrl": "https://lonelyguy.vercel.app/",
+    "verificationMethod": "html-file",
+    "verificationFile": "google6cb4e7d9840b7dd9.html"
+  },
+  "socials": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/LonelyGuy-SE1",
+      "rel": "me"
+    },
+    {
+      "label": "X",
+      "url": "https://x.com/lonelyguyse1",
+      "rel": "me"
+    },
+    {
+      "label": "Hugging Face",
+      "url": "https://huggingface.co/Lonelyguyse1",
+      "rel": "me"
+    },
+    {
+      "label": "ORCID",
+      "url": "https://orcid.org/0009-0000-7221-863X",
+      "rel": "me"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/greeshmasurya/",
+      "rel": "me"
+    }
+  ]
+}

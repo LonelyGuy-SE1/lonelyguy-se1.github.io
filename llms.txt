@@ -1,16 +1,27 @@
 # Lonely Guy
-> rl, robotics, world models, embodied ai, and system stuff.
+> se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.
 
-lonely guy is a cs undergrad working on reinforcement learning, robotics simulation, world models, and embodied ai. the goal is autonomous robotic assistants.
+SE1 (Lonely Guy) is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.
 
 ## Navigation
 - Home: https://lonelyguy.vercel.app/
+- Now: https://lonelyguy.vercel.app/now
+- Stack: https://lonelyguy.vercel.app/stack
+- Path: https://lonelyguy.vercel.app/path
+- Projects: https://lonelyguy.vercel.app/projects
 - Articles: https://lonelyguy.vercel.app/articles
 - Updates: https://lonelyguy.vercel.app/updates
 - Papers: https://lonelyguy.vercel.app/papers
-- Projects: https://lonelyguy.vercel.app/projects
-- Gallery: https://lonelyguy.vercel.app/#images
-- Contact: https://lonelyguy.vercel.app/#contact
+- Gallery: https://lonelyguy.vercel.app/gallery
+- Search index JSON: https://lonelyguy.vercel.app/search-index.json
+- Site index JSON: https://lonelyguy.vercel.app/site-index.json
+
+## Projects
+- [Project Halide](https://lonelyguy.vercel.app/projects/project-halide): Small-model diagnostic workbench for damaged film scans using MiniCPM-V, Nemotron-Mini, strict validation, overlays, telemetry, and a Gradio light-table UI.
+- [Cybersec OpenEnv](https://lonelyguy.vercel.app/projects/cybersec-openenv): Long-horizon cyber-defense POMDP for training and evaluating small LLM SOC agents with GRPO, realistic attack chains, and reward-hacking resistant containment incentives.
+- [Moirai](https://lonelyguy.vercel.app/projects/moirai): Bare-metal C++ inference runtime concept for deploying quantized reinforcement-learning control policies with deterministic memory, packed weights, and CPU-cache-aware execution.
+- [Breakout-DQN](https://lonelyguy.vercel.app/projects/breakout-dqn): From-scratch Atari Breakout DQN study for building intuition around deep RL, preprocessing, replay, target networks, and early DeepMind-style agent design.
+- [EcomEnv](https://lonelyguy.vercel.app/projects/ecomenv): Experimental environment for modeling e-commerce decisions as an agent problem, useful for practicing environment design, reward shaping, and simulation thinking.
 
 ## Articles
 - [Project Halide, Building A Small-Model Diagnostic Workbench For Damaged Film](https://lonelyguy.vercel.app/articles/2026-06-16-project-halide): An open-weight film diagnostics workbench built around MiniCPM-V 4.6, Nemotron-Mini-4B, real negative failure cases, and a validator that became as important as the model.
@@ -21,12 +32,9 @@ lonely guy is a cs undergrad working on reinforcement learning, robotics simulat
 - [Hackathons + Humanoid Simulation + UAV Conference + Breakout](https://lonelyguy.vercel.app/updates/2026-04-11-updates): Qualified for some interesting hackathons, Good progress is being done on training the humanoid robot + Will be attending a UAV conference + Breakout might have to wait a bit.
 - [playing around with an arm and a biped and rl](https://lonelyguy.vercel.app/updates/2026-03-18-biped): wanted to test the update page, so though might as well log about the biped, this is more of a random update.
 
-## Projects
-- [Breakout-DQN](https://lonelyguy.vercel.app/projects/breakout-dqn): GitHub repository for Breakout-DQN, part of lonely guy's work.
-- [EcomEnv](https://lonelyguy.vercel.app/projects/ecomenv): GitHub repository for EcomEnv, part of lonely guy's work.
-
 ## Profiles
 - [GitHub](https://github.com/LonelyGuy-SE1)
+- [X](https://x.com/lonelyguyse1)
 - [Hugging Face](https://huggingface.co/Lonelyguyse1)
 - [ORCID](https://orcid.org/0009-0000-7221-863X)
 - [LinkedIn](https://www.linkedin.com/in/greeshmasurya/)

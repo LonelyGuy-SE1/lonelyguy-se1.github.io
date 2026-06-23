@@ -1,5 +1,31 @@
 [
   {
+    "title": "Raijin LOB",
+    "slug": "raijin-lob",
+    "summary": "C++ limit order book engine built around low-latency market microstructure ideas, benchmarked publicly and now moving toward a simulator phase.",
+    "status": "phase one public",
+    "featured": true,
+    "tags": ["limit order book", "market microstructure", "systems", "c++", "quant"],
+    "stack": ["C++", "Low-latency systems", "Market microstructure", "GitHub Pages docs", "GitHub Actions benchmarks"],
+    "repo": "LonelyGuy-SE1/Raijin-LOB",
+    "demo": "https://lonelyguy-se1.github.io/Raijin-LOB/",
+    "article": "/updates/2026-06-23-updates",
+    "images": [
+      {
+        "src": "gallery/bench.raijin.png",
+        "alt": "Raijin LOB benchmark brief"
+      }
+    ],
+    "metrics": [
+      "Public benchmark brief and repository documentation",
+      "Phase-one engine complete enough to start simulator work",
+      "Consumer-hardware-oriented C++ design"
+    ],
+    "role": "Designed and implemented the phase-one matching engine, documentation, and benchmark reporting path.",
+    "updated": "2026-06-23",
+    "body": "Raijin is a fast limit order book engine built with consumer hardware in mind. The current public phase focuses on the core engine, benchmark reporting, and documentation around the design choices.\n\nThe project now moves into a simulator phase, where the goal is to model realistic market behaviour closely enough to support later RL and JEPA experiments.\n\nThe important part for the portfolio is the systems direction: market microstructure, latency-aware data structures, measured performance, and a path from engine work into agent simulation."
+  },
+  {
     "title": "Project Halide",
     "slug": "project-halide",
     "summary": "Small-model diagnostic workbench for damaged film scans using MiniCPM-V, Nemotron-Mini, strict validation, overlays, telemetry, and a Gradio light-table UI.",
@@ -65,28 +91,6 @@
     "body": "Cybersec OpenEnv asks whether a small local LLM can learn useful defensive behavior in a realistic long-horizon cyber environment. The setup models delayed alerts, partial observability, containment cost, adaptive attacker timing, and valid JSON actions.\n\nThe project became interesting when the model found reward exploits: isolate everything, or isolate the root asset at tick zero. The fix was not a bigger model. The fix was a better environment and an evidence-based containment reward that makes investigation before containment the winning strategy.\n\nThe held-out result matters most: the trained policy improved over the heuristic on a scenario it never saw during training. That suggests the model learned a transferable defensive pattern rather than memorizing attack graphs."
   },
   {
-    "title": "Moirai",
-    "slug": "moirai",
-    "summary": "Bare-metal C++ inference runtime concept for deploying quantized reinforcement-learning control policies with deterministic memory, packed weights, and CPU-cache-aware execution.",
-    "status": "private in progress",
-    "featured": true,
-    "tags": ["robotics", "rl deployment", "systems", "quantization", "edge inference"],
-    "stack": ["C++", "AVX2", "Quantization-aware training", "RL control policies", "Static memory arenas"],
-    "repo": "",
-    "article": "/updates/2026-05-01-moirai",
-    "images": [],
-    "metrics": [
-      "Zero heap allocation target",
-      "2-bit packed policy weights",
-      "Fixed-shape MLP runtime",
-      "Microsecond-level determinism goal"
-    ],
-    "role": "Designing the runtime architecture, quantization path, memory model, and benchmarking plan.",
-    "started": "2026-05-01",
-    "updated": "2026-05-01",
-    "body": "Moirai is the systems side of the embodied AI goal: train reinforcement-learning policies in flexible tooling, then deploy them on constrained hardware without dragging a full ML framework into the robot.\n\nThe design target is a specialized runtime for fixed-shape control MLPs: no heap allocation, compact ternary or 2-bit weights, cache-resident policy data, and explicit vectorized kernels. It is intentionally narrow because robots need predictable latency more than a generalized inference server.\n\nThe source stays private while the training and quantization methodology stabilizes, but the direction is clear: make policy execution small, inspectable, deterministic, and close to the metal."
-  },
-  {
     "title": "Breakout-DQN",
     "slug": "breakout-dqn",
     "summary": "From-scratch Atari Breakout DQN study for building intuition around deep RL, preprocessing, replay, target networks, and early DeepMind-style agent design.",
@@ -114,24 +118,5 @@
     "started": "2026-03-01",
     "updated": "2026-04-11",
     "body": "Breakout-DQN is a deliberate first-principles RL project. The point is not to beat every public benchmark. The point is to understand the mechanics behind the early Atari agents: frame preprocessing, action repeat, replay buffers, target networks, value updates, and the instability that appears when any piece is wrong.\n\nThe project belongs in the portfolio because it shows the learning path behind the bigger robotics and world-model ambitions."
-  },
-  {
-    "title": "EcomEnv",
-    "slug": "ecomenv",
-    "summary": "Experimental environment for modeling e-commerce decisions as an agent problem, useful for practicing environment design, reward shaping, and simulation thinking.",
-    "status": "prototype",
-    "featured": false,
-    "tags": ["simulation", "environment design", "rl", "agents"],
-    "stack": ["Python", "Environment design", "Reward shaping"],
-    "repo": "LonelyGuy-SE1/EcomEnv",
-    "images": [],
-    "metrics": [
-      "Custom environment structure",
-      "Agent-facing state and reward design"
-    ],
-    "role": "Designed and prototyped the environment.",
-    "started": "2026-03-01",
-    "updated": "2026-04-01",
-    "body": "EcomEnv is a smaller simulation project focused on the shape of agent environments: what the state exposes, what actions mean, how rewards can distort behavior, and how to make a toy system useful for learning.\n\nIt sits alongside the cyber and robotics work as practice in turning messy real-world workflows into controlled agent loops."
   }
 ]

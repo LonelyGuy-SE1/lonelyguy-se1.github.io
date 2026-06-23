@@ -1752,27 +1752,6 @@ async function generateAssetManifest() {
   return manifest;
 }
 
-function makeHomeSeoLinks(config, updates, articles, papers, projects) {
-  const list = (label, href, records, type) => {
-    const itemLinks = records
-      .slice(0, 6)
-      .map((record) => {
-        const url = type === "projects" ? recordUrl(config, "projects", record.id) : recordUrl(config, type, record.id);
-        return `<li><a href="${url}">${escapeHtml(record.title)}</a></li>`;
-      })
-      .join("");
-    return `<section class="about-link-group"><p class="about-link-title"><a href="${href}">${escapeHtml(label)}</a></p><ul>${itemLinks || "<li>coming soon</li>"}</ul></section>`;
-  };
-  return [
-    '<nav class="about-link-grid" aria-label="indexable site links">',
-    list("projects", collectionUrl(config, "projects"), projects, "projects"),
-    list("articles", collectionUrl(config, "articles"), articles, "articles"),
-    list("updates", collectionUrl(config, "updates"), updates, "updates"),
-    list("papers", collectionUrl(config, "papers"), papers, "papers"),
-    "</nav>",
-  ].join("\n");
-}
-
 function updateHeadJsonLd(html, config, projects, articles) {
   const graph = siteGraphJsonLd(config);
   graph["@graph"].push(
@@ -1852,15 +1831,6 @@ async function updateHomepage(config, assets, updates, articles, papers, project
     .replace(/<script(?:\s+defer)? src="(?:scripts\/content\.js|\/assets\/build\/content\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.content}"></script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/main\.js|\/assets\/build\/main\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.main}"></script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/assistant\.js|\/assets\/build\/assistant\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.assistant}"></script>`);
-
-  const start = "<!-- SEO_LINKS_START -->";
-  const end = "<!-- SEO_LINKS_END -->";
-  const seoLinks = `${start}\n${makeHomeSeoLinks(config, updates, articles, papers, projects)}\n${end}`;
-  if (html.includes(start) && html.includes(end)) {
-    const startIndex = html.indexOf(start);
-    const endIndex = html.indexOf(end);
-    html = html.slice(0, startIndex) + seoLinks + html.slice(endIndex + end.length);
-  }
 
   await fs.writeFile(indexPath, html, "utf8");
   console.log("  -> index.html metadata/assets");

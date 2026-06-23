@@ -39,16 +39,22 @@
     "title": "Gallery",
     "summary": "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
     "url": "/gallery",
-    "content": "env cybersec humanoid circuit clanker pose biped arm result biped arm biped arm training graph atari breakout preprocessing atari breakout"
+    "content": "shiori extension bench raijin env cybersec humanoid circuit clanker pose biped arm result biped arm biped arm training graph atari breakout preprocessing atari breakout"
   },
   {
     "type": "updates",
-    "title": "Project Moirai - Bare-Metal Embodied Control",
-    "summary": "Started working on a custom bare-metal C++ runtime for deploying quantized RL policies on edge hardware. No frameworks, no heap allocations, just raw AVX2 intrinsics.",
-    "url": "/updates/2026-05-01-moirai",
-    "date": "2026-05-01",
-    "tags": [],
-    "content": "so i started a new project called Moirai ... been really into this idea of running continuous control RL policies on edge hardware without the bloat of standard ml frameworks. basically, most ml frameworks are built for cloud gpus, not for constrained robots. the latency is kinda crazy. so my goal is to get microsecond-level determinism on commodity cpus, completely bypassing floating-point matrix mul. right now im architecting an end-to-end pipeline to train and deploy 1.58-bit (ternary-weight) reinforcement learning policies. the deployment layer is a custom bare-metal c++ inference runtime. by packing neural weights into high-density 2-bit structures and using raw avx2 compiler intrinsics, im replacing heavy fp32 gemm operations with fast integer dot products. the architecture has three strict constraints: Zero heap allocation : a statically allocated memory arena guarantees deterministic execution without os garbage collection spikes Cache residency : 2-bit packing ensures the active continuous control policy stays entirely in the cpu&#39;s l1/l2 cache rl-specific topologies : unlike generalized llm quantization engines, this runtime is aggressively unrolled and specialized for fixed-shape mlps the repo is strictly private while i finalize the mathematical stability of the quantization-aware training (qat) methodology. benchmarks and source code will be released publicly once the core engine is done. back to the metal :))"
+    "title": "June 2026 Updates - Raijin, Halide, Shiori, Android, and Simulation",
+    "summary": "Progress update covering Raijin phase one, Project Halide, a Shiori Chrome extension, Android system work, competitive programming, and simulation work.",
+    "url": "/updates/2026-06-23-updates",
+    "date": "2026-06-23",
+    "tags": [
+      "Raijin",
+      "Project Halide",
+      "systems",
+      "reinforcement learning",
+      "simulation"
+    ],
+    "content": "It has been a while since my last update, and quite a lot has happened since then. For starters, I currently have multiple projects and experiments running in parallel. The largest one is still Raijin. Phase one of Raijin is now in a reasonably strong state. It is a fast limit order book engine built with consumer hardware in mind, and I have tried to incorporate as much relevant market microstructure and low-latency systems research as I could while building it. More details are available on GitHub, along with the documentation and benchmark numbers: The benchmark numbers shown here are a brief snapshot. The full benchmark numbers are available in the GitHub Actions summary. GitHub: https://github.com/LonelyGuy-SE1/Raijin-LOB Docs: https://lonelyguy-se1.github.io/Raijin-LOB/ The results so far are encouraging. The core performs well for what it is trying to be, and the benchmark numbers are available in the repository. I have now started phase two, which is the simulator. This part will take more time, since the research is still underway. The goal is to build a simulator that can replicate real market behaviour as closely as possible. I will need this for phase three, where I plan to move into the RL/JEPA side of the project. Apart from Raijin, I have also been gradually building more experience with fine-tuning and small language models. The progress here has been steady. I am starting to get a much clearer intuition for where small models are useful, where they break, and what kind of data actually improves them. One of my recent releases is Project Halide, a diagnostic workbench for film negatives. Since this was built as a hackathon submission, I tried to make it as practically useful as possible rather than treating it as a toy demo. The hardest part was the data. There are almost no reliable public datasets for this specific problem, so I had to create my own synthetic data and fine-tune the vision model around that. The fine-tuning led to a noticeable improvement, and I have written a separate report/blog about the project in the blog section. Blog: https://lonelyguy.vercel.app/articles/2026-06-16-project-halide I also built a small Chrome extension to track and auto-sync my anime watchlist with an anime site. There is not much to say about this one, since it is mostly a personal utility, but it was useful enough for me to keep. This week, I also spent some time working with core Android system files and managed to fix a few issues at the OS level for my custom ROM devices. On the competitive programming side, I participated in my first couple of CP contests. I am still early here, but I have started treating it as a regular skill-building process rather than something occasional. I am also working on a fast in-memory database, along with a set of general AI experiments. Some of these involve conceptual learning, paper implementations, and older architectures such as ResNet and LSTM. A lot of this is still exploratory, but it has been useful for improving my understanding from first principles. I have also been spending a significant amount of time on simulations using ROS 2, MuJoCo, MATLAB, and related tools. Most of this work is still undocumented because it is experimental and difficult to present cleanly. If the Hawkes simulator progresses well, I plan to intensify my work on robotics-related simulation projects as well. That is mostly what I have been working on since the previous update. I might also attend a few research-oriented events if time permits, but for now the main priority is to keep building and documenting the work that is already underway."
   },
   {
     "type": "updates",
@@ -88,6 +94,21 @@
   },
   {
     "type": "projects",
+    "title": "Raijin LOB",
+    "summary": "C++ limit order book engine built around low-latency market microstructure ideas, benchmarked publicly and now moving toward a simulator phase.",
+    "url": "/projects/raijin-lob",
+    "date": "2026-06-23",
+    "tags": [
+      "limit order book",
+      "market microstructure",
+      "systems",
+      "c++",
+      "quant"
+    ],
+    "content": "Raijin is a fast limit order book engine built with consumer hardware in mind. The current public phase focuses on the core engine, benchmark reporting, and documentation around the design choices. The project now moves into a simulator phase, where the goal is to model realistic market behaviour closely enough to support later RL and JEPA experiments. The important part for the portfolio is the systems direction: market microstructure, latency-aware data structures, measured performance, and a path from engine work into agent simulation. C++ Low-latency systems Market microstructure GitHub Pages docs GitHub Actions benchmarks Public benchmark brief and repository documentation Phase-one engine complete enough to start simulator work Consumer-hardware-oriented C++ design"
+  },
+  {
+    "type": "projects",
     "title": "Project Halide",
     "summary": "Small-model diagnostic workbench for damaged film scans using MiniCPM-V, Nemotron-Mini, strict validation, overlays, telemetry, and a Gradio light-table UI.",
     "url": "/projects/project-halide",
@@ -118,21 +139,6 @@
   },
   {
     "type": "projects",
-    "title": "Moirai",
-    "summary": "Bare-metal C++ inference runtime concept for deploying quantized reinforcement-learning control policies with deterministic memory, packed weights, and CPU-cache-aware execution.",
-    "url": "/projects/moirai",
-    "date": "2026-05-01",
-    "tags": [
-      "robotics",
-      "rl deployment",
-      "systems",
-      "quantization",
-      "edge inference"
-    ],
-    "content": "Moirai is the systems side of the embodied AI goal: train reinforcement-learning policies in flexible tooling, then deploy them on constrained hardware without dragging a full ML framework into the robot. The design target is a specialized runtime for fixed-shape control MLPs: no heap allocation, compact ternary or 2-bit weights, cache-resident policy data, and explicit vectorized kernels. It is intentionally narrow because robots need predictable latency more than a generalized inference server. The source stays private while the training and quantization methodology stabilizes, but the direction is clear: make policy execution small, inspectable, deterministic, and close to the metal. C++ AVX2 Quantization-aware training RL control policies Static memory arenas Zero heap allocation target 2-bit packed policy weights Fixed-shape MLP runtime Microsecond-level determinism goal"
-  },
-  {
-    "type": "projects",
     "title": "Breakout-DQN",
     "summary": "From-scratch Atari Breakout DQN study for building intuition around deep RL, preprocessing, replay, target networks, and early DeepMind-style agent design.",
     "url": "/projects/breakout-dqn",
@@ -147,18 +153,18 @@
     "content": "Breakout-DQN is a deliberate first-principles RL project. The point is not to beat every public benchmark. The point is to understand the mechanics behind the early Atari agents: frame preprocessing, action repeat, replay buffers, target networks, value updates, and the instability that appears when any piece is wrong. The project belongs in the portfolio because it shows the learning path behind the bigger robotics and world-model ambitions. Python PyTorch Gymnasium OpenCV-style preprocessing Matplotlib Frame preprocessing pipeline Replay-buffer based value learning Target-network training loop"
   },
   {
-    "type": "projects",
-    "title": "EcomEnv",
-    "summary": "Experimental environment for modeling e-commerce decisions as an agent problem, useful for practicing environment design, reward shaping, and simulation thinking.",
-    "url": "/projects/ecomenv",
-    "date": "2026-04-01",
-    "tags": [
-      "simulation",
-      "environment design",
-      "rl",
-      "agents"
-    ],
-    "content": "EcomEnv is a smaller simulation project focused on the shape of agent environments: what the state exposes, what actions mean, how rewards can distort behavior, and how to make a toy system useful for learning. It sits alongside the cyber and robotics work as practice in turning messy real-world workflows into controlled agent loops. Python Environment design Reward shaping Custom environment structure Agent-facing state and reward design"
+    "type": "gallery",
+    "title": "shiori extension",
+    "summary": "shiori extension",
+    "url": "/gallery",
+    "content": "gallery/shiori.extension.png"
+  },
+  {
+    "type": "gallery",
+    "title": "bench raijin",
+    "summary": "bench raijin",
+    "url": "/gallery",
+    "content": "gallery/bench.raijin.png"
   },
   {
     "type": "gallery",

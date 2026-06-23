@@ -1272,29 +1272,24 @@ summary,
   line-height: 1.8;
 }
 
-.static-section-grid,
-.about-link-grid {
+.static-section-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-.static-section-grid section,
-.about-link-group {
+.static-section-grid section {
   padding: 1rem 0;
   border-top: 1px solid var(--line);
 }
 
-.static-section-grid h2,
-.about-link-group h3,
-.about-link-title {
+.static-section-grid h2 {
   margin: 0 0 0.45rem;
   font-size: 1.05rem;
   font-weight: 700;
 }
 
 .static-section-grid p,
-.about-link-group li,
 .project-facts dd,
 .project-media-grid figcaption {
   margin: 0;
@@ -1302,13 +1297,6 @@ summary,
   line-height: 1.7;
 }
 
-.about-link-grid {
-  margin-top: 1.4rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
-}
-
-.about-link-group ul,
 .static-link-list,
 .meta-chip-list {
   margin: 0;
@@ -1659,7 +1647,6 @@ summary,
   .panel-head,
   .updates-layout,
   .static-section-grid,
-  .about-link-grid,
   .stack-board,
   .project-media-grid {
     grid-template-columns: 1fr;

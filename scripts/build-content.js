@@ -263,10 +263,11 @@ function inlineMarkdown(text) {
 function extractYouTubeId(url) {
   try {
     const parsed = new URL(url.trim());
-    if (parsed.hostname === "youtu.be") {
+    const host = parsed.hostname.toLowerCase();
+    if (host === "youtu.be") {
       return parsed.pathname.replace(/^\/+/, "").split("/")[0];
     }
-    if (parsed.hostname.endsWith("youtube.com")) {
+    if (host === "youtube.com" || host.endsWith(".youtube.com")) {
       return parsed.searchParams.get("v") || parsed.pathname.split("/").pop();
     }
   } catch {}

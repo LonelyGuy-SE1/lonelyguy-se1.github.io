@@ -181,12 +181,15 @@
     <link rel="icon" type="image/jpeg" href="assets/SE1.jpg" />
     <link
       rel="preload"
-      href="assets/yuri-720.webp"
+      href="assets/yuri-720.avif"
+      imagesrcset="assets/yuri-480.avif 480w, assets/yuri-720.avif 720w, assets/yuri.avif 1024w"
+      imagesizes="(max-width: 640px) 92vw, (max-width: 960px) 60vw, 42vw"
       as="image"
+      type="image/avif"
       fetchpriority="high"
     />
 
-    <link rel="stylesheet" href="/assets/build/main.5aebef9eaf.css" />
+    <link rel="stylesheet" href="/assets/build/main.e006432128.css" />
     <!-- Vercel Analytics -->
     <script>
       window.va =
@@ -240,12 +243,9 @@
               aria-label="portfolio sections"
             >
               <a class="tab-button" id="tab-home" href="/" role="tab" aria-selected="true" aria-controls="panel-home" tabindex="0" data-tab="home">home</a>
-              <a class="tab-button" id="tab-now" href="/now" role="tab" aria-selected="false" aria-controls="panel-now" tabindex="-1" data-tab="now">now</a>
               <a class="tab-button" id="tab-stack" href="/stack" role="tab" aria-selected="false" aria-controls="panel-stack" tabindex="-1" data-tab="stack">stack</a>
-              <a class="tab-button" id="tab-path" href="/path" role="tab" aria-selected="false" aria-controls="panel-path" tabindex="-1" data-tab="path">path</a>
               <a class="tab-button" id="tab-updates" href="/updates" role="tab" aria-selected="false" aria-controls="panel-updates" tabindex="-1" data-tab="updates">updates</a>
               <a class="tab-button" id="tab-articles" href="/articles" role="tab" aria-selected="false" aria-controls="panel-articles" tabindex="-1" data-tab="articles">blogs</a>
-              <a class="tab-button" id="tab-papers" href="/papers" role="tab" aria-selected="false" aria-controls="panel-papers" tabindex="-1" data-tab="papers">papers</a>
               <a class="tab-button" id="tab-images" href="/gallery" role="tab" aria-selected="false" aria-controls="panel-images" tabindex="-1" data-tab="images">gallery</a>
               <a class="tab-button" id="tab-projects" href="/projects" role="tab" aria-selected="false" aria-controls="panel-projects" tabindex="-1" data-tab="projects">projects</a>
               <a class="tab-button" id="tab-contact" href="/contact" role="tab" aria-selected="false" aria-controls="panel-contact" tabindex="-1" data-tab="contact">contact</a>
@@ -365,59 +365,6 @@
 
           <section
             class="tab-panel"
-            id="panel-now"
-            role="tabpanel"
-            aria-labelledby="tab-now"
-            hidden
-          >
-            <p class="panel-label">now</p>
-            <div class="panel-head">
-              <h2>what im on right now</h2>
-              <p>main areas im spending time on right now.</p>
-            </div>
-
-            <ul class="line-list line-list-wide">
-              <li>
-                <strong>reinforcement learning</strong>
-                <span
-                  >learning everything about rl from scratch, all content from
-                  20th century to the 21st century, following Aske Plaat's deep
-                  rl graduate textbook as of now.. also spending quite a bit of
-                  time experimenting with various other options too :)</span
-                >
-              </li>
-              <li>
-                <strong>LLMs</strong>
-                <span
-                  >learning everything about llms, again from back in the time..
-                  including stuff all the way from bag of words to transformers,
-                  been hearing that the chinese folks are coming up with
-                  something wild, gotta look into that too.</span
-                >
-              </li>
-              <li>
-                <strong>robotic simulations</strong>
-                <span
-                  >working towards getting myself familiar with various robotic
-                  simulation platforms and tools... purely hands on, no course,
-                  no fixed course, just direct experiments and debugging..
-                  playing around with (mujoco, matlab simulink/simscape, isaac lab,
-                  gazebo, ros, all open robotics products)</span
-                >
-              </li>
-              <li>
-                <strong>world models</strong>
-                <span
-                  >trying to play with world models, ive got some ideas i want
-                  to try and get working, might be real useful for robots
-                  training through rl</span
-                >
-              </li>
-            </ul>
-          </section>
-
-          <section
-            class="tab-panel"
             id="panel-stack"
             role="tabpanel"
             aria-labelledby="tab-stack"
@@ -436,140 +383,88 @@
             </div>
 
             <div class="stack-board" aria-label="skill stack">
-              <article class="stack-card stack-card--primary">
-                <div class="stack-card-head">
-                  <span class="stack-glyph">RL</span>
-                  <div>
-                    <h3>ai / learning side</h3>
-                    <p>where most of the current attention is going.</p>
-                  </div>
-                </div>
-                <div class="shield-row">
-                  <span class="skill-shield skill-shield--hot"><b>RL</b> reinforcement learning</span>
-                  <span class="skill-shield"><b>DL</b> deep learning</span>
-                  <span class="skill-shield"><b>LLM</b> transformers</span>
-                  <span class="skill-shield"><b>GYM</b> gymnasium</span>
-                  <span class="skill-shield"><b>HF</b> hugging face</span>
-                  <span class="skill-shield"><b>SK</b> scikit-learn</span>
-                </div>
-                <p>
-                  supervised / unsupervised learning, rl, deep learning, llm
-                  basics, transformers, encoders, decoders, rnns, and the
-                  messy experimental tooling around them.
-                </p>
-              </article>
-
-              <article class="stack-card">
-                <div class="stack-card-head">
-                  <span class="stack-glyph">CODE</span>
-                  <div>
-                    <h3>languages + formats</h3>
-                    <p>stuff used to express models, systems, and simulations.</p>
-                  </div>
-                </div>
-                <div class="shield-row">
-                  <span class="skill-shield skill-shield--hot"><b>PY</b> python</span>
-                  <span class="skill-shield"><b>C++</b> embedded c/c++</span>
-                  <span class="skill-shield"><b>JV</b> java</span>
-                  <span class="skill-shield"><b>JS</b> javascript</span>
-                  <span class="skill-shield"><b>URDF</b> robot format</span>
-                  <span class="skill-shield"><b>MJCF</b> mujoco format</span>
-                </div>
-              </article>
-
-              <article class="stack-card">
-                <div class="stack-card-head">
-                  <span class="stack-glyph">BOT</span>
-                  <div>
-                    <h3>robotics / sim / embedded</h3>
-                    <p>simulators, control intuition, and hardware-side basics.</p>
-                  </div>
-                </div>
-                <div class="shield-row">
-                  <span class="skill-shield skill-shield--hot"><b>MJ</b> mujoco</span>
-                  <span class="skill-shield"><b>SIM</b> simulink</span>
-                  <span class="skill-shield"><b>ISAAC</b> isaac lab</span>
-                  <span class="skill-shield"><b>ROS</b> ros</span>
-                  <span class="skill-shield"><b>ARD</b> arduino</span>
-                  <span class="skill-shield"><b>PI</b> raspberry pi</span>
-                </div>
-              </article>
-
-              <article class="stack-card stack-card--wide">
-                <div class="stack-card-head">
-                  <span class="stack-glyph">SYS</span>
-                  <div>
-                    <h3>infra / build / distributed side</h3>
-                    <p>the workbench around experiments and deployment.</p>
-                  </div>
-                </div>
-                <div class="shield-row">
-                  <span class="skill-shield"><b>GIT</b> git / github</span>
-                  <span class="skill-shield"><b>CI</b> github actions</span>
-                  <span class="skill-shield"><b>NB</b> jupyter / colab</span>
-                  <span class="skill-shield"><b>API</b> fastapi</span>
-                  <span class="skill-shield"><b>DOC</b> docker</span>
-                  <span class="skill-shield"><b>DIST</b> parallax</span>
-                </div>
-                <p>
-                  also spent a good chunk of time on blockchain architecture,
-                  dapps, daos, and tokenomics. had its time, taught a lot, not
-                  the center of gravity right now.
-                </p>
-              </article>
+          <article class="stack-card stack-card--primary">
+            <div class="stack-card-head">
+              <span class="stack-glyph">RL</span>
+              <div>
+                <h3>ai / learning side</h3>
+                <p>where most of the current attention is going.</p>
+              </div>
             </div>
-
-            <p class="stack-note">
-              still not treating this as a certificate wall. skills are weird,
-              they decay, improve, and change shape. judge me more by projects,
-              writeups, and a conversation.
+            <div class="shield-row"><img class="skill-badge skill-badge--hot" src="https://img.shields.io/badge/reinforcement%20learning-ff6b35?style=flat-square&amp;logoColor=white" alt="reinforcement learning" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/deep%20learning-dc2626?style=flat-square&amp;logoColor=white" alt="deep learning" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/transformers-c4284a?style=flat-square&amp;logoColor=white" alt="transformers" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/gymnasium-0081a5?style=flat-square&amp;logoColor=white" alt="gymnasium" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/hugging%20face-ffd21e?style=flat-square&amp;logoColor=000000&amp;logo=huggingface" alt="hugging face" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/scikit--learn-f7931e?style=flat-square&amp;logoColor=000000&amp;logo=scikitlearn" alt="scikit-learn" loading="lazy" decoding="async"></div>
+            <p>
+              supervised / unsupervised learning, rl, deep learning, llm basics,
+              transformers, encoders, decoders, rnns, and the messy experimental
+              tooling around them.
             </p>
-          </section>
+          </article>
 
-          <section
-            class="tab-panel"
-            id="panel-path"
-            role="tabpanel"
-            aria-labelledby="tab-path"
-            hidden
-          >
-            <p class="panel-label">path</p>
-            <div class="panel-head">
-              <h2>where this is going</h2>
-              <p>what does the path look like.</p>
+          <article class="stack-card">
+            <div class="stack-card-head">
+              <span class="stack-glyph">CODE</span>
+              <div>
+                <h3>languages + formats</h3>
+                <p>stuff used to express models, systems, and simulations.</p>
+              </div>
             </div>
+            <div class="shield-row"><img class="skill-badge skill-badge--hot" src="https://img.shields.io/badge/python-3776ab?style=flat-square&amp;logoColor=white&amp;logo=python" alt="python" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/embedded%20c%2Fc%2B%2B-00599c?style=flat-square&amp;logoColor=white&amp;logo=cplusplus" alt="embedded c/c++" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/java-007396?style=flat-square&amp;logoColor=white&amp;logo=openjdk" alt="java" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/javascript-f7df1e?style=flat-square&amp;logoColor=000000&amp;logo=javascript" alt="javascript" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/urdf-cc8833?style=flat-square&amp;logoColor=white" alt="urdf" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/mjcf-a855f7?style=flat-square&amp;logoColor=white" alt="mjcf" loading="lazy" decoding="async"></div>
+          </article>
 
-            <ol class="path-list">
-              <li>
-                <strong>right now</strong>
-                <p>
-                  cs undergrad, figuring things out, forming connections,
-                  experimenting.
-                </p>
-              </li>
-              <li>
-                <strong
-                  >masters + research + maybe some entrepreneurship</strong
-                >
-                <p>
-                  nothing much to explain, start working towards a masters, do
-                  research in the areas mentioned above, publish papers,
-                  contribute to open source, and keep building stuff, i see a
-                  lot of stuff that has to be built... rl has a long way to go,
-                  and so does robotics. We are still struggling to replicate
-                  stuff a human could do with close to no effort.
-                </p>
-              </li>
-              <li>
-                <strong>research + anime</strong>
-                <p>
-                  keep working towards that goal of building an autonomous
-                  robotic assistant, get it to be as close to a human as
-                  possible. playing with emotions seems to be a fun one, play
-                  with hormones...
-                </p>
-              </li>
-            </ol>
+          <article class="stack-card">
+            <div class="stack-card-head">
+              <span class="stack-glyph">BOT</span>
+              <div>
+                <h3>robotics / sim / embedded</h3>
+                <p>simulators, control intuition, and hardware-side basics.</p>
+              </div>
+            </div>
+            <div class="shield-row"><img class="skill-badge skill-badge--hot" src="https://img.shields.io/badge/mujoco-3c4f65?style=flat-square&amp;logoColor=white" alt="mujoco" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/simulink-f2a900?style=flat-square&amp;logoColor=000000" alt="simulink" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/isaac%20lab-76b900?style=flat-square&amp;logoColor=000000&amp;logo=nvidia" alt="isaac lab" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/ros-22314e?style=flat-square&amp;logoColor=white&amp;logo=ros" alt="ros" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/arduino-00878f?style=flat-square&amp;logoColor=white&amp;logo=arduino" alt="arduino" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/raspberry%20pi-a22846?style=flat-square&amp;logoColor=white&amp;logo=raspberrypi" alt="raspberry pi" loading="lazy" decoding="async"></div>
+          </article>
+
+          <article class="stack-card stack-card--wide">
+            <div class="stack-card-head">
+              <span class="stack-glyph">SYS</span>
+              <div>
+                <h3>infra / build / distributed side</h3>
+                <p>the workbench around experiments and deployment.</p>
+              </div>
+            </div>
+            <div class="shield-row"><img class="skill-badge" src="https://img.shields.io/badge/git-f05032?style=flat-square&amp;logoColor=white&amp;logo=git" alt="git" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/github-181717?style=flat-square&amp;logoColor=white&amp;logo=github" alt="github" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/github%20actions-2088ff?style=flat-square&amp;logoColor=white&amp;logo=githubactions" alt="github actions" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/jupyter-f37626?style=flat-square&amp;logoColor=000000&amp;logo=jupyter" alt="jupyter" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/colab-f9ab00?style=flat-square&amp;logoColor=000000&amp;logo=googlecolab" alt="colab" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/fastapi-009688?style=flat-square&amp;logoColor=white&amp;logo=fastapi" alt="fastapi" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/docker-2496ed?style=flat-square&amp;logoColor=white&amp;logo=docker" alt="docker" loading="lazy" decoding="async">
+              <img class="skill-badge" src="https://img.shields.io/badge/parallax-cc8833?style=flat-square&amp;logoColor=000000" alt="parallax" loading="lazy" decoding="async"></div>
+            <p>
+              also spent a good chunk of time on blockchain architecture, dapps,
+              daos, and tokenomics. had its time, taught a lot, not the center
+              of gravity right now.
+            </p>
+          </article>
+        </div>
+
+        <p class="stack-note">
+          still not treating this as a certificate wall. skills are weird, they
+          decay, improve, and change shape. judge me more by projects, writeups,
+          and a conversation.
+        </p>
           </section>
 
           <section
@@ -640,43 +535,6 @@
                 <article
                   class="update-reader"
                   id="articles-reader-content"
-                  hidden
-                ></article>
-              </div>
-            </div>
-          </section>
-
-          <section
-            class="tab-panel"
-            id="panel-papers"
-            role="tabpanel"
-            aria-labelledby="tab-papers"
-            hidden
-          >
-            <p class="panel-label">papers</p>
-            <div class="panel-head">
-              <h2>papers</h2>
-              <p>published research and formal work.</p>
-            </div>
-
-            <div class="updates-layout">
-              <aside
-                class="updates-list"
-                id="papers-list"
-                aria-live="polite"
-                aria-atomic="true"
-                aria-label="paper list"
-              >
-                <p class="dynamic-note">loading papers...</p>
-              </aside>
-
-              <div class="reader-shell">
-                <div class="reader-empty" id="papers-reader-empty">
-                  select a paper from the list. the full note opens here.
-                </div>
-                <article
-                  class="update-reader"
-                  id="papers-reader-content"
                   hidden
                 ></article>
               </div>
@@ -918,8 +776,8 @@
       </figure>
     </div>
 
-    <script defer src="/assets/build/content.293c93b63b.js"></script>
-    <script defer src="/assets/build/main.a71851faa8.js"></script>
-    <script defer src="/assets/build/assistant.c475eacf6b.js"></script>
+    <script>window.PORTFOLIO_CONTENT_SRC="/assets/build/content.ac3fae4a91.js";</script>
+    <script defer src="/assets/build/main.00368566a2.js"></script>
+    <script defer src="/assets/build/assistant.8d760232ec.js"></script>
   </body>
 </html>

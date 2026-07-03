@@ -8,24 +8,10 @@
   },
   {
     "type": "page",
-    "title": "Now",
-    "summary": "What SE1 is actively studying and building right now across reinforcement learning, LLMs, robotics simulation, and world models.",
-    "url": "/now",
-    "content": "Reinforcement learning Working from fundamentals toward modern deep RL, with the long-term goal of reliable autonomous control for robots. LLMs and agents Studying the path from classical language modeling to transformers and small agentic systems, especially where models can reason inside controlled environments. Robotics simulation Hands-on exploration across MuJoCo, Simulink/Simscape, Isaac Lab, Gazebo, ROS, and custom environment design. World models Exploring compact predictive models that could make reinforcement learning more sample efficient for embodied systems."
-  },
-  {
-    "type": "page",
     "title": "Stack",
     "summary": "A practical skill map for lonely guy across programming, machine learning, robotics simulation, systems, and deployment.",
     "url": "/stack",
     "content": "Languages and formats Python, C/C++, Java, JavaScript, HTML, CSS, URDF, MJCF, and the low-level interfaces needed to move between simulation and real systems. AI and ML Reinforcement learning, deep learning, supervised and unsupervised learning, LLM basics, transformers, Gymnasium, PyTorch-style workflows, Hugging Face, NumPy, pandas, and visualization. Robotics and embedded systems MuJoCo, MATLAB, Simulink, Simscape Multibody, Gazebo, Isaac Lab, ROS, Arduino, Raspberry Pi, sensors, and embedded C/C++ practice. Systems thinking Deterministic runtimes, quantized deployment, cache-aware inference, API design, and the habit of turning vague agent ideas into testable environments."
-  },
-  {
-    "type": "page",
-    "title": "Path",
-    "summary": "The long-term direction behind the portfolio: research, embodied AI, autonomous robotic assistants, and systems that can leave the demo stage.",
-    "url": "/path",
-    "content": "Near term Build stronger reinforcement-learning intuition, ship public technical write-ups, and turn projects into reproducible artifacts with benchmarks and demos. Research direction Work toward embodied AI systems that combine world models, reinforcement learning, low-level control, and reliable deployment. Long-term obsession Autonomous robotic assistants that are useful, inspectable, and close enough to real life that the work cannot hide behind pretty demos."
   },
   {
     "type": "page",

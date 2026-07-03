@@ -5,13 +5,10 @@ SE1 (Lonely Guy) is building toward autonomous robotic assistants through reinfo
 
 ## Navigation
 - Home: https://lonelyguy.vercel.app/
-- Now: https://lonelyguy.vercel.app/now
 - Stack: https://lonelyguy.vercel.app/stack
-- Path: https://lonelyguy.vercel.app/path
 - Projects: https://lonelyguy.vercel.app/projects
 - Articles: https://lonelyguy.vercel.app/articles
 - Updates: https://lonelyguy.vercel.app/updates
-- Papers: https://lonelyguy.vercel.app/papers
 - Gallery: https://lonelyguy.vercel.app/gallery
 - Search index JSON: https://lonelyguy.vercel.app/search-index.json
 - Site index JSON: https://lonelyguy.vercel.app/site-index.json

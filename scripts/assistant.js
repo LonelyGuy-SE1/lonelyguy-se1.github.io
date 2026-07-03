@@ -30,7 +30,7 @@
 
     var content = window.PORTFOLIO_CONTENT;
     if (content) {
-      var sections = ["updates", "articles", "papers"];
+      var sections = ["updates", "articles"];
       for (var si = 0; si < sections.length; si++) {
         var key = sections[si];
         var items = content[key] || [];

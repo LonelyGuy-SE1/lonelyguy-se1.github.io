@@ -30,7 +30,7 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-06-23T14:30:01.735Z",
+  "generatedAt": "2026-07-03T14:18:44.789Z",
   "routes": [
     {
       "type": "page",
@@ -42,25 +42,9 @@
     },
     {
       "type": "page",
-      "title": "Now",
-      "url": "https://lonelyguy.vercel.app/now",
-      "summary": "What SE1 is actively studying and building right now across reinforcement learning, LLMs, robotics simulation, and world models.",
-      "tags": [],
-      "date": ""
-    },
-    {
-      "type": "page",
       "title": "Stack",
       "url": "https://lonelyguy.vercel.app/stack",
       "summary": "A practical skill map for lonely guy across programming, machine learning, robotics simulation, systems, and deployment.",
-      "tags": [],
-      "date": ""
-    },
-    {
-      "type": "page",
-      "title": "Path",
-      "url": "https://lonelyguy.vercel.app/path",
-      "summary": "The long-term direction behind the portfolio: research, embodied AI, autonomous robotic assistants, and systems that can leave the demo stage.",
       "tags": [],
       "date": ""
     },

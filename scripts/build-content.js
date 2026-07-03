@@ -15,38 +15,11 @@ const SITE_INDEX_JSON = path.join(ROOT, "site-index.json");
 const COLLECTION_DIRS = {
   updates: path.join(ROOT, "updates"),
   articles: path.join(ROOT, "articles"),
-  papers: path.join(ROOT, "papers"),
 };
 
 const GALLERY_DIR = path.join(ROOT, "gallery");
 
 const STATIC_PAGES = [
-  {
-    id: "now",
-    path: "/now",
-    title: "Now",
-    description:
-      "What SE1 is actively studying and building right now across reinforcement learning, LLMs, robotics simulation, and world models.",
-    kicker: "current focus",
-    sections: [
-      {
-        title: "Reinforcement learning",
-        body: "Working from fundamentals toward modern deep RL, with the long-term goal of reliable autonomous control for robots.",
-      },
-      {
-        title: "LLMs and agents",
-        body: "Studying the path from classical language modeling to transformers and small agentic systems, especially where models can reason inside controlled environments.",
-      },
-      {
-        title: "Robotics simulation",
-        body: "Hands-on exploration across MuJoCo, Simulink/Simscape, Isaac Lab, Gazebo, ROS, and custom environment design.",
-      },
-      {
-        title: "World models",
-        body: "Exploring compact predictive models that could make reinforcement learning more sample efficient for embodied systems.",
-      },
-    ],
-  },
   {
     id: "stack",
     path: "/stack",
@@ -70,28 +43,6 @@ const STATIC_PAGES = [
       {
         title: "Systems thinking",
         body: "Deterministic runtimes, quantized deployment, cache-aware inference, API design, and the habit of turning vague agent ideas into testable environments.",
-      },
-    ],
-  },
-  {
-    id: "path",
-    path: "/path",
-    title: "Path",
-    description:
-      "The long-term direction behind the portfolio: research, embodied AI, autonomous robotic assistants, and systems that can leave the demo stage.",
-    kicker: "direction",
-    sections: [
-      {
-        title: "Near term",
-        body: "Build stronger reinforcement-learning intuition, ship public technical write-ups, and turn projects into reproducible artifacts with benchmarks and demos.",
-      },
-      {
-        title: "Research direction",
-        body: "Work toward embodied AI systems that combine world models, reinforcement learning, low-level control, and reliable deployment.",
-      },
-      {
-        title: "Long-term obsession",
-        body: "Autonomous robotic assistants that are useful, inspectable, and close enough to real life that the work cannot hide behind pretty demos.",
       },
     ],
   },
@@ -813,12 +764,9 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
 function headerHtml(activePath = "") {
   const links = [
     ["/", "home"],
-    ["/now", "now"],
     ["/stack", "stack"],
-    ["/path", "path"],
     ["/updates", "updates"],
     ["/articles", "blogs"],
-    ["/papers", "papers"],
     ["/gallery", "gallery"],
     ["/projects", "projects"],
     ["/contact", "contact"],
@@ -844,15 +792,17 @@ function headerHtml(activePath = "") {
 function footerHtml(config) {
   return `<footer class="site-footer" id="footer">
       <div class="site-width footer-inner">
-        <p class="footer-kicker">built for the long run</p>
+        <p class="footer-kicker">stuck in my head while making this</p>
         <blockquote class="footer-quote">
-          "part imagination and part curiosity. in short, truth itself."
+          "Your enemy is a resilient one. The thing you all oppose isn't just
+          me. Nor is it heretics. It's part imagination and part curiosity. In
+          short, it's truth itself"
         </blockquote>
         <div class="footer-meta">
-          <span>${escapeHtml(config.shortName)} keeps building toward embodied AI systems.</span>
+          <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
           <a href="/">back to home</a>
         </div>
-        <p class="footer-copy">&copy; 2026 ${escapeHtml(config.shortName)}. All rights reserved.</p>
+        <p class="footer-copy">&copy; 2026 SE1. All rights reserved.</p>
       </div>
     </footer>`;
 }
@@ -977,24 +927,44 @@ function projectMediaHtml(record) {
     .join("")}</div>`;
 }
 
-function stackBoardHtml() {
+function shieldsBadgeUrl(item) {
+  const params = new URLSearchParams({
+    style: "flat-square",
+    logoColor: item.logoColor || "white",
+  });
+  if (item.logo) params.set("logo", item.logo);
+  if (item.logoSize) params.set("logoSize", item.logoSize);
+  const labelPath = encodeURIComponent(item.label).replaceAll("-", "--");
+  return `https://img.shields.io/badge/${labelPath}-${item.color}?${params.toString()}`;
+}
+
+function skillBadgeHtml(item) {
+  return `<img class="skill-badge${item.hot ? " skill-badge--hot" : ""}" src="${escapeAttr(shieldsBadgeUrl(item))}" alt="${escapeAttr(item.label)}" loading="lazy" decoding="async">`;
+}
+
+function skillBadgeRow(items) {
+  return `<div class="shield-row">${items.map(skillBadgeHtml).join("\n              ")}</div>`;
+}
+
+function stackBoardHtml(options = {}) {
+  const headingTag = options.headingLevel === 3 ? "h3" : "h2";
   return `<div class="stack-board" aria-label="skill stack">
           <article class="stack-card stack-card--primary">
             <div class="stack-card-head">
               <span class="stack-glyph">RL</span>
               <div>
-                <h2>ai / learning side</h2>
+                <${headingTag}>ai / learning side</${headingTag}>
                 <p>where most of the current attention is going.</p>
               </div>
             </div>
-            <div class="shield-row">
-              <span class="skill-shield skill-shield--hot"><b>RL</b> reinforcement learning</span>
-              <span class="skill-shield"><b>DL</b> deep learning</span>
-              <span class="skill-shield"><b>LLM</b> transformers</span>
-              <span class="skill-shield"><b>GYM</b> gymnasium</span>
-              <span class="skill-shield"><b>HF</b> hugging face</span>
-              <span class="skill-shield"><b>SK</b> scikit-learn</span>
-            </div>
+            ${skillBadgeRow([
+              { label: "reinforcement learning", color: "ff6b35", hot: true },
+              { label: "deep learning", color: "dc2626" },
+              { label: "transformers", color: "c4284a" },
+              { label: "gymnasium", color: "0081a5" },
+              { label: "hugging face", logo: "huggingface", color: "ffd21e", logoColor: "000000" },
+              { label: "scikit-learn", logo: "scikitlearn", color: "f7931e", logoColor: "000000" },
+            ])}
             <p>
               supervised / unsupervised learning, rl, deep learning, llm basics,
               transformers, encoders, decoders, rnns, and the messy experimental
@@ -1006,54 +976,56 @@ function stackBoardHtml() {
             <div class="stack-card-head">
               <span class="stack-glyph">CODE</span>
               <div>
-                <h2>languages + formats</h2>
+                <${headingTag}>languages + formats</${headingTag}>
                 <p>stuff used to express models, systems, and simulations.</p>
               </div>
             </div>
-            <div class="shield-row">
-              <span class="skill-shield skill-shield--hot"><b>PY</b> python</span>
-              <span class="skill-shield"><b>C++</b> embedded c/c++</span>
-              <span class="skill-shield"><b>JV</b> java</span>
-              <span class="skill-shield"><b>JS</b> javascript</span>
-              <span class="skill-shield"><b>URDF</b> robot format</span>
-              <span class="skill-shield"><b>MJCF</b> mujoco format</span>
-            </div>
+            ${skillBadgeRow([
+              { label: "python", logo: "python", color: "3776ab", hot: true },
+              { label: "embedded c/c++", logo: "cplusplus", color: "00599c" },
+              { label: "java", logo: "openjdk", color: "007396" },
+              { label: "javascript", logo: "javascript", color: "f7df1e", logoColor: "000000" },
+              { label: "urdf", color: "cc8833" },
+              { label: "mjcf", color: "a855f7" },
+            ])}
           </article>
 
           <article class="stack-card">
             <div class="stack-card-head">
               <span class="stack-glyph">BOT</span>
               <div>
-                <h2>robotics / sim / embedded</h2>
+                <${headingTag}>robotics / sim / embedded</${headingTag}>
                 <p>simulators, control intuition, and hardware-side basics.</p>
               </div>
             </div>
-            <div class="shield-row">
-              <span class="skill-shield skill-shield--hot"><b>MJ</b> mujoco</span>
-              <span class="skill-shield"><b>SIM</b> simulink</span>
-              <span class="skill-shield"><b>ISAAC</b> isaac lab</span>
-              <span class="skill-shield"><b>ROS</b> ros</span>
-              <span class="skill-shield"><b>ARD</b> arduino</span>
-              <span class="skill-shield"><b>PI</b> raspberry pi</span>
-            </div>
+            ${skillBadgeRow([
+              { label: "mujoco", color: "3c4f65", hot: true },
+              { label: "simulink", color: "f2a900", logoColor: "000000" },
+              { label: "isaac lab", logo: "nvidia", color: "76b900", logoColor: "000000" },
+              { label: "ros", logo: "ros", color: "22314e" },
+              { label: "arduino", logo: "arduino", color: "00878f" },
+              { label: "raspberry pi", logo: "raspberrypi", color: "a22846" },
+            ])}
           </article>
 
           <article class="stack-card stack-card--wide">
             <div class="stack-card-head">
               <span class="stack-glyph">SYS</span>
               <div>
-                <h2>infra / build / distributed side</h2>
+                <${headingTag}>infra / build / distributed side</${headingTag}>
                 <p>the workbench around experiments and deployment.</p>
               </div>
             </div>
-            <div class="shield-row">
-              <span class="skill-shield"><b>GIT</b> git / github</span>
-              <span class="skill-shield"><b>CI</b> github actions</span>
-              <span class="skill-shield"><b>NB</b> jupyter / colab</span>
-              <span class="skill-shield"><b>API</b> fastapi</span>
-              <span class="skill-shield"><b>DOC</b> docker</span>
-              <span class="skill-shield"><b>DIST</b> parallax</span>
-            </div>
+            ${skillBadgeRow([
+              { label: "git", logo: "git", color: "f05032" },
+              { label: "github", logo: "github", color: "181717" },
+              { label: "github actions", logo: "githubactions", color: "2088ff" },
+              { label: "jupyter", logo: "jupyter", color: "f37626", logoColor: "000000" },
+              { label: "colab", logo: "googlecolab", color: "f9ab00", logoColor: "000000" },
+              { label: "fastapi", logo: "fastapi", color: "009688" },
+              { label: "docker", logo: "docker", color: "2496ed" },
+              { label: "parallax", color: "cc8833", logoColor: "000000" },
+            ])}
             <p>
               also spent a good chunk of time on blockchain architecture, dapps,
               daos, and tokenomics. had its time, taught a lot, not the center
@@ -1067,6 +1039,36 @@ function stackBoardHtml() {
           decay, improve, and change shape. judge me more by projects, writeups,
           and a conversation.
         </p>`;
+}
+
+function homepageStackPanelHtml() {
+  return `<section
+            class="tab-panel"
+            id="panel-stack"
+            role="tabpanel"
+            aria-labelledby="tab-stack"
+            hidden
+          >
+            <p class="panel-label">stack</p>
+            <div class="panel-head">
+              <h2>skill tree / sub stuff</h2>
+              <p>
+                this section is something ive always struggled with, when
+                exactly could one call that they have acquired a certain skill,
+                im sure the field keeps evolving... so its better to judge me by
+                having a talk. also what if i learned something but forgot it,
+                or learned it but cannot apply it.
+              </p>
+            </div>
+
+            ${stackBoardHtml({ headingLevel: 3 })}
+          </section>`;
+}
+
+function removeHomepageTab(html, id) {
+  return html
+    .replace(new RegExp(`\\s*<a class="tab-button" id="tab-${id}"[\\s\\S]*?<\\/a>`, "g"), "")
+    .replace(new RegExp(`\\s*<section\\s+class="tab-panel"\\s+id="panel-${id}"[\\s\\S]*?<\\/section>`, "g"), "");
 }
 
 function makeProjectPageHtml(config, assets, record) {
@@ -1400,15 +1402,12 @@ async function writePage(routePath, html) {
   console.log(`  -> ${clean === "/" ? "index.html" : `${clean.slice(1)}/index.html`}`);
 }
 
-async function generatePages(config, assets, updates, articles, papers, gallery, projects) {
+async function generatePages(config, assets, updates, articles, gallery, projects) {
   for (const record of updates) {
     await writePage(`/updates/${record.id}`, makeArticlePageHtml(config, assets, record, "updates"));
   }
   for (const record of articles) {
     await writePage(`/articles/${record.id}`, makeArticlePageHtml(config, assets, record, "articles"));
-  }
-  for (const record of papers) {
-    await writePage(`/papers/${record.id}`, makeArticlePageHtml(config, assets, record, "papers"));
   }
   for (const record of projects) {
     await writePage(`/projects/${record.id}`, makeProjectPageHtml(config, assets, record));
@@ -1434,17 +1433,6 @@ async function generatePages(config, assets, updates, articles, papers, gallery,
       "Articles",
       "Longer technical write-ups from SE1 on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
       articles,
-    ),
-  );
-  await writePage(
-    "/papers",
-    makeCollectionPageHtml(
-      config,
-      assets,
-      "papers",
-      "Papers",
-      "Published research, formal papers, preprints, and academically structured work from SE1 as the portfolio grows.",
-      papers,
     ),
   );
   await writePage(
@@ -1483,12 +1471,10 @@ function sitemapEntry(config, pathname, options = {}) {
   return `<url><loc>${escapeXml(canonicalUrl(config, pathname))}</loc>${options.lastmod ? `<lastmod>${escapeXml(options.lastmod)}</lastmod>` : ""}<changefreq>${options.changefreq || "monthly"}</changefreq><priority>${options.priority || "0.7"}</priority>${imageTags}</url>`;
 }
 
-async function generateSitemap(config, updates, articles, papers, gallery, projects) {
+async function generateSitemap(config, updates, articles, gallery, projects) {
   const entries = [
     sitemapEntry(config, "/", { changefreq: "weekly", priority: "1.0" }),
-    sitemapEntry(config, "/now", { changefreq: "monthly", priority: "0.8" }),
     sitemapEntry(config, "/stack", { changefreq: "monthly", priority: "0.7" }),
-    sitemapEntry(config, "/path", { changefreq: "monthly", priority: "0.7" }),
     sitemapEntry(config, "/contact", { changefreq: "yearly", priority: "0.6" }),
     sitemapEntry(config, "/search", { changefreq: "monthly", priority: "0.4" }),
     sitemapEntry(config, "/gallery", {
@@ -1498,12 +1484,10 @@ async function generateSitemap(config, updates, articles, papers, gallery, proje
     }),
     sitemapEntry(config, "/updates", { changefreq: "weekly", priority: "0.8" }),
     sitemapEntry(config, "/articles", { changefreq: "weekly", priority: "0.8" }),
-    sitemapEntry(config, "/papers", { changefreq: "monthly", priority: "0.6" }),
     sitemapEntry(config, "/projects", { changefreq: "monthly", priority: "0.8" }),
   ];
   for (const r of updates) entries.push(sitemapEntry(config, `/updates/${r.id}`, { lastmod: r.updated || r.date, priority: "0.7", images: r.image ? [{ src: r.image }] : [] }));
   for (const r of articles) entries.push(sitemapEntry(config, `/articles/${r.id}`, { lastmod: r.updated || r.date, priority: "0.9", images: r.image ? [{ src: r.image }] : [] }));
-  for (const r of papers) entries.push(sitemapEntry(config, `/papers/${r.id}`, { lastmod: r.updated || r.date, priority: "0.8", images: r.image ? [{ src: r.image }] : [] }));
   for (const r of projects) entries.push(sitemapEntry(config, `/projects/${r.id}`, { lastmod: r.updated, priority: r.featured ? "0.85" : "0.7", images: r.images || [] }));
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -1580,7 +1564,7 @@ async function generateJsonFeed(config, articles) {
   console.log("  -> feed.json");
 }
 
-function makeSearchRecords(config, updates, articles, papers, gallery, projects) {
+function makeSearchRecords(config, updates, articles, gallery, projects) {
   const records = [
     {
       type: "page",
@@ -1607,7 +1591,6 @@ function makeSearchRecords(config, updates, articles, papers, gallery, projects)
   for (const [type, items] of [
     ["updates", updates],
     ["articles", articles],
-    ["papers", papers],
   ]) {
     for (const item of items) {
       records.push({
@@ -1644,8 +1627,8 @@ function makeSearchRecords(config, updates, articles, papers, gallery, projects)
   return records;
 }
 
-async function generateMachineIndexes(config, updates, articles, papers, gallery, projects) {
-  const searchRecords = makeSearchRecords(config, updates, articles, papers, gallery, projects);
+async function generateMachineIndexes(config, updates, articles, gallery, projects) {
+  const searchRecords = makeSearchRecords(config, updates, articles, gallery, projects);
   await fs.writeFile(SEARCH_INDEX_JSON, JSON.stringify(searchRecords, null, 2), "utf8");
   const siteIndex = {
     site: {
@@ -1669,7 +1652,7 @@ async function generateMachineIndexes(config, updates, articles, papers, gallery
   console.log("  -> site-index.json");
 }
 
-async function generateLlmsTxt(config, updates, articles, papers, projects) {
+async function generateLlmsTxt(config, updates, articles, projects) {
   const lines = [
     `# ${config.siteName}`,
     `> ${config.description}`,
@@ -1678,13 +1661,10 @@ async function generateLlmsTxt(config, updates, articles, papers, projects) {
     "",
     "## Navigation",
     `- Home: ${canonicalUrl(config, "/")}`,
-    `- Now: ${canonicalUrl(config, "/now")}`,
     `- Stack: ${canonicalUrl(config, "/stack")}`,
-    `- Path: ${canonicalUrl(config, "/path")}`,
     `- Projects: ${collectionUrl(config, "projects")}`,
     `- Articles: ${collectionUrl(config, "articles")}`,
     `- Updates: ${collectionUrl(config, "updates")}`,
-    `- Papers: ${collectionUrl(config, "papers")}`,
     `- Gallery: ${canonicalUrl(config, "/gallery")}`,
     `- Search index JSON: ${config.baseUrl}/search-index.json`,
     `- Site index JSON: ${config.baseUrl}/site-index.json`,
@@ -1703,11 +1683,6 @@ async function generateLlmsTxt(config, updates, articles, papers, projects) {
   if (updates.length) {
     lines.push("## Updates");
     for (const r of updates) lines.push(`- [${r.title}](${recordUrl(config, "updates", r.id)}): ${r.summary}`);
-    lines.push("");
-  }
-  if (papers.length) {
-    lines.push("## Papers");
-    for (const r of papers) lines.push(`- [${r.title}](${recordUrl(config, "papers", r.id)}): ${r.summary}`);
     lines.push("");
   }
   lines.push("## Profiles");
@@ -1782,9 +1757,18 @@ function updateHeadJsonLd(html, config, projects, articles) {
   );
 }
 
-async function updateHomepage(config, assets, updates, articles, papers, projects) {
+async function updateHomepage(config, assets, updates, articles, projects) {
   const indexPath = path.join(ROOT, "index.html");
   let html = await fs.readFile(indexPath, "utf8");
+  const heroImagePreload = `<link
+      rel="preload"
+      href="assets/yuri-720.avif"
+      imagesrcset="assets/yuri-480.avif 480w, assets/yuri-720.avif 720w, assets/yuri.avif 1024w"
+      imagesizes="(max-width: 640px) 92vw, (max-width: 960px) 60vw, 42vw"
+      as="image"
+      type="image/avif"
+      fetchpriority="high"
+    />`;
 
   html = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(config.seo.defaultTitle)}</title>`)
@@ -1794,6 +1778,7 @@ async function updateHomepage(config, assets, updates, articles, papers, project
     )
     .replace(/<meta name="author" content="[^"]*"\s*\/>/, `<meta name="author" content="${escapeAttr(config.author.name)}" />`)
     .replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${canonicalUrl(config, "/")}" />`)
+    .replace(/<link\s+rel="preload"\s+href="assets\/yuri-720\.(?:webp|avif)"[\s\S]*?\/>/, heroImagePreload)
     .replace(/\s*<meta name="google-site-verification" content="[^"]*"\s*\/>\n?/, "\n")
     .replace(/<meta property="og:site_name" content="[^"]*"\s*\/>/, `<meta property="og:site_name" content="${escapeAttr(config.siteName)}" />`)
     .replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:title" content="${escapeAttr(config.seo.defaultTitle)}" />`)
@@ -1829,9 +1814,18 @@ async function updateHomepage(config, assets, updates, articles, papers, project
     .replace(/\s*<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?rel="stylesheet"\s*\/>\n?/g, "\n")
     .replace(/<link rel="stylesheet" href="(?:styles\/main\.css|\/assets\/build\/main\.[^"]+\.css)" \/>/, `<link rel="stylesheet" href="${assets.css}" />`)
     .replace(/\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/marked\/marked\.min\.js"><\/script>\n?/g, "\n")
-    .replace(/<script(?:\s+defer)? src="(?:scripts\/content\.js|\/assets\/build\/content\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.content}"></script>`)
+    .replace(/(?:<script>window\.PORTFOLIO_CONTENT_SRC="[^"]+";<\/script>|<script(?:\s+defer)? src="(?:scripts\/content\.js|\/assets\/build\/content\.[^"]+\.js)"><\/script>)/, `<script>window.PORTFOLIO_CONTENT_SRC="${assets.content}";</script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/main\.js|\/assets\/build\/main\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.main}"></script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/assistant\.js|\/assets\/build\/assistant\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.assistant}"></script>`);
+
+  html = html.replace(
+    /<section\s+class="tab-panel"\s+id="panel-stack"[\s\S]*?(?=\s*<section\s+class="tab-panel"\s+id="panel-(?:path|updates)")/,
+    homepageStackPanelHtml(),
+  );
+
+  for (const id of ["now", "path", "papers"]) {
+    html = removeHomepageTab(html, id);
+  }
 
   await fs.writeFile(indexPath, html, "utf8");
   console.log("  -> index.html metadata/assets");
@@ -1844,15 +1838,13 @@ async function build() {
   console.log("converting images...");
   await convertImages();
 
-  const [updates, articles, papers, gallery, projects] = await Promise.all([
+  const [updates, articles, gallery, projects] = await Promise.all([
     readMarkdownCollection(COLLECTION_DIRS.updates),
     readMarkdownCollection(COLLECTION_DIRS.articles),
-    readMarkdownCollection(COLLECTION_DIRS.papers),
     readGallery(),
     readProjects(),
   ]);
-
-  const content = { updates, articles, papers, gallery, projects };
+  const content = { updates, articles, gallery, projects };
   await fs.writeFile(CONTENT_JS, `window.PORTFOLIO_CONTENT=${JSON.stringify(content)};\n`, "utf8");
   console.log("  -> scripts/content.js");
 
@@ -1860,22 +1852,22 @@ async function build() {
   const assets = await generateAssetManifest();
 
   console.log("generating pages...");
-  await generatePages(config, assets, updates, articles, papers, gallery, projects);
+  await generatePages(config, assets, updates, articles, gallery, projects);
 
   console.log("generating sitemap...");
-  await generateSitemap(config, updates, articles, papers, gallery, projects);
+  await generateSitemap(config, updates, articles, gallery, projects);
 
   console.log("generating feeds...");
   await Promise.all([generateRssFeed(config, articles), generateJsonFeed(config, articles)]);
 
   console.log("generating machine indexes...");
-  await generateMachineIndexes(config, updates, articles, papers, gallery, projects);
+  await generateMachineIndexes(config, updates, articles, gallery, projects);
 
   console.log("generating llms.txt...");
-  await generateLlmsTxt(config, updates, articles, papers, projects);
+  await generateLlmsTxt(config, updates, articles, projects);
 
   console.log("updating homepage...");
-  await updateHomepage(config, assets, updates, articles, papers, projects);
+  await updateHomepage(config, assets, updates, articles, projects);
 
   console.log("done.");
 }

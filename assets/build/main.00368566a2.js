@@ -13,10 +13,12 @@ const galleryLightboxClose = Array.from(document.querySelectorAll("[data-lightbo
 const siteContent = window.PORTFOLIO_CONTENT || {
   updates: [],
   articles: [],
-  papers: [],
   projects: [],
   gallery: [],
 };
+let contentLoadPromise = null;
+let contentRendered = false;
+let searchIndex = [];
 
 const feedSections = {
   updates: {
@@ -31,12 +33,6 @@ const feedSections = {
     reader: document.getElementById("articles-reader-content"),
     emptyText: "no articles added yet.",
   },
-  papers: {
-    list: document.getElementById("papers-list"),
-    empty: document.getElementById("papers-reader-empty"),
-    reader: document.getElementById("papers-reader-content"),
-    emptyText: "no papers added yet.",
-  },
   projects: {
     list: document.getElementById("projects-list"),
     empty: document.getElementById("projects-reader-empty"),
@@ -48,7 +44,6 @@ const feedSections = {
 const feedRecords = {
   updates: [],
   articles: [],
-  papers: [],
   projects: [],
 };
 
@@ -82,12 +77,9 @@ function pictureHtml(src, alt, extra) {
 
 const tabRoutes = {
   home: "/",
-  now: "/now",
   stack: "/stack",
-  path: "/path",
   updates: "/updates",
   articles: "/articles",
-  papers: "/papers",
   images: "/gallery",
   projects: "/projects",
   contact: "/contact",
@@ -96,6 +88,83 @@ const tabRoutes = {
 const routeTabs = Object.fromEntries(Object.entries(tabRoutes).map(([tab, route]) => [route, tab]));
 
 window.currentTab = "home";
+
+function isContentTab(tabId) {
+  return ["updates", "articles", "images", "projects"].includes(tabId);
+}
+
+function applyLoadedContent(content) {
+  const loadedContent = content || {};
+  siteContent.updates = Array.isArray(loadedContent.updates) ? loadedContent.updates : [];
+  siteContent.articles = Array.isArray(loadedContent.articles) ? loadedContent.articles : [];
+  siteContent.projects = Array.isArray(loadedContent.projects) ? loadedContent.projects : [];
+  siteContent.gallery = Array.isArray(loadedContent.gallery) ? loadedContent.gallery : [];
+}
+
+function loadPortfolioContent() {
+  if (window.PORTFOLIO_CONTENT) {
+    applyLoadedContent(window.PORTFOLIO_CONTENT);
+    return Promise.resolve(siteContent);
+  }
+
+  if (contentLoadPromise) {
+    return contentLoadPromise;
+  }
+
+  const source = window.PORTFOLIO_CONTENT_SRC;
+  if (!source) {
+    return Promise.resolve(siteContent);
+  }
+
+  contentLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = source;
+    script.async = true;
+    script.onload = () => {
+      applyLoadedContent(window.PORTFOLIO_CONTENT);
+      resolve(siteContent);
+    };
+    script.onerror = () => {
+      contentLoadPromise = null;
+      reject(new Error("portfolio content failed to load"));
+    };
+    document.head.appendChild(script);
+  });
+
+  return contentLoadPromise;
+}
+
+function showContentLoadError() {
+  Object.values(feedSections).forEach((section) => {
+    if (section.list) {
+      section.list.innerHTML = '<p class="dynamic-note">could not load this section.</p>';
+    }
+  });
+
+  if (galleryGrid) {
+    galleryGrid.innerHTML = '<p class="dynamic-note">could not load images.</p>';
+  }
+}
+
+function renderInteractiveContent() {
+  if (contentRendered) {
+    return;
+  }
+
+  renderFeed("updates", siteContent.updates || []);
+  renderFeed("articles", siteContent.articles || []);
+  renderFeed("projects", siteContent.projects || []);
+  renderGallery(siteContent.gallery || []);
+  rebuildSearchIndex();
+  contentRendered = true;
+}
+
+function ensureInteractiveContent() {
+  return loadPortfolioContent().then(() => {
+    renderInteractiveContent();
+    return siteContent;
+  });
+}
 
 function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
   const nextButton = tabButtons.find((button) => button.dataset.tab === tabId) || tabButtons[0];
@@ -124,6 +193,10 @@ function setActiveTab(tabId, updateHash = true, scrollToTabs = false) {
 
   if (scrollToTabs) {
     tabsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  if (isContentTab(nextId)) {
+    ensureInteractiveContent().catch(showContentLoadError);
   }
 }
 
@@ -438,13 +511,13 @@ galleryLightboxClose.forEach((control) => {
 
 syncTabWithHash();
 updateScrollProgress();
-renderFeed("updates", siteContent.updates || []);
-renderFeed("articles", siteContent.articles || []);
-renderFeed("papers", siteContent.papers || []);
-renderFeed("projects", siteContent.projects || []);
-renderGallery(siteContent.gallery || []);
+rebuildSearchIndex();
 
-// ── Site Search ──────────────────────────────────────────────────────
+if (isContentTab(window.currentTab)) {
+  ensureInteractiveContent().catch(showContentLoadError);
+}
+
+// Site Search
 
 const searchInput = document.getElementById("site-search");
 const searchResults = document.getElementById("search-results");
@@ -457,7 +530,15 @@ function openSearch() {
   searchTrigger.setAttribute("aria-expanded", "true");
   setTimeout(function () { 
     searchInput.focus(); 
-    if (!searchInput.value.trim()) runSearch("");
+    if (!searchInput.value.trim()) {
+      ensureInteractiveContent()
+        .then(function () {
+          runSearch("");
+        })
+        .catch(function () {
+          runSearch("");
+        });
+    }
   }, 100);
 }
 
@@ -480,14 +561,12 @@ if (searchTrigger) {
   });
 }
 
-let searchIndex = [];
-
 function rebuildSearchIndex() {
   const index = [];
   
   document.querySelectorAll(".tab-panel").forEach(panel => {
     const id = panel.id.replace("panel-", "");
-    if (["updates", "articles", "papers", "images", "projects"].includes(id)) return;
+    if (["updates", "articles", "images", "projects"].includes(id)) return;
     index.push({
       type: "page",
       id: id,
@@ -498,7 +577,7 @@ function rebuildSearchIndex() {
     });
   });
 
-  for (const type of ["updates", "articles", "papers"]) {
+  for (const type of ["updates", "articles"]) {
     for (const item of (siteContent[type] || [])) {
       const rawText = (item.html || "").replace(/<[^>]*>?/gm, " ");
       index.push({ type, id: item.id, title: item.title, summary: item.summary, date: item.dateLabel, content: rawText });
@@ -624,7 +703,12 @@ if (searchInput) {
 
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => runSearch(searchInput.value.trim()), 200);
+    searchTimeout = setTimeout(() => {
+      const query = searchInput.value.trim();
+      ensureInteractiveContent()
+        .then(() => runSearch(query))
+        .catch(() => runSearch(query));
+    }, 200);
   });
 
   searchInput.addEventListener("keydown", (e) => {

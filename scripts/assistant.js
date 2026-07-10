@@ -189,7 +189,7 @@
   function renderBotMessage(body, text) {
     var div = document.createElement("div");
     div.className = "assistant-msg assistant-msg--bot";
-    var navRegex = /\u2192\s*([\w-]+)(?::([\w-]+))?/g;
+    var navRegex = /(?:\u2192|\?)\s*([\w-]+)(?::([\w-]+))?/g;
     var match;
     var lastIndex = 0;
     var actions = [];
@@ -349,7 +349,7 @@
       console.error("Stream read error:", err);
     }
 
-    var navRegex = /\u2192\s*([\w-]+)(?::([\w-]+))?/g;
+    var navRegex = /(?:\u2192|\?)\s*([\w-]+)(?::([\w-]+))?/g;
     var match;
     while ((match = navRegex.exec(fullText)) !== null) {
       navActions.push({ type: match[1], id: match[2] || null });

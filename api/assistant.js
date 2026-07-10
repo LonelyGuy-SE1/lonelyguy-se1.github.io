@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
     fullSystemPrompt += "\n\nCONTEXT INFORMATION:\n" + contextString;
   }
   
-  fullSystemPrompt += "\n\nCRITICAL FORMATTING INSTRUCTIONS:\n- Keep your answers concise, natural, and helpful.\n- Use standard markdown formatting.\n- DO NOT include strange artifacts, `<think>` tags, or internal reasoning in your final output.\n- For simple greetings or casual questions, reply conversationally and briefly in 1-2 sentences.";
+  fullSystemPrompt += "\n\nCRITICAL FORMATTING INSTRUCTIONS:\n- Keep your answers concise, natural, and helpful.\n- Use standard markdown formatting.\n- DO NOT include strange artifacts, `<think>` tags, or internal reasoning in your final output.\n- For simple greetings or casual questions, reply conversationally and briefly in 1-2 sentences.\n- For navigation actions, ALWAYS use the → arrow character (not ? or any other punctuation). Example: → projects:project-halide\n- Format for navigation buttons: → tab-name or → tab:item-id\n- You can include navigation suggestions inline in your natural response. The client will render them as clickable buttons.\n- You MUST include navigation suggestions when relevant. For example, after greeting someone, suggest they check out relevant sections.";
 
   const openRouterMessages = [
     { role: "system", content: fullSystemPrompt }

@@ -25,7 +25,7 @@
     "title": "Gallery",
     "summary": "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
     "url": "/gallery",
-    "content": "biped arm result clanker pose env cybersec humanoid circuit shiori extension atari breakout atari breakout preprocessing bench raijin biped arm training graph biped arm"
+    "content": "biped arm result clanker pose env cybersec humanoid circuit shiori extension atari breakout atari breakout preprocessing bench raijin biped arm training graph biped arm yuri"
   },
   {
     "type": "updates",
@@ -207,5 +207,12 @@
     "summary": "biped arm",
     "url": "/gallery",
     "content": "gallery/biped.arm.png"
+  },
+  {
+    "type": "gallery",
+    "title": "yuri",
+    "summary": "yuri",
+    "url": "/gallery",
+    "content": "gallery/yuri.png"
   }
 ]

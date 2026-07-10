@@ -903,7 +903,7 @@ function makeArticlePageHtml(config, assets, record, type) {
             <p class="reader-kicker">${escapeHtml(record.dateLabel)}${record.readingTime ? ` / ${escapeHtml(record.readingTime)} min read` : ""}</p>
             <h1>${escapeHtml(record.title)}</h1>
           </div>
-          ${renderLinkPills([{ label: `back to ${type}`, href: `/${type}` }])}
+          ${renderLinkPills([{ label: `back to ${type}`, href: `/?t=${type}` }])}
         </div>
         <p class="static-page-summary">${escapeHtml(record.summary)}</p>
         ${renderTagList(record.tags)}
@@ -1090,12 +1090,6 @@ function homepageStackPanelHtml() {
           </section>`;
 }
 
-function removeHomepageTab(html, id) {
-  return html
-    .replace(new RegExp(`\\s*<a class="tab-button" id="tab-${id}"[\\s\\S]*?<\\/a>`, "g"), "")
-    .replace(new RegExp(`\\s*<section\\s+class="tab-panel"\\s+id="panel-${id}"[\\s\\S]*?<\\/section>`, "g"), "");
-}
-
 function makeProjectPageHtml(config, assets, record) {
   const url = recordUrl(config, "projects", record.id);
   const jsonLd = [
@@ -1136,7 +1130,7 @@ function makeProjectPageHtml(config, assets, record) {
             <p class="reader-kicker">${escapeHtml(record.status)}</p>
             <h1>${escapeHtml(record.title)}</h1>
           </div>
-          ${renderLinkPills(projectLinks(record).concat([{ label: "all projects", href: "/projects" }]))}
+          ${renderLinkPills(projectLinks(record).concat([{ label: "all projects", href: "/?t=projects" }]))}
         </div>
         <p class="static-page-summary">${escapeHtml(record.summary)}</p>
         ${renderTagList(record.tags)}
@@ -1830,15 +1824,6 @@ function updateHeadJsonLd(html, config, projects, articles) {
 async function updateHomepage(config, assets, updates, articles, projects) {
   const indexPath = path.join(ROOT, "index.html");
   let html = await fs.readFile(indexPath, "utf8");
-  const heroImagePreload = `<link
-      rel="preload"
-      href="assets/yuri-720.avif"
-      imagesrcset="assets/yuri-480.avif 480w, assets/yuri-720.avif 720w, assets/yuri.avif 1024w"
-      imagesizes="(max-width: 640px) 92vw, (max-width: 960px) 60vw, 42vw"
-      as="image"
-      type="image/avif"
-      fetchpriority="high"
-    />`;
 
   html = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(config.seo.defaultTitle)}</title>`)
@@ -1848,7 +1833,6 @@ async function updateHomepage(config, assets, updates, articles, projects) {
     )
     .replace(/<meta name="author" content="[^"]*"\s*\/>/, `<meta name="author" content="${escapeAttr(config.author.name)}" />`)
     .replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${canonicalUrl(config, "/")}" />`)
-    .replace(/<link\s+rel="preload"\s+href="assets\/yuri-720\.(?:webp|avif)"[\s\S]*?\/>/, heroImagePreload)
     .replace(/\s*<meta name="google-site-verification" content="[^"]*"\s*\/>\n?/, "\n")
     .replace(/<meta property="og:site_name" content="[^"]*"\s*\/>/, `<meta property="og:site_name" content="${escapeAttr(config.siteName)}" />`)
     .replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:title" content="${escapeAttr(config.seo.defaultTitle)}" />`)
@@ -1879,23 +1863,15 @@ async function updateHomepage(config, assets, updates, articles, projects) {
   html = html.replace(/<!-- Speculation Rules:[\s\S]*?<\/script>/, speculationRules);
 
   html = html
-    .replace(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com" \/>\s*/g, "")
-    .replace(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin \/>\s*/g, "")
-    .replace(/\s*<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?rel="stylesheet"\s*\/>\n?/g, "\n")
     .replace(/<link rel="stylesheet" href="(?:styles\/main\.css|\/assets\/build\/main\.[^"]+\.css)" \/>/, `<link rel="stylesheet" href="${assets.css}" />`)
-    .replace(/\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/marked\/marked\.min\.js"><\/script>\n?/g, "\n")
     .replace(/(?:<script>window\.PORTFOLIO_CONTENT_SRC="[^"]+";<\/script>|<script(?:\s+defer)? src="(?:scripts\/content\.js|\/assets\/build\/content\.[^"]+\.js)"><\/script>)/, `<script>window.PORTFOLIO_CONTENT_SRC="${assets.content}";</script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/main\.js|\/assets\/build\/main\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.main}"></script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/assistant\.js|\/assets\/build\/assistant\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.assistant}"></script>`);
 
   html = html.replace(
-    /<section\s+class="tab-panel"\s+id="panel-stack"[\s\S]*?(?=\s*<section\s+class="tab-panel"\s+id="panel-(?:path|updates)")/,
+    /<section\s+class="tab-panel"\s+id="panel-stack"[\s\S]*?(?=\s*<section\s+class="tab-panel"\s+id="panel-(?:updates)")/,
     homepageStackPanelHtml(),
   );
-
-  for (const id of ["now", "path", "papers"]) {
-    html = removeHomepageTab(html, id);
-  }
 
   await fs.writeFile(indexPath, html, "utf8");
   console.log("  -> index.html metadata/assets");

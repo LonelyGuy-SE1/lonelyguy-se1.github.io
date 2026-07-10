@@ -30,7 +30,7 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-07-10T15:58:02.436Z",
+  "generatedAt": "2026-07-10T17:17:23.214Z",
   "routes": [
     {
       "type": "page",
@@ -243,6 +243,14 @@
       "title": "biped arm",
       "url": "https://lonelyguy.vercel.app/gallery",
       "summary": "biped arm",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "yuri",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "yuri",
       "tags": [],
       "date": ""
     }

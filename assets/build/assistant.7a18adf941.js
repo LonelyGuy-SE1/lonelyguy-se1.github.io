@@ -189,7 +189,7 @@
   function renderBotMessage(body, text) {
     var div = document.createElement("div");
     div.className = "assistant-msg assistant-msg--bot";
-    var navRegex = /[\u2192\?]\s*([\w-]+)(?::([\w-]+))?/g;
+    var navRegex = /\u2192\s*([\w-]+)(?::([\w-]+))?/g;
     var match;
     var lastIndex = 0;
     var actions = [];
@@ -349,13 +349,30 @@
       console.error("Stream read error:", err);
     }
 
-    var navRegex = /[\u2192\?]\s*([\w-]+)(?::([\w-]+))?/g;
+    var navRegex = /\u2192\s*([\w-]+)(?::([\w-]+))?/g;
     var match;
     while ((match = navRegex.exec(fullText)) !== null) {
       navActions.push({ type: match[1], id: match[2] || null });
     }
 
+    // Rebuild msgDiv content: strip nav markers from displayed text, keep only plain text
     if (navActions.length) {
+      msgDiv.removeChild(textNode);
+      var cleanLastIndex = 0;
+      var cleanParts = [];
+      navRegex.lastIndex = 0;
+      while ((match = navRegex.exec(fullText)) !== null) {
+        if (match.index > cleanLastIndex) {
+          cleanParts.push(fullText.slice(cleanLastIndex, match.index));
+        }
+        cleanLastIndex = match.index + match[0].length;
+      }
+      if (cleanLastIndex < fullText.length) {
+        cleanParts.push(fullText.slice(cleanLastIndex));
+      }
+      var cleanTextNode = document.createTextNode(cleanParts.join(""));
+      msgDiv.appendChild(cleanTextNode);
+
       var actionDiv = document.createElement("div");
       actionDiv.className = "assistant-actions";
       for (var ai = 0; ai < navActions.length; ai++) {

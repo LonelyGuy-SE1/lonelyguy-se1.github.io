@@ -478,6 +478,16 @@ scrollTopLinks.forEach((link) => {
 });
 
 function syncTabWithHash() {
+  const tabParam = new URLSearchParams(window.location.search).get("t");
+  if (tabParam && tabButtons.some((button) => button.dataset.tab === tabParam)) {
+    setActiveTab(tabParam, false, false);
+    if (window.location.search) {
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState(null, "", cleanUrl);
+    }
+    return;
+  }
+
   const routeMatch = routeTabs[window.location.pathname];
   if (routeMatch) {
     setActiveTab(routeMatch, false, false);
@@ -595,12 +605,6 @@ function rebuildSearchIndex() {
     index.push({ type: "projects", id: item.id, title: item.title, summary: item.summary, date: "", content: rawText });
   }
   searchIndex = index;
-}
-
-rebuildSearchIndex();
-
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function runSearch(query) {

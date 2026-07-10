@@ -464,6 +464,10 @@ summary,
 
 .static-header-nav {
   margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.8rem;
 }
 
 .header-tabs {

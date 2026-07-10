@@ -225,10 +225,21 @@ function extractYouTubeId(url) {
   return "";
 }
 
-function youtubeEmbedHtml(url) {
+function youtubeEmbedHtml(url, videoTitle) {
   const id = extractYouTubeId(url);
   if (!id || !/^[a-zA-Z0-9_-]{6,}$/.test(id)) return "";
-  return `<div class="reader-video"><iframe src="https://www.youtube-nocookie.com/embed/${escapeAttr(id)}" title="Video player" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+  const title = videoTitle || "Video walkthrough";
+  return `<div class="reader-video"><iframe src="https://www.youtube-nocookie.com/embed/${escapeAttr(id)}" title="${escapeAttr(title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+}
+
+function extractYouTubeIdsFromHtml(html) {
+  const ids = [];
+  const regex = /youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]{6,})/g;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    ids.push(match[1]);
+  }
+  return [...new Set(ids)];
 }
 
 function markdownToHtml(markdown) {
@@ -872,6 +883,20 @@ function makeArticlePageHtml(config, assets, record, type) {
       { name: record.title, url },
     ]),
   ];
+
+  // Add VideoObject for any YouTube embeds in the article body
+  const videoIds = extractYouTubeIdsFromHtml(record.html);
+  for (const videoId of videoIds) {
+    jsonLd.push({
+      "@type": "VideoObject",
+      "@id": `${url}#video-${videoId}`,
+      name: `${record.title} - video walkthrough`,
+      description: record.summary,
+      uploadDate: record.updated || record.date,
+      embedUrl: `https://www.youtube.com/embed/${videoId}`,
+      thumbnailUrl: imageUrl,
+    });
+  }
   const body = `<article>
         <div class="reader-head">
           <div>
@@ -1092,14 +1117,17 @@ function makeProjectPageHtml(config, assets, record) {
     ]),
   ];
   if (record.video) {
-    jsonLd.push({
-      "@type": "VideoObject",
-      name: `${record.title} walkthrough`,
-      description: record.summary,
-      uploadDate: record.updated,
-      contentUrl: record.video,
-      thumbnailUrl: absoluteImageUrl(config, record.image),
-    });
+    const videoId = extractYouTubeId(record.video);
+    if (videoId) {
+      jsonLd.push({
+        "@type": "VideoObject",
+        name: `${record.title} walkthrough`,
+        description: record.summary,
+        uploadDate: record.updated,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        thumbnailUrl: absoluteImageUrl(config, record.image),
+      });
+    }
   }
 
   const body = `<article>
@@ -1468,7 +1496,15 @@ function sitemapEntry(config, pathname, options = {}) {
       return `<image:image><image:loc>${escapeXml(loc)}</image:loc>${caption ? `<image:caption>${escapeXml(caption)}</image:caption>` : ""}</image:image>`;
     })
     .join("");
-  return `<url><loc>${escapeXml(canonicalUrl(config, pathname))}</loc>${options.lastmod ? `<lastmod>${escapeXml(options.lastmod)}</lastmod>` : ""}<changefreq>${options.changefreq || "monthly"}</changefreq><priority>${options.priority || "0.7"}</priority>${imageTags}</url>`;
+  const videoTags = (options.videos || [])
+    .filter((v) => v && v.id)
+    .map((video) => {
+      const embedUrl = `https://www.youtube.com/embed/${escapeXml(video.id)}`;
+      const thumbnail = video.thumbnail ? escapeXml(absoluteImageUrl(config, video.thumbnail)) : "";
+      return `<video:video><video:thumbnail_loc>${thumbnail}</video:thumbnail_loc><video:title>${escapeXml(video.title || "Video walkthrough")}</video:title><video:description>${escapeXml(video.description || "Video walkthrough")}</video:description><video:content_loc>https://www.youtube.com/watch?v=${escapeXml(video.id)}</video:content_loc><video:embed_loc>${escapeXml(embedUrl)}</video:embed_loc><video:publication_date>${escapeXml(video.date || "")}</video:publication_date></video:video>`;
+    })
+    .join("");
+  return `<url><loc>${escapeXml(canonicalUrl(config, pathname))}</loc>${options.lastmod ? `<lastmod>${escapeXml(options.lastmod)}</lastmod>` : ""}<changefreq>${options.changefreq || "monthly"}</changefreq><priority>${options.priority || "0.7"}</priority>${imageTags}${videoTags}</url>`;
 }
 
 async function generateSitemap(config, updates, articles, gallery, projects) {
@@ -1487,11 +1523,45 @@ async function generateSitemap(config, updates, articles, gallery, projects) {
     sitemapEntry(config, "/projects", { changefreq: "monthly", priority: "0.8" }),
   ];
   for (const r of updates) entries.push(sitemapEntry(config, `/updates/${r.id}`, { lastmod: r.updated || r.date, priority: "0.7", images: r.image ? [{ src: r.image }] : [] }));
-  for (const r of articles) entries.push(sitemapEntry(config, `/articles/${r.id}`, { lastmod: r.updated || r.date, priority: "0.9", images: r.image ? [{ src: r.image }] : [] }));
-  for (const r of projects) entries.push(sitemapEntry(config, `/projects/${r.id}`, { lastmod: r.updated, priority: r.featured ? "0.85" : "0.7", images: r.images || [] }));
+  for (const r of articles) {
+    const articleVideoIds = extractYouTubeIdsFromHtml(r.html);
+    entries.push(sitemapEntry(config, `/articles/${r.id}`, {
+      lastmod: r.updated || r.date,
+      priority: "0.9",
+      images: r.image ? [{ src: r.image }] : [],
+      videos: articleVideoIds.map((id) => ({
+        id,
+        title: `${r.title} - video walkthrough`,
+        description: r.summary,
+        thumbnail: r.image,
+        date: r.updated || r.date,
+      })),
+    }));
+  }
+  for (const r of projects) {
+    const projectVideos = [];
+    if (r.video) {
+      const videoId = extractYouTubeId(r.video);
+      if (videoId) {
+        projectVideos.push({
+          id: videoId,
+          title: `${r.title} walkthrough`,
+          description: r.summary,
+          thumbnail: r.image,
+          date: r.updated,
+        });
+      }
+    }
+    entries.push(sitemapEntry(config, `/projects/${r.id}`, {
+      lastmod: r.updated,
+      priority: r.featured ? "0.85" : "0.7",
+      images: r.images || [],
+      videos: projectVideos,
+    }));
+  }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${entries.join("\n")}
 </urlset>`;
   await fs.writeFile(path.join(ROOT, "sitemap.xml"), xml, "utf8");

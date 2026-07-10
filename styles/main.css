@@ -462,6 +462,10 @@ summary,
   align-items: center;
 }
 
+.static-header-nav {
+  margin-left: auto;
+}
+
 .header-tabs {
   display: flex;
   flex-wrap: wrap;

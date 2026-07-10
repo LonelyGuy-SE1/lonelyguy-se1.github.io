@@ -256,13 +256,17 @@ function openReader(sectionKey, id) {
     trigger.setAttribute("aria-pressed", String(isActive));
   });
 
+  const standaloneUrl = `/${sectionKey}/${escapeHtml(id)}`;
   section.reader.innerHTML = `
     <div class="reader-head">
       <div>
         <p class="reader-kicker">${escapeHtml(record.dateLabel)}</p>
         <h3>${escapeHtml(record.title)}</h3>
       </div>
-      <button class="reader-close" type="button" data-reader-close="${sectionKey}">exit</button>
+      <div class="reader-head-actions">
+        <a class="reader-expand" href="${standaloneUrl}">expand</a>
+        <button class="reader-close" type="button" data-reader-close="${sectionKey}">exit</button>
+      </div>
     </div>
     <div class="reader-body">${record.html}</div>
   `;

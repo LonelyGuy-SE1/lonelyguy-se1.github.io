@@ -25,7 +25,7 @@
     "title": "Gallery",
     "summary": "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
     "url": "/gallery",
-    "content": "shiori extension bench raijin env cybersec humanoid circuit clanker pose biped arm result biped arm biped arm training graph atari breakout preprocessing atari breakout"
+    "content": "biped arm result clanker pose env cybersec humanoid circuit shiori extension atari breakout atari breakout preprocessing bench raijin biped arm training graph biped arm"
   },
   {
     "type": "updates",
@@ -140,17 +140,17 @@
   },
   {
     "type": "gallery",
-    "title": "shiori extension",
-    "summary": "shiori extension",
+    "title": "biped arm result",
+    "summary": "biped arm result",
     "url": "/gallery",
-    "content": "gallery/shiori.extension.png"
+    "content": "gallery/biped.arm.result.png"
   },
   {
     "type": "gallery",
-    "title": "bench raijin",
-    "summary": "bench raijin",
+    "title": "clanker pose",
+    "summary": "clanker pose",
     "url": "/gallery",
-    "content": "gallery/bench.raijin.png"
+    "content": "gallery/clanker.pose.png"
   },
   {
     "type": "gallery",
@@ -168,31 +168,17 @@
   },
   {
     "type": "gallery",
-    "title": "clanker pose",
-    "summary": "clanker pose",
+    "title": "shiori extension",
+    "summary": "shiori extension",
     "url": "/gallery",
-    "content": "gallery/clanker.pose.png"
+    "content": "gallery/shiori.extension.png"
   },
   {
     "type": "gallery",
-    "title": "biped arm result",
-    "summary": "biped arm result",
+    "title": "atari breakout",
+    "summary": "atari breakout",
     "url": "/gallery",
-    "content": "gallery/biped.arm.result.png"
-  },
-  {
-    "type": "gallery",
-    "title": "biped arm",
-    "summary": "biped arm",
-    "url": "/gallery",
-    "content": "gallery/biped.arm.png"
-  },
-  {
-    "type": "gallery",
-    "title": "biped arm training graph",
-    "summary": "biped arm training graph",
-    "url": "/gallery",
-    "content": "gallery/biped.arm.graph.png"
+    "content": "gallery/atari.breakout.png"
   },
   {
     "type": "gallery",
@@ -203,9 +189,23 @@
   },
   {
     "type": "gallery",
-    "title": "atari breakout",
-    "summary": "atari breakout",
+    "title": "bench raijin",
+    "summary": "bench raijin",
     "url": "/gallery",
-    "content": "gallery/atari.breakout.png"
+    "content": "gallery/bench.raijin.png"
+  },
+  {
+    "type": "gallery",
+    "title": "biped arm training graph",
+    "summary": "biped arm training graph",
+    "url": "/gallery",
+    "content": "gallery/biped.arm.graph.png"
+  },
+  {
+    "type": "gallery",
+    "title": "biped arm",
+    "summary": "biped arm",
+    "url": "/gallery",
+    "content": "gallery/biped.arm.png"
   }
 ]

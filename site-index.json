@@ -30,7 +30,7 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-07-10T15:36:43.114Z",
+  "generatedAt": "2026-07-10T15:58:02.436Z",
   "routes": [
     {
       "type": "page",
@@ -168,17 +168,17 @@
     },
     {
       "type": "gallery",
-      "title": "shiori extension",
+      "title": "biped arm result",
       "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "shiori extension",
+      "summary": "biped arm result",
       "tags": [],
       "date": ""
     },
     {
       "type": "gallery",
-      "title": "bench raijin",
+      "title": "clanker pose",
       "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "bench raijin",
+      "summary": "clanker pose",
       "tags": [],
       "date": ""
     },
@@ -200,33 +200,17 @@
     },
     {
       "type": "gallery",
-      "title": "clanker pose",
+      "title": "shiori extension",
       "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "clanker pose",
+      "summary": "shiori extension",
       "tags": [],
       "date": ""
     },
     {
       "type": "gallery",
-      "title": "biped arm result",
+      "title": "atari breakout",
       "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "biped arm result",
-      "tags": [],
-      "date": ""
-    },
-    {
-      "type": "gallery",
-      "title": "biped arm",
-      "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "biped arm",
-      "tags": [],
-      "date": ""
-    },
-    {
-      "type": "gallery",
-      "title": "biped arm training graph",
-      "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "biped arm training graph",
+      "summary": "atari breakout",
       "tags": [],
       "date": ""
     },
@@ -240,9 +224,25 @@
     },
     {
       "type": "gallery",
-      "title": "atari breakout",
+      "title": "bench raijin",
       "url": "https://lonelyguy.vercel.app/gallery",
-      "summary": "atari breakout",
+      "summary": "bench raijin",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "biped arm training graph",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "biped arm training graph",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "biped arm",
+      "url": "https://lonelyguy.vercel.app/gallery",
+      "summary": "biped arm",
       "tags": [],
       "date": ""
     }

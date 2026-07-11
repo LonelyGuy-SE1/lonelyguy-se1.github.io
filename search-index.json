@@ -11,7 +11,7 @@
     "title": "Stack",
     "summary": "A practical skill map for lonely guy across programming, machine learning, robotics simulation, systems, and deployment.",
     "url": "/stack",
-    "content": "Languages and formats Python, C/C++, Java, JavaScript, HTML, CSS, URDF, MJCF, and the low-level interfaces needed to move between simulation and real systems. AI and ML Reinforcement learning, deep learning, supervised and unsupervised learning, LLM basics, transformers, Gymnasium, PyTorch-style workflows, Hugging Face, NumPy, pandas, and visualization. Robotics and embedded systems MuJoCo, MATLAB, Simulink, Simscape Multibody, Gazebo, Isaac Lab, ROS, Arduino, Raspberry Pi, sensors, and embedded C/C++ practice. Systems thinking Deterministic runtimes, quantized deployment, cache-aware inference, API design, and the habit of turning vague agent ideas into testable environments."
+    "content": "Languages and formats Python, C/C++, JavaScript, Rust, MATLAB, Bash, URDF, MJCF, and the low-level interfaces needed to move between simulation and real systems. AI and ML Reinforcement learning, deep learning, supervised and unsupervised learning, LLM basics, transformers, Gymnasium, PyTorch-style workflows, Hugging Face, NumPy, pandas, and visualization. Robotics and embedded systems MuJoCo, MATLAB, Simulink, Simscape Multibody, Gazebo, ROS, Arduino, Raspberry Pi, sensors, and embedded C/C++ practice. Systems thinking Deterministic runtimes, quantized deployment, cache-aware inference, API design, and the habit of turning vague agent ideas into testable environments."
   },
   {
     "type": "page",

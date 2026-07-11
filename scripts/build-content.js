@@ -30,7 +30,7 @@ const STATIC_PAGES = [
     sections: [
       {
         title: "Languages and formats",
-        body: "Python, C/C++, Java, JavaScript, HTML, CSS, URDF, MJCF, and the low-level interfaces needed to move between simulation and real systems.",
+        body: "Python, C/C++, JavaScript, Rust, MATLAB, Bash, URDF, MJCF, and the low-level interfaces needed to move between simulation and real systems.",
       },
       {
         title: "AI and ML",
@@ -38,7 +38,7 @@ const STATIC_PAGES = [
       },
       {
         title: "Robotics and embedded systems",
-        body: "MuJoCo, MATLAB, Simulink, Simscape Multibody, Gazebo, Isaac Lab, ROS, Arduino, Raspberry Pi, sensors, and embedded C/C++ practice.",
+        body: "MuJoCo, MATLAB, Simulink, Simscape Multibody, Gazebo, ROS, Arduino, Raspberry Pi, sensors, and embedded C/C++ practice.",
       },
       {
         title: "Systems thinking",
@@ -755,6 +755,9 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
     <meta property="og:type" content="${escapeAttr(type)}" />
     <meta property="og:url" content="${escapeAttr(canonical)}" />
     <meta property="og:image" content="${escapeAttr(image)}" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:locale" content="${escapeAttr(config.seo.locale)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="${escapeAttr(config.seo.twitterHandle)}" />
@@ -978,26 +981,50 @@ function skillBadgeRow(items) {
 function stackBoardHtml(options = {}) {
   const headingTag = options.headingLevel === 3 ? "h3" : "h2";
   return `<div class="stack-board" aria-label="skill stack">
-          <article class="stack-card stack-card--primary">
+          <article class="stack-card">
             <div class="stack-card-head">
-              <span class="stack-glyph">RL</span>
+              <span class="stack-glyph">ML</span>
               <div>
-                <${headingTag}>ai / learning side</${headingTag}>
-                <p>where most of the current attention is going.</p>
+                <${headingTag}>ml / ai</${headingTag}>
+                <p>concepts, training methods, and the frameworks around them.</p>
               </div>
             </div>
             ${skillBadgeRow([
               { label: "reinforcement learning", color: "ff6b35", hot: true },
               { label: "deep learning", color: "dc2626" },
               { label: "transformers", color: "c4284a" },
-              { label: "gymnasium", color: "0081a5" },
-              { label: "hugging face", logo: "huggingface", color: "ffd21e", logoColor: "000000" },
+              { label: "llms", color: "8b5cf6" },
+              { label: "computer vision", color: "0891b2" },
+              { label: "finetuning", color: "16a34a" },
+              { label: "lora / peft", color: "059669" },
+              { label: "quantization", color: "0d9488" },
+              { label: "rag", color: "7c3aed" },
+              { label: "agentic ai", color: "dc2626", hot: true },
+              { label: "mcps", color: "ea580c" },
+              { label: "classifiers", color: "2563eb" },
+              { label: "logistic regression", color: "6366f1" },
+              { label: "dqn", color: "e11d48" },
+              { label: "pytorch", logo: "pytorch", color: "ee4c2c" },
+              { label: "jax", logo: "jax", color: "5c6bc0" },
+              { label: "numpy", logo: "numpy", color: "4dabcf" },
+              { label: "hugging face", logo: "huggingface", color: "ffcc00", logoColor: "000000" },
+              { label: "wandb", logo: "wandb", color: "ffcc33", logoColor: "000000" },
               { label: "scikit-learn", logo: "scikitlearn", color: "f7931e", logoColor: "000000" },
+              { label: "stable baselines", color: "00599c" },
+              { label: "gymnasium", color: "0081a5" },
+              { label: "trackio", color: "a855f7" },
+              { label: "trl", color: "f97316" },
+              { label: "unsloth", color: "10b981" },
+              { label: "openenv", color: "16a34a" },
+              { label: "sentence transformers", color: "e16737" },
+              { label: "matplotlib", logo: "matplotlib", color: "11557c" },
+              { label: "seaborn", color: "4c72b0" },
+              { label: "pillow", logo: "python", color: "3776ab" },
             ])}
             <p>
               supervised / unsupervised learning, rl, deep learning, llm basics,
-              transformers, encoders, decoders, rnns, and the messy experimental
-              tooling around them.
+              finetuning, peft, quantization, rag, agentic systems, mcp tooling,
+              encoders, decoders, rnns, and the messy experimental tooling around them.
             </p>
           </article>
 
@@ -1011,10 +1038,14 @@ function stackBoardHtml(options = {}) {
             </div>
             ${skillBadgeRow([
               { label: "python", logo: "python", color: "3776ab", hot: true },
-              { label: "embedded c/c++", logo: "cplusplus", color: "00599c" },
-              { label: "java", logo: "openjdk", color: "007396" },
+              { label: "c/c++", logo: "cplusplus", color: "00599c" },
               { label: "javascript", logo: "javascript", color: "f7df1e", logoColor: "000000" },
+              { label: "rust", logo: "rust", color: "ce422b" },
+              { label: "matlab", logo: "mathworks", color: "e16737" },
+              { label: "bash", logo: "gnubash", color: "4eaa25" },
               { label: "urdf", color: "cc8833" },
+              { label: "html", logo: "html5", color: "e34f26" },
+              { label: "css", logo: "css3", color: "1572b6" },
               { label: "mjcf", color: "a855f7" },
             ])}
           </article>
@@ -1030,18 +1061,18 @@ function stackBoardHtml(options = {}) {
             ${skillBadgeRow([
               { label: "mujoco", color: "3c4f65", hot: true },
               { label: "simulink", color: "f2a900", logoColor: "000000" },
-              { label: "isaac lab", logo: "nvidia", color: "76b900", logoColor: "000000" },
               { label: "ros", logo: "ros", color: "22314e" },
               { label: "arduino", logo: "arduino", color: "00878f" },
               { label: "raspberry pi", logo: "raspberrypi", color: "a22846" },
+              { label: "simscape multibody", color: "f2a900", logoColor: "000000" },
             ])}
           </article>
 
-          <article class="stack-card stack-card--wide">
+          <article class="stack-card">
             <div class="stack-card-head">
               <span class="stack-glyph">SYS</span>
               <div>
-                <${headingTag}>infra / build / distributed side</${headingTag}>
+                <${headingTag}>infra / dev / testing</${headingTag}>
                 <p>the workbench around experiments and deployment.</p>
               </div>
             </div>
@@ -1049,10 +1080,16 @@ function stackBoardHtml(options = {}) {
               { label: "git", logo: "git", color: "f05032" },
               { label: "github", logo: "github", color: "181717" },
               { label: "github actions", logo: "githubactions", color: "2088ff" },
+              { label: "ci/cd", color: "0284c7" },
+              { label: "docker", logo: "docker", color: "2496ed" },
+              { label: "wsl", logo: "windows", color: "0078d4" },
+              { label: "tailscale", logo: "tailscale", color: "24253f" },
+              { label: "pytest", logo: "pytest", color: "0a9edc", logoColor: "000000" },
+              { label: "doctest", color: "6b21a8" },
+              { label: "google test", color: "4285f4", logoColor: "000000" },
+              { label: "google benchmarks", color: "34a853" },
               { label: "jupyter", logo: "jupyter", color: "f37626", logoColor: "000000" },
               { label: "colab", logo: "googlecolab", color: "f9ab00", logoColor: "000000" },
-              { label: "fastapi", logo: "fastapi", color: "009688" },
-              { label: "docker", logo: "docker", color: "2496ed" },
               { label: "parallax", color: "cc8833", logoColor: "000000" },
             ])}
             <p>
@@ -1060,6 +1097,45 @@ function stackBoardHtml(options = {}) {
               daos, and tokenomics. had its time, taught a lot, not the center
               of gravity right now.
             </p>
+          </article>
+
+          <article class="stack-card">
+            <div class="stack-card-head">
+              <span class="stack-glyph">WEB</span>
+              <div>
+                <${headingTag}>web / fullstack</${headingTag}>
+                <p>frontends, backends, and the glue between them.</p>
+              </div>
+            </div>
+            ${skillBadgeRow([
+              { label: "next.js", logo: "nextdotjs", color: "000000" },
+              { label: "node.js", logo: "nodedotjs", color: "339933" },
+              { label: "fastapi", logo: "fastapi", color: "009688" },
+              { label: "shadcn", color: "ffffff", logoColor: "000000" },
+              { label: "three.js", logo: "threedotjs", color: "000000" },
+              { label: "websocket", logo: "websocket", color: "0153be" },
+              { label: "chrome extensions", logo: "googlechrome", color: "4285f4", logoColor: "ffffff" },
+            ])}
+          </article>
+
+          <article class="stack-card">
+            <div class="stack-card-head">
+              <span class="stack-glyph">DATA</span>
+              <div>
+                <${headingTag}>cloud / data / compute</${headingTag}>
+                <p>hosting, databases, and services around deployment.</p>
+              </div>
+            </div>
+            ${skillBadgeRow([
+              { label: "aws", logo: "amazonwebservices", color: "232f3e", logoColor: "ff9900" },
+              { label: "vercel", logo: "vercel", color: "000000" },
+              { label: "modal", logo: "modal", color: "1b1b1b" },
+              { label: "supabase", logo: "supabase", color: "3ecf8e" },
+              { label: "postgresql", logo: "postgresql", color: "4169e1" },
+              { label: "redis", logo: "redis", color: "dc382d" },
+              { label: "hf jobs", logo: "huggingface", color: "ffcc00", logoColor: "000000" },
+              { label: "sentry", logo: "sentry", color: "362d59" },
+            ])}
           </article>
         </div>
 

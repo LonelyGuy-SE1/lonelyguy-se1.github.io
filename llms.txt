@@ -1,7 +1,7 @@
 # Lonely Guy
-lonely guy- cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.
+> se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.
 
-Lonely Guy is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.
+SE1 (Lonely Guy) is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.
 
 ## Navigation
 - Home: https://lonelyguy.vercel.app/

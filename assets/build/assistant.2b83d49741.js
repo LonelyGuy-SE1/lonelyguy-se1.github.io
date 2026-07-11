@@ -186,7 +186,14 @@
     }
   }
 
+  var VALID_TABS = ["home","stack","updates","articles","blogs","images","gallery","projects","contact","now"];
+
+  function stripThinking(text) {
+    return text.replace(/<think>[\s\S]*?<\/think>/gi, "").replace(/<think>[\s\S]*$/gi, "").trim();
+  }
+
   function renderBotMessage(body, text) {
+    text = stripThinking(text);
     var div = document.createElement("div");
     div.className = "assistant-msg assistant-msg--bot";
     var navRegex = /(?:\u2192|\?)\s*([\w-]+)(?::([\w-]+))?/g;
@@ -195,6 +202,10 @@
     var actions = [];
 
     while ((match = navRegex.exec(text)) !== null) {
+      var tabName = match[1].toLowerCase();
+      if (VALID_TABS.indexOf(tabName) === -1) {
+        continue;
+      }
       if (match.index > lastIndex) {
         div.appendChild(
           document.createTextNode(text.slice(lastIndex, match.index)),
@@ -339,7 +350,7 @@
             var token = chunk.token || "";
             if (token) {
               fullText += token;
-              textNode.nodeValue = fullText;
+              textNode.nodeValue = stripThinking(fullText);
               body.scrollTop = body.scrollHeight;
             }
           } catch (e) {}
@@ -349,10 +360,15 @@
       console.error("Stream read error:", err);
     }
 
+    fullText = stripThinking(fullText);
+
     var navRegex = /(?:\u2192|\?)\s*([\w-]+)(?::([\w-]+))?/g;
     var match;
     while ((match = navRegex.exec(fullText)) !== null) {
-      navActions.push({ type: match[1], id: match[2] || null });
+      var tabName = match[1].toLowerCase();
+      if (VALID_TABS.indexOf(tabName) !== -1) {
+        navActions.push({ type: match[1], id: match[2] || null });
+      }
     }
 
     // Rebuild msgDiv content: strip nav markers from displayed text, keep only plain text

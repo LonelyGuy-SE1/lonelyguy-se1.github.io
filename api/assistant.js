@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
     fullSystemPrompt += "\n\nCONTEXT INFORMATION:\n" + contextString;
   }
   
-  fullSystemPrompt += "\n\nCRITICAL FORMATTING INSTRUCTIONS:\n- Keep your answers concise, natural, and helpful.\n- Use standard markdown formatting.\n- DO NOT include strange artifacts, `<think>` tags, or internal reasoning in your final output.\n- For simple greetings or casual questions, reply conversationally and briefly in 1-2 sentences.\n- For navigation actions, ALWAYS use the → arrow character (not ? or any other punctuation). Example: → projects:project-halide\n- Format for navigation buttons: → tab-name or → tab:item-id\n- You can include navigation suggestions inline in your natural response. The client will render them as clickable buttons.\n- You MUST include navigation suggestions when relevant. For example, after greeting someone, suggest they check out relevant sections.";
+  fullSystemPrompt += "\n\nCRITICAL FORMATTING INSTRUCTIONS:\n- Keep your answers concise, natural, and helpful.\n- Use standard markdown formatting.\n- NEVER include <think> tags, internal reasoning, or chain-of-thought in your output. These must never appear in your response.\n- For simple greetings or casual questions, reply conversationally and briefly in 1-2 sentences.\n- For navigation actions, use the → arrow followed by a valid tab name. Valid tabs: home, stack, updates, articles/blogs, gallery, projects, contact, now.\n- Example: → projects:project-halide or → updates\n- Only use → with VALID tab names listed above. Never use → with other words.\n- You MUST include navigation suggestions when relevant. For example, after greeting someone, suggest they check out relevant sections.";
 
   const openRouterMessages = [
     { role: "system", content: fullSystemPrompt }
@@ -133,9 +133,13 @@ module.exports = async (req, res) => {
   return res.status(200).json({ reply: "the knowledge base is swamped right now. try again in a bit?" });
 };
 
+function stripThinking(text) {
+  return text.replace(/<think>[\s\S]*?<\/think>/gi, "").replace(/<think>[\s\S]*$/gi, "").trim();
+}
+
 async function jsonResponse(response, res) {
   const data = await response.json();
-  const reply = (data.choices?.[0]?.message?.content || "").trim();
+  const reply = stripThinking((data.choices?.[0]?.message?.content || "").trim());
   if (!reply) {
     return res.status(200).json({ reply: "drew a blank there. try asking differently?" });
   }
@@ -152,6 +156,8 @@ async function streamResponse(response, res) {
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let inThinking = false;
+  let thinkingBuffer = "";
 
   try {
     while (true) {
@@ -173,9 +179,42 @@ async function streamResponse(response, res) {
         try {
           const chunk = JSON.parse(jsonStr);
           const token = chunk.choices?.[0]?.delta?.content || "";
-          if (token) {
-            res.write("data: " + JSON.stringify({ token: token }) + "\n\n");
+          if (!token) continue;
+
+          if (inThinking) {
+            thinkingBuffer += token;
+            const closeIdx = thinkingBuffer.indexOf("</think>");
+            if (closeIdx !== -1) {
+              inThinking = false;
+              thinkingBuffer = "";
+            }
+            continue;
           }
+
+          // Check if this token opens a thinking block
+          const openIdx = token.indexOf("<think>");
+          if (openIdx !== -1) {
+            // Send any content before the tag
+            if (openIdx > 0) {
+              res.write("data: " + JSON.stringify({ token: token.slice(0, openIdx) }) + "\n\n");
+            }
+            // Start thinking - buffer the rest
+            inThinking = true;
+            thinkingBuffer = token.slice(openIdx + 7);
+            // Check if the thinking block closes in the same token
+            const closeIdx = thinkingBuffer.indexOf("</think>");
+            if (closeIdx !== -1) {
+              inThinking = false;
+              const after = thinkingBuffer.slice(closeIdx + 8);
+              thinkingBuffer = "";
+              if (after) {
+                res.write("data: " + JSON.stringify({ token: after }) + "\n\n");
+              }
+            }
+            continue;
+          }
+
+          res.write("data: " + JSON.stringify({ token: token }) + "\n\n");
         } catch (e) {}
       }
     }

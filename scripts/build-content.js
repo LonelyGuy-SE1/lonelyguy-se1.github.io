@@ -819,12 +819,16 @@ function footerHtml(config) {
 }
 
 function shell(config, assets, page, body, jsonLdGraph = [], extraScripts = "") {
+  const spaRedirect = page.spaRedirect
+    ? `<script>if(!window.location.search){location.replace("${page.spaRedirect}")}</script>`
+    : "";
   return `<!doctype html>
 <html lang="en">
 <head>
     ${metadataHead(config, page, assets, jsonLdGraph)}
 </head>
 <body>
+    ${spaRedirect}
     <a class="skip-link" href="#main">skip to main</a>
     ${headerHtml(page.path)}
     <main class="site-width static-page" id="main">
@@ -860,7 +864,7 @@ function makeArticlePageHtml(config, assets, record, type) {
   const imageUrl = absoluteImageUrl(config, record.image);
   const schemaType = type === "articles" ? "BlogPosting" : "Article";
   const collectionTitle =
-    type === "articles" ? "Articles" : type === "updates" ? "Updates" : "Papers";
+    type === "articles" ? "Blogs" : type === "updates" ? "Updates" : "Papers";
   const jsonLd = [
     {
       "@type": schemaType,
@@ -903,7 +907,7 @@ function makeArticlePageHtml(config, assets, record, type) {
             <p class="reader-kicker">${escapeHtml(record.dateLabel)}${record.readingTime ? ` / ${escapeHtml(record.readingTime)} min read` : ""}</p>
             <h1>${escapeHtml(record.title)}</h1>
           </div>
-          ${renderLinkPills([{ label: `back to ${type}`, href: `/?t=${type}` }])}
+          ${renderLinkPills([{ label: `back to ${type === "articles" ? "blogs" : type}`, href: `/?t=${type}` }])}
         </div>
         <p class="static-page-summary">${escapeHtml(record.summary)}</p>
         ${renderTagList(record.tags)}
@@ -1203,7 +1207,7 @@ function makeCollectionPageHtml(config, assets, type, title, description, record
   const body = `<article>
         <div class="reader-head">
           <div>
-            <p class="reader-kicker">${escapeHtml(type)}</p>
+            <p class="reader-kicker">${escapeHtml(type === "articles" ? "blogs" : type)}</p>
             <h1>${escapeHtml(title)}</h1>
           </div>
           ${renderLinkPills([{ label: "home", href: "/" }])}
@@ -1214,7 +1218,7 @@ function makeCollectionPageHtml(config, assets, type, title, description, record
   return shell(
     config,
     assets,
-    { path: canonicalPath(type), title, description },
+    { path: canonicalPath(type), title, description, spaRedirect: `/?t=${type}` },
     body,
     jsonLd,
   );
@@ -1452,7 +1456,7 @@ async function generatePages(config, assets, updates, articles, gallery, project
       config,
       assets,
       "articles",
-      "Articles",
+      "Blogs",
       "Longer technical write-ups from SE1 on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
       articles,
     ),

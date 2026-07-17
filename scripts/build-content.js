@@ -67,7 +67,7 @@ async function loadSiteConfig() {
     siteName: "Lonely Guy",
     shortName: "Lonely Guy",
     description:
-      "Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
+      "Lonely Guy (Greeshma Surya) - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied AI. Projects, research, and technical writing on RL, systems, and LLM agents.",
     author: { name: "Greeshma Surya", alternateName: "Lonely Guy", sameAs: [], knowsAbout: [] },
     seo: {
       defaultTitle:
@@ -777,28 +777,56 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
 
 function headerHtml(activePath = "") {
   const links = [
-    ["/", "home"],
-    ["/stack", "stack"],
-    ["/updates", "updates"],
-    ["/articles", "blogs"],
-    ["/gallery", "gallery"],
-    ["/projects", "projects"],
-    ["/contact", "contact"],
+    ["/", "home", "home"],
+    ["/stack", "stack", "stack"],
+    ["/updates", "updates", "updates"],
+    ["/articles", "articles", "blogs"],
+    ["/gallery", "gallery", "gallery"],
+    ["/projects", "projects", "projects"],
+    ["/contact", "contact", "contact"],
   ];
-  return `<header class="site-header">
+  const active = links.find(([href]) => activePath === href);
+  const breadcrumbLabel = active ? active[2] : "home";
+  return `<header class="site-header" id="top">
       <div class="site-width header-inner">
-        <a class="brand" href="/">
+        <a class="brand" href="/" data-scroll-top>
           <img class="brand-mark" src="/assets/SE1.jpg" alt="" width="640" height="640" decoding="async" />
           <span class="brand-copy"><strong>lonely guy</strong></span>
         </a>
-        <nav class="header-nav static-header-nav" aria-label="Main">
-          ${links
-            .map(([href, label]) => {
-              const current = activePath === href ? ' aria-current="page"' : "";
-              return `<a class="tab-button" href="${href}"${current}>${label}</a>`;
-            })
-            .join("")}
+
+        <nav class="breadcrumbs header-breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="/" data-scroll-top>home</a></li>
+            ${activePath !== "/" ? `<li aria-current="page" id="crumb-current">${escapeHtml(breadcrumbLabel)}</li>` : `<li aria-current="page" id="crumb-current">home</li>`}
+          </ol>
         </nav>
+
+        <div class="header-actions">
+          <nav class="header-nav" aria-label="Header">
+            <div class="header-tabs" role="tablist" aria-label="portfolio sections">
+              ${links
+                .map(([href, tabId, label]) => {
+                  const selected = activePath === href;
+                  return `<a class="tab-button" href="${href}" role="tab" aria-selected="${selected}" aria-controls="panel-${tabId}" tabindex="${selected ? "0" : "-1"}" data-tab="${tabId}">${label}</a>`;
+                })
+                .join("")}
+            </div>
+          </nav>
+
+          <div class="header-search" role="search">
+            <div class="search-field" id="search-field">
+              <label for="site-search" class="visually-hidden">search site</label>
+              <input id="site-search" type="search" placeholder="search articles, updates, gallery..." autocomplete="off" spellcheck="false" />
+            </div>
+            <button class="search-trigger" id="search-trigger" type="button" aria-label="open search" title="search" aria-expanded="false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+            <div class="search-results" id="search-results" hidden></div>
+          </div>
+        </div>
       </div>
     </header>`;
 }
@@ -838,6 +866,42 @@ function shell(config, assets, page, body, jsonLdGraph = [], extraScripts = "") 
       ${body}
     </main>
     ${footerHtml(config)}
+    <script>
+    (function(){
+      var trigger=document.getElementById("search-trigger");
+      var field=document.getElementById("search-field");
+      var input=document.getElementById("site-search");
+      var results=document.getElementById("search-results");
+      var idx=null;
+      if(trigger){
+        trigger.addEventListener("click",function(){
+          var open=field.classList.toggle("search-field--open");
+          trigger.setAttribute("aria-expanded",String(open));
+          if(open){setTimeout(function(){input.focus();},100);}
+          else{results.hidden=true;input.value="";}
+        });
+      }
+      if(input){
+        input.addEventListener("input",function(){
+          var q=input.value.trim().toLowerCase();
+          if(!q){results.hidden=true;return;}
+          if(!idx){
+            fetch("/search-index.json").then(function(r){return r.json();}).then(function(d){idx=d;search(q);}).catch(function(){});
+          }else{search(q);}
+        });
+      }
+      function search(q){
+        if(!idx)return;
+        var items=idx.filter(function(r){return((r.title||"")+(r.summary||"")+(r.tags||"").join(" ")).toLowerCase().indexOf(q)!==-1;}).slice(0,12);
+        if(!items.length){results.innerHTML='<p class="dynamic-note">no results found.</p>';results.hidden=false;return;}
+        results.innerHTML=items.map(function(r){
+          var href=r.url||"/";
+          return '<a class="search-result" href="'+href+'"><strong>'+(r.title||"")+'</strong><span>'+(r.summary||"").slice(0,120)+'...</span></a>';
+        }).join("");
+        results.hidden=false;
+      }
+    })();
+    </script>
     <script src="https://js.supascribe.com/v1/loader/nOC91cmI8ZfrfPBUQ1aSbvF7NLf1.js" async></script>
     ${extraScripts}
     <script defer src="${assets.assistant}"></script>
@@ -1552,6 +1616,24 @@ async function writePage(routePath, html) {
   console.log(`  -> ${clean === "/" ? "index.html" : `${clean.slice(1)}/index.html`}`);
 }
 
+async function generate404Page(config, assets) {
+  const page = {
+    title: "page not found",
+    description: "the page you're looking for doesn't exist.",
+    path: "/404",
+    ogType: "website",
+  };
+  const body = `
+      <div style="text-align:center; padding:4rem 1rem;">
+        <h1 style="font-size:4rem; margin:0 0 0.5rem; color:var(--c-primary);">404</h1>
+        <p style="font-size:1.2rem; color:var(--c-text-secondary); margin:0 0 2rem;">this page doesn't exist.</p>
+        <a href="/" style="display:inline-block; padding:0.6rem 1.4rem; background:var(--c-primary); color:#fff; border-radius:6px; text-decoration:none; font-weight:500;">back to home</a>
+      </div>`;
+  const html = shell(config, assets, page, body);
+  await fs.writeFile(path.join(ROOT, "404.html"), html, "utf8");
+  console.log("  -> 404.html");
+}
+
 async function generatePages(config, assets, updates, articles, gallery, projects) {
   for (const record of updates) {
     await writePage(`/updates/${record.id}`, makeArticlePageHtml(config, assets, record, "updates"));
@@ -2039,6 +2121,9 @@ async function build() {
 
   console.log("hashing assets...");
   const assets = await generateAssetManifest();
+
+  console.log("generating 404 page...");
+  await generate404Page(config, assets);
 
   console.log("generating pages...");
   await generatePages(config, assets, updates, articles, gallery, projects);

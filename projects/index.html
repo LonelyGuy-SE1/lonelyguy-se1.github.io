@@ -31,7 +31,7 @@
     <link rel="alternate" type="application/feed+json" title="Lonely Guy - Articles" href="/feed.json" />
     <link rel="icon" type="image/jpeg" href="/assets/SE1.jpg" />
     <link rel="stylesheet" href="/assets/build/main.6d13b84622.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://lonelyguy.tech/#person","name":"Greeshma Surya","alternateName":"Lonely Guy","url":"https://lonelyguy.tech","email":"loner@lonelyguy.tech","jobTitle":"CS undergraduate, embodied AI and robotics builder","description":"CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.","sameAs":["https://github.com/LonelyGuy-SE1","https://x.com/lonelyguyse1","https://huggingface.co/Lonelyguyse1","https://orcid.org/0009-0000-7221-863X","https://www.linkedin.com/in/greeshmasurya/"],"knowsAbout":["Reinforcement Learning","Robotics","Embodied AI","World Models","Deep Learning","Decentralized Systems","Systems","Large Language Models"]},{"@type":"WebSite","@id":"https://lonelyguy.tech/#website","url":"https://lonelyguy.tech/","name":"Lonely Guy","description":"Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.","publisher":{"@id":"https://lonelyguy.tech/#person"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://lonelyguy.tech/search?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"CollectionPage","@id":"https://lonelyguy.tech/projects#webpage","url":"https://lonelyguy.tech/projects","name":"Projects","description":"Selected project case studies from Lonely Guy across embodied AI, RL, LLM agents, vision, systems, and simulation.","isPartOf":{"@id":"https://lonelyguy.tech/#website"},"about":{"@id":"https://lonelyguy.tech/#person"}},{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Raijin LOB","url":"https://lonelyguy.tech/projects/raijin-lob"},{"@type":"ListItem","position":2,"name":"Project Halide","url":"https://lonelyguy.tech/projects/project-halide"},{"@type":"ListItem","position":3,"name":"Cybersec OpenEnv","url":"https://lonelyguy.tech/projects/cybersec-openenv"},{"@type":"ListItem","position":4,"name":"Breakout-DQN","url":"https://lonelyguy.tech/projects/breakout-dqn"}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://lonelyguy.tech/"},{"@type":"ListItem","position":2,"name":"Projects","item":"https://lonelyguy.tech/projects"}]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://lonelyguy.tech/#person","name":"Greeshma Surya","alternateName":"Lonely Guy","url":"https://lonelyguy.tech","email":"loner@lonelyguy.tech","jobTitle":"CS undergraduate, embodied AI and robotics builder","description":"CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.","sameAs":["https://github.com/LonelyGuy-SE1","https://x.com/lonelyguyse1","https://huggingface.co/Lonelyguyse1","https://orcid.org/0009-0000-7221-863X","https://www.linkedin.com/in/greeshmasurya/"],"knowsAbout":["Reinforcement Learning","Robotics","Embodied AI","World Models","Deep Learning","Decentralized Systems","Systems","Large Language Models"]},{"@type":"WebSite","@id":"https://lonelyguy.tech/#website","url":"https://lonelyguy.tech/","name":"Lonely Guy","description":"Lonely Guy (Greeshma Surya) - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied AI. Projects, research, and technical writing on RL, systems, and LLM agents.","publisher":{"@id":"https://lonelyguy.tech/#person"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://lonelyguy.tech/search?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"CollectionPage","@id":"https://lonelyguy.tech/projects#webpage","url":"https://lonelyguy.tech/projects","name":"Projects","description":"Selected project case studies from Lonely Guy across embodied AI, RL, LLM agents, vision, systems, and simulation.","isPartOf":{"@id":"https://lonelyguy.tech/#website"},"about":{"@id":"https://lonelyguy.tech/#person"}},{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Raijin LOB","url":"https://lonelyguy.tech/projects/raijin-lob"},{"@type":"ListItem","position":2,"name":"Project Halide","url":"https://lonelyguy.tech/projects/project-halide"},{"@type":"ListItem","position":3,"name":"Cybersec OpenEnv","url":"https://lonelyguy.tech/projects/cybersec-openenv"},{"@type":"ListItem","position":4,"name":"Breakout-DQN","url":"https://lonelyguy.tech/projects/breakout-dqn"}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://lonelyguy.tech/"},{"@type":"ListItem","position":2,"name":"Projects","item":"https://lonelyguy.tech/projects"}]}]}</script>
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -44,15 +44,41 @@
 <body>
     <script>if(!window.location.search){location.replace("/?t=projects")}</script>
     <a class="skip-link" href="#main">skip to main</a>
-    <header class="site-header">
+    <header class="site-header" id="top">
       <div class="site-width header-inner">
-        <a class="brand" href="/">
+        <a class="brand" href="/" data-scroll-top>
           <img class="brand-mark" src="/assets/SE1.jpg" alt="" width="640" height="640" decoding="async" />
           <span class="brand-copy"><strong>lonely guy</strong></span>
         </a>
-        <nav class="header-nav static-header-nav" aria-label="Main">
-          <a class="tab-button" href="/">home</a><a class="tab-button" href="/stack">stack</a><a class="tab-button" href="/updates">updates</a><a class="tab-button" href="/articles">blogs</a><a class="tab-button" href="/gallery">gallery</a><a class="tab-button" href="/projects" aria-current="page">projects</a><a class="tab-button" href="/contact">contact</a>
+
+        <nav class="breadcrumbs header-breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="/" data-scroll-top>home</a></li>
+            <li aria-current="page" id="crumb-current">projects</li>
+          </ol>
         </nav>
+
+        <div class="header-actions">
+          <nav class="header-nav" aria-label="Header">
+            <div class="header-tabs" role="tablist" aria-label="portfolio sections">
+              <a class="tab-button" href="/" role="tab" aria-selected="false" aria-controls="panel-home" tabindex="-1" data-tab="home">home</a><a class="tab-button" href="/stack" role="tab" aria-selected="false" aria-controls="panel-stack" tabindex="-1" data-tab="stack">stack</a><a class="tab-button" href="/updates" role="tab" aria-selected="false" aria-controls="panel-updates" tabindex="-1" data-tab="updates">updates</a><a class="tab-button" href="/articles" role="tab" aria-selected="false" aria-controls="panel-articles" tabindex="-1" data-tab="articles">blogs</a><a class="tab-button" href="/gallery" role="tab" aria-selected="false" aria-controls="panel-gallery" tabindex="-1" data-tab="gallery">gallery</a><a class="tab-button" href="/projects" role="tab" aria-selected="true" aria-controls="panel-projects" tabindex="0" data-tab="projects">projects</a><a class="tab-button" href="/contact" role="tab" aria-selected="false" aria-controls="panel-contact" tabindex="-1" data-tab="contact">contact</a>
+            </div>
+          </nav>
+
+          <div class="header-search" role="search">
+            <div class="search-field" id="search-field">
+              <label for="site-search" class="visually-hidden">search site</label>
+              <input id="site-search" type="search" placeholder="search articles, updates, gallery..." autocomplete="off" spellcheck="false" />
+            </div>
+            <button class="search-trigger" id="search-trigger" type="button" aria-label="open search" title="search" aria-expanded="false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+            <div class="search-results" id="search-results" hidden></div>
+          </div>
+        </div>
       </div>
     </header>
     <main class="site-width static-page" id="main">
@@ -99,6 +125,42 @@
         <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
       </div>
     </footer>
+    <script>
+    (function(){
+      var trigger=document.getElementById("search-trigger");
+      var field=document.getElementById("search-field");
+      var input=document.getElementById("site-search");
+      var results=document.getElementById("search-results");
+      var idx=null;
+      if(trigger){
+        trigger.addEventListener("click",function(){
+          var open=field.classList.toggle("search-field--open");
+          trigger.setAttribute("aria-expanded",String(open));
+          if(open){setTimeout(function(){input.focus();},100);}
+          else{results.hidden=true;input.value="";}
+        });
+      }
+      if(input){
+        input.addEventListener("input",function(){
+          var q=input.value.trim().toLowerCase();
+          if(!q){results.hidden=true;return;}
+          if(!idx){
+            fetch("/search-index.json").then(function(r){return r.json();}).then(function(d){idx=d;search(q);}).catch(function(){});
+          }else{search(q);}
+        });
+      }
+      function search(q){
+        if(!idx)return;
+        var items=idx.filter(function(r){return((r.title||"")+(r.summary||"")+(r.tags||"").join(" ")).toLowerCase().indexOf(q)!==-1;}).slice(0,12);
+        if(!items.length){results.innerHTML='<p class="dynamic-note">no results found.</p>';results.hidden=false;return;}
+        results.innerHTML=items.map(function(r){
+          var href=r.url||"/";
+          return '<a class="search-result" href="'+href+'"><strong>'+(r.title||"")+'</strong><span>'+(r.summary||"").slice(0,120)+'...</span></a>';
+        }).join("");
+        results.hidden=false;
+      }
+    })();
+    </script>
     <script src="https://js.supascribe.com/v1/loader/nOC91cmI8ZfrfPBUQ1aSbvF7NLf1.js" async></script>
     
     <script defer src="/assets/build/assistant.2b83d49741.js"></script>

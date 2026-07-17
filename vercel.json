@@ -7,7 +7,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "https://newdomain.com",
+      "destination": "https://lonelyguy.tech",
       "permanent": true
     }
   ],

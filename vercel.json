@@ -4,13 +4,6 @@
   "buildCommand": "npm run build",
   "cleanUrls": true,
   "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "https://lonelyguy.tech",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/assets/build/(.*)",

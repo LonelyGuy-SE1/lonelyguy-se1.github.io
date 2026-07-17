@@ -1,5 +1,5 @@
 # Lonely Guy
-> Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.
+> Lonely Guy (Greeshma Surya) - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied AI. Projects, research, and technical writing on RL, systems, and LLM agents.
 
 Lonely Guy is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.
 

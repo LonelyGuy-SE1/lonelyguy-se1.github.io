@@ -2,6 +2,7 @@
   "name": "lonelyguy-portfolio",
   "private": true,
   "scripts": {
+    "dev": "node scripts/dev-server.js",
     "build": "node scripts/build-content.js",
     "validate": "node scripts/validate-site.js",
     "seo:validate": "node scripts/validate-site.js",

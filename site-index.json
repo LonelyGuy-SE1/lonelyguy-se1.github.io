@@ -2,7 +2,7 @@
   "site": {
     "name": "Lonely Guy",
     "url": "https://lonelyguy.tech/",
-    "description": "Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
+    "description": "Lonely Guy (Greeshma Surya) - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied AI. Projects, research, and technical writing on RL, systems, and LLM agents.",
     "author": {
       "name": "Greeshma Surya",
       "alternateName": "Lonely Guy",
@@ -30,13 +30,13 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-07-17T12:17:08.886Z",
+  "generatedAt": "2026-07-17T14:08:55.402Z",
   "routes": [
     {
       "type": "page",
       "title": "Home",
       "url": "https://lonelyguy.tech/",
-      "summary": "Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
+      "summary": "Lonely Guy (Greeshma Surya) - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied AI. Projects, research, and technical writing on RL, systems, and LLM agents.",
       "tags": [],
       "date": ""
     },

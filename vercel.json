@@ -4,6 +4,13 @@
   "buildCommand": "npm run build",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://newdomain.com",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/assets/build/(.*)",

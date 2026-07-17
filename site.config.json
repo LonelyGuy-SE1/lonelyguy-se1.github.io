@@ -6,7 +6,7 @@
     "name": "Greeshma Surya",
     "alternateName": "Lonely Guy",
     "email": "loner@lonelyguy.tech",
-    "secondaryEmail": "lonelyguy.se1@gmail.com",
+    "secondaryEmail": "brawlers.assemble@gmail.com",
     "description": "CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
     "jobTitle": "CS undergraduate, embodied AI and robotics builder",
     "location": "India",
@@ -67,7 +67,8 @@
     {
       "label": "ORCID",
       "url": "https://orcid.org/0009-0000-7221-863X",
-      "rel": "me"
+      "rel": "me",
+      "icon": "/assets/icons/orcid.svg"
     },
     {
       "label": "Substack",

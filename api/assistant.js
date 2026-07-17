@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   const reasoningEffort = process.env.ASSISTANT_REASONING_EFFORT || "high";
   const maxTokens = parseInt(process.env.ASSISTANT_MAX_TOKENS || "768", 10);
   const temperature = parseFloat(process.env.ASSISTANT_TEMPERATURE || "0.7");
-  const referer = process.env.ASSISTANT_REFERER_URL || "https://lonelyguy.vercel.app";
+  const referer = process.env.ASSISTANT_REFERER_URL || "https://lonelyguy.tech";
   const siteTitle = process.env.ASSISTANT_SITE_TITLE || "Lonely Guy";
 
   const body = req.body || {};

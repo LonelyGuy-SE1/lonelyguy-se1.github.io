@@ -701,6 +701,15 @@ function siteGraphJsonLd(config) {
           "query-input": "required name=search_term_string",
         },
       },
+      {
+        "@type": "Organization",
+        "@id": `${config.baseUrl}/#organization`,
+        name: config.siteName,
+        url: config.baseUrl,
+        logo: `${config.baseUrl}/assets/SE1.jpg`,
+        founder: { "@id": `${config.baseUrl}/#person` },
+        sameAs: config.author.sameAs || [],
+      },
     ],
   };
 }
@@ -741,7 +750,7 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
   const canonical = page.canonical || canonicalUrl(config, pathName);
   const image = absoluteImageUrl(config, page.image);
   const type = page.type || "website";
-  const robots = page.robots || "index, follow, max-image-preview:large";
+  const robots = page.robots || "index, follow, max-image-preview:large, max-video-preview:-1";
   const graph = siteGraphJsonLd(config);
   graph["@graph"].push(...jsonLdGraph);
 
@@ -759,8 +768,8 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
     <meta property="og:type" content="${escapeAttr(type)}" />
     <meta property="og:url" content="${escapeAttr(canonical)}" />
     <meta property="og:image" content="${escapeAttr(image)}" />
-    <meta property="og:image:width" content="640" />
-    <meta property="og:image:height" content="640" />
+    <meta property="og:image:width" content="${escapeAttr(String(page.imageMeta?.width || 640))}" />
+    <meta property="og:image:height" content="${escapeAttr(String(page.imageMeta?.height || 640))}" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:locale" content="${escapeAttr(config.seo.locale)}" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -836,7 +845,7 @@ function headerHtml(activePath = "") {
 }
 
 function footerHtml(config) {
-  return `<footer class="site-footer" id="footer">
+  return `<footer class="site-footer" id="footer" data-nosnippet>
       <div class="site-width footer-inner">
         <p class="footer-kicker">stuck in my head while making this</p>
         <blockquote class="footer-quote">
@@ -994,6 +1003,7 @@ function makeArticlePageHtml(config, assets, record, type) {
       description: record.seoDescription || record.summary,
       type: "article",
       image: record.image,
+      imageMeta: record.imageMeta,
       date: record.date,
       updated: record.updated || record.date,
       canonical: record.canonical || url,
@@ -1300,6 +1310,7 @@ function makeProjectPageHtml(config, assets, record) {
       description: record.summary,
       type: "article",
       image: record.image,
+      imageMeta: record.imageMeta,
       date: record.started,
       updated: record.updated,
     },
@@ -1648,6 +1659,7 @@ async function generate404Page(config, assets) {
     description: "the page you're looking for doesn't exist.",
     path: "/404",
     ogType: "website",
+    robots: "noindex",
   };
   const body = `
       <div style="text-align:center; padding:4rem 1rem;">
@@ -1731,7 +1743,7 @@ function sitemapEntry(config, pathname, options = {}) {
     .map((video) => {
       const embedUrl = `https://www.youtube.com/embed/${escapeXml(video.id)}`;
       const thumbnail = video.thumbnail ? escapeXml(absoluteImageUrl(config, video.thumbnail)) : "";
-      return `<video:video><video:thumbnail_loc>${thumbnail}</video:thumbnail_loc><video:title>${escapeXml(video.title || "Video walkthrough")}</video:title><video:description>${escapeXml(video.description || "Video walkthrough")}</video:description><video:content_loc>https://www.youtube.com/watch?v=${escapeXml(video.id)}</video:content_loc><video:embed_loc>${escapeXml(embedUrl)}</video:embed_loc><video:publication_date>${escapeXml(video.date || "")}</video:publication_date></video:video>`;
+      return `<video:video><video:thumbnail_loc>${thumbnail}</video:thumbnail_loc><video:title>${escapeXml(video.title || "Video walkthrough")}</video:title><video:description>${escapeXml(video.description || "Video walkthrough")}</video:description><video:content_loc>https://www.youtube.com/watch?v=${escapeXml(video.id)}</video:content_loc><video:player_loc>${escapeXml(embedUrl)}</video:player_loc><video:publication_date>${escapeXml(video.date || "")}</video:publication_date></video:video>`;
     })
     .join("");
   return `<url><loc>${escapeXml(canonicalUrl(config, pathname))}</loc>${options.lastmod ? `<lastmod>${escapeXml(options.lastmod)}</lastmod>` : ""}<changefreq>${options.changefreq || "monthly"}</changefreq><priority>${options.priority || "0.7"}</priority>${imageTags}${videoTags}</url>`;
@@ -1994,6 +2006,8 @@ async function generateLlmsTxt(config, updates, articles, projects) {
 async function generateRobotsTxt(config) {
   const content = `User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /scripts/
 
 Sitemap: ${config.baseUrl}/sitemap.xml
 `;
@@ -2129,7 +2143,8 @@ async function updateHomepage(config, assets, updates, articles, projects) {
     .replace(/<meta name="twitter:creator" content="[^"]*"\s*\/>/, `<meta name="twitter:creator" content="${escapeAttr(config.seo.twitterHandle)}" />`)
     .replace(/<meta\s+name="twitter:title"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:title" content="${escapeAttr(config.seo.defaultTitle)}" />`)
     .replace(/<meta\s+name="twitter:description"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:description" content="${escapeAttr(config.seo.defaultDescription)}" />`)
-    .replace(/<meta\s+name="twitter:image"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:image" content="${absoluteImageUrl(config)}" />`);
+    .replace(/<meta\s+name="twitter:image"\s+content="[\s\S]*?"\s*\/>/, `<meta name="twitter:image" content="${absoluteImageUrl(config)}" />`)
+    .replace(/<meta\s+name="robots"\s+content="[^"]*"\s*\/>/, `<meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1" />`);
 
   html = updateHeadJsonLd(html, config, projects, articles);
 

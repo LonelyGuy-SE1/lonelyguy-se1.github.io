@@ -680,6 +680,10 @@ function siteGraphJsonLd(config) {
         description: config.author.description,
         sameAs: config.author.sameAs || [],
         knowsAbout: config.author.knowsAbout || [],
+        speakable: {
+          "@type": "SpeakableSpecification",
+          cssSelector: [".brand-copy", ".hero-text", "#hero-title"],
+        },
       },
       {
         "@type": "WebSite",
@@ -1419,11 +1423,13 @@ function makeStaticInfoPage(config, assets, page) {
       </script>
       <ul class="social-list static-contact-list">${config.socials
       .map(
-        (social) =>
-          `<li><span>${escapeHtml(social.label)}</span><a href="${escapeAttr(social.url)}" target="_blank" rel="${escapeAttr(social.rel || "noreferrer")} noreferrer">${escapeHtml(social.url.replace(/^https?:\/\//, ""))}</a></li>`,
+        (social) => {
+          const icon = social.icon ? `<img class="service-logo" src="${escapeAttr(social.icon)}" alt="" />` : "";
+          return `<li><span>${icon}${escapeHtml(social.label)}</span><a href="${escapeAttr(social.url)}" target="_blank" rel="${escapeAttr(social.rel || "noreferrer")} noreferrer">${escapeHtml(social.url.replace(/^https?:\/\//, ""))}</a></li>`;
+        }
       )
       .join("")}
-      <li><span>email</span><a href="mailto:${escapeAttr(config.author.secondaryEmail)}">${escapeHtml(config.author.secondaryEmail)}</a></li>
+      <li><span>email</span><a href="mailto:${escapeAttr(config.author.email)}">${escapeHtml(config.author.email)}</a></li>
       <li><span>discord</span><span>lonelyguy_se1</span></li>
     </ul>`;
   } else if (page.id === "stack") {
@@ -1443,7 +1449,27 @@ function makeStaticInfoPage(config, assets, page) {
       url,
       name: page.title,
       description: page.description,
-      mainEntity: { "@id": `${config.baseUrl}/#person` },
+      mainEntity: {
+        "@type": "Person",
+        "@id": `${config.baseUrl}/#person`,
+        name: config.author.name,
+        alternateName: config.author.alternateName,
+        url: config.baseUrl,
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            contactType: "email",
+            email: config.author.email,
+            url: `${config.baseUrl}/contact`,
+          },
+          {
+            "@type": "ContactPoint",
+            contactType: "email",
+            email: config.author.secondaryEmail,
+          },
+        ],
+        sameAs: config.author.sameAs || [],
+      },
       isPartOf: { "@id": `${config.baseUrl}/#website` },
     },
     breadcrumbsJsonLd(config, [
@@ -1975,6 +2001,46 @@ Sitemap: ${config.baseUrl}/sitemap.xml
   console.log("  -> robots.txt");
 }
 
+async function submitIndexNow(config, updates, articles, gallery, projects) {
+  const key = "1b38771147a342ff915f56163bebea6a";
+  const urls = [];
+
+  // Collect all page URLs
+  urls.push(`${config.baseUrl}/`);
+  for (const r of updates) urls.push(`${config.baseUrl}/updates/${r.id}`);
+  for (const r of articles) urls.push(`${config.baseUrl}/articles/${r.id}`);
+  for (const r of projects) urls.push(`${config.baseUrl}/projects/${r.id}`);
+  urls.push(`${config.baseUrl}/gallery`);
+  urls.push(`${config.baseUrl}/search`);
+  urls.push(`${config.baseUrl}/stack`);
+  urls.push(`${config.baseUrl}/contact`);
+  urls.push(`${config.baseUrl}/updates`);
+  urls.push(`${config.baseUrl}/articles`);
+  urls.push(`${config.baseUrl}/projects`);
+
+  const payload = {
+    host: "lonelyguy.tech",
+    key,
+    keyLocation: `${config.baseUrl}/${key}.txt`,
+    urlList: urls,
+  };
+
+  try {
+    const res = await fetch("https://api.indexnow.org/IndexNow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      console.log(`  submitted ${urls.length} URLs to IndexNow (${res.status})`);
+    } else {
+      console.log(`  IndexNow responded ${res.status} (non-critical, skipping)`);
+    }
+  } catch (err) {
+    console.log(`  IndexNow submission failed (non-critical): ${err.message}`);
+  }
+}
+
 async function hashAndCopyAsset(sourcePath, publicName) {
   let content = await fs.readFile(sourcePath);
   if (path.extname(publicName) === ".css") {
@@ -2142,6 +2208,9 @@ async function build() {
 
   console.log("generating robots.txt...");
   await generateRobotsTxt(config);
+
+  console.log("submitting to IndexNow...");
+  await submitIndexNow(config, updates, articles, gallery, projects);
 
   console.log("updating homepage...");
   await updateHomepage(config, assets, updates, articles, projects);

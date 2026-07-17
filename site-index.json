@@ -11,7 +11,8 @@
         "https://x.com/lonelyguyse1",
         "https://huggingface.co/Lonelyguyse1",
         "https://orcid.org/0009-0000-7221-863X",
-        "https://www.linkedin.com/in/greeshmasurya/"
+        "https://www.linkedin.com/in/greeshmasurya/",
+        "https://www.alphaxiv.org/@greeshma-surya"
       ],
       "knowsAbout": [
         "Reinforcement Learning",
@@ -30,7 +31,7 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-07-17T17:28:58.977Z",
+  "generatedAt": "2026-07-17T18:58:00.950Z",
   "routes": [
     {
       "type": "page",

@@ -3,7 +3,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const config = JSON.parse(fs.readFileSync(path.join(ROOT, "site.config.json"), "utf8"));
-const BASE_URL = String(config.baseUrl || "https://lonelyguy.vercel.app").replace(/\/+$/, "");
+const BASE_URL = String(config.baseUrl || "https://lonelyguy.tech").replace(/\/+$/, "");
 
 const failures = [];
 const warnings = [];

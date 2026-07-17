@@ -15,7 +15,8 @@
       "https://x.com/lonelyguyse1",
       "https://huggingface.co/Lonelyguyse1",
       "https://orcid.org/0009-0000-7221-863X",
-      "https://www.linkedin.com/in/greeshmasurya/"
+      "https://www.linkedin.com/in/greeshmasurya/",
+      "https://www.alphaxiv.org/@greeshma-surya"
     ],
     "knowsAbout": [
       "Reinforcement Learning",
@@ -79,6 +80,12 @@
       "label": "LinkedIn",
       "url": "https://www.linkedin.com/in/greeshmasurya/",
       "rel": "me"
+    },
+    {
+      "label": "AlphaXiv",
+      "url": "https://www.alphaxiv.org/@greeshma-surya",
+      "rel": "me",
+      "icon": "/assets/icons/alphaxiv.png"
     }
   ]
 }

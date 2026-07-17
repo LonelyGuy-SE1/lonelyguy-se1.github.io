@@ -1,15 +1,14 @@
 {
-  "baseUrl": "https://lonelyguy.vercel.app",
-  "futureCanonicalDomain": "",
+  "baseUrl": "https://lonelyguy.tech",
   "siteName": "Lonely Guy",
   "shortName": "Lonely Guy",
   "author": {
-    "name": "SE1",
+    "name": "Greeshma Surya",
     "alternateName": "Lonely Guy",
-    "email": "lonelyguy.se1@gmail.com",
-    "secondaryEmail": "brawlers.assemble@gmail.com",
+    "email": "loner@lonelyguy.tech",
+    "secondaryEmail": "lonelyguy.se1@gmail.com",
     "description": "CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
-    "jobTitle": "CS undergraduate, embodied AI builder",
+    "jobTitle": "CS undergraduate, embodied AI and robotics builder",
     "location": "India",
     "sameAs": [
       "https://github.com/LonelyGuy-SE1",
@@ -29,11 +28,11 @@
       "Large Language Models"
     ]
   },
-  "description": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
+  "description": "Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
   "seo": {
     "defaultTitle": "Lonely Guy - RL, Robotics, Embodied AI & Systems Portfolio",
     "titleTemplate": "%s - Lonely Guy",
-    "defaultDescription": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems. portfolio with blogs, projects, and research.",
+    "defaultDescription": "Lonely Guy - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems. Portfolio with blogs, projects, and research.",
     "defaultImage": "/assets/SE1.jpg",
     "twitterHandle": "@lonelyguyse1",
     "language": "en-US",
@@ -45,7 +44,7 @@
     "vercelSpeedInsights": true
   },
   "gsc": {
-    "propertyUrl": "https://lonelyguy.vercel.app/",
+    "propertyUrl": "https://lonelyguy.tech/",
     "verificationMethod": "html-file",
     "verificationFile": "google6cb4e7d9840b7dd9.html"
   },
@@ -68,6 +67,11 @@
     {
       "label": "ORCID",
       "url": "https://orcid.org/0009-0000-7221-863X",
+      "rel": "me"
+    },
+    {
+      "label": "Substack",
+      "url": "https://lonelyguyse1.substack.com",
       "rel": "me"
     },
     {

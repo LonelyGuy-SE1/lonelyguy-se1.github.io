@@ -58,22 +58,22 @@ const STATIC_PAGES = [
 ];
 
 function normalizeBaseUrl(value) {
-  return String(value || "https://lonelyguy.vercel.app").replace(/\/+$/, "");
+  return String(value || "https://lonelyguy.tech").replace(/\/+$/, "");
 }
 
 async function loadSiteConfig() {
   const defaults = {
-    baseUrl: "https://lonelyguy.vercel.app",
+    baseUrl: "https://lonelyguy.tech",
     siteName: "Lonely Guy",
     shortName: "Lonely Guy",
     description:
-      "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
-    author: { name: "SE1", alternateName: "Lonely Guy", sameAs: [], knowsAbout: [] },
+      "Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
+    author: { name: "Greeshma Surya", alternateName: "Lonely Guy", sameAs: [], knowsAbout: [] },
     seo: {
       defaultTitle:
         "Lonely Guy - RL, Robotics, Embodied AI & Systems Portfolio",
       defaultDescription:
-        "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems. portfolio with blogs, projects, and research.",
+        "Lonely Guy - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems. Portfolio with blogs, projects, and research.",
       defaultImage: "/assets/SE1.jpg",
       twitterHandle: "@lonelyguyse1",
       language: "en-US",
@@ -82,7 +82,7 @@ async function loadSiteConfig() {
     },
     analytics: { vercelAnalytics: true, vercelSpeedInsights: true },
     socials: [],
-    gsc: { propertyUrl: "https://lonelyguy.vercel.app/" },
+    gsc: { propertyUrl: "https://lonelyguy.tech/" },
   };
 
   try {
@@ -617,7 +617,7 @@ async function readProjects() {
           title: entry.title,
           summary:
             entry.summary ||
-            (repo ? `GitHub repository for ${repoName}, part of SE1's work.` : ""),
+            (repo ? `GitHub repository for ${repoName}, part of Lonely Guy's work.` : ""),
           status: entry.status || "project",
           featured: Boolean(entry.featured),
           tags: normalizeList(entry.tags),
@@ -732,7 +732,7 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
     ? title
     : title === config.seo.defaultTitle
       ? title
-      : (config.seo.titleTemplate || "%s - SE1").replace("%s", title);
+      : (config.seo.titleTemplate || "%s - Lonely Guy").replace("%s", title);
   const description = page.description || config.seo.defaultDescription;
   const canonical = page.canonical || canonicalUrl(config, pathName);
   const image = absoluteImageUrl(config, page.image);
@@ -745,7 +745,7 @@ function metadataHead(config, page, assets, jsonLdGraph = []) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(fullTitle)}</title>
     <meta name="description" content="${escapeAttr(description)}" />
-    <meta name="author" content="${escapeAttr(config.author.name)}" />
+    <meta name="author" content="${escapeAttr(config.author.alternateName)}" />
     <meta name="robots" content="${escapeAttr(robots)}" />
     <meta name="theme-color" content="${escapeAttr(config.seo.themeColor)}" />
     <link rel="canonical" href="${escapeAttr(canonical)}" />
@@ -816,7 +816,7 @@ function footerHtml(config) {
           <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
           <a href="/">back to home</a>
         </div>
-        <p class="footer-copy">&copy; 2026 SE1. All rights reserved.</p>
+        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
       </div>
     </footer>`;
 }
@@ -838,6 +838,7 @@ function shell(config, assets, page, body, jsonLdGraph = [], extraScripts = "") 
       ${body}
     </main>
     ${footerHtml(config)}
+    <script src="https://js.supascribe.com/v1/loader/nOC91cmI8ZfrfPBUQ1aSbvF7NLf1.js" async></script>
     ${extraScripts}
     <script defer src="${assets.assistant}"></script>
 </body>
@@ -1304,14 +1305,61 @@ function makeStaticInfoPage(config, assets, page) {
   const url = canonicalUrl(config, page.path);
   let bodyContent = "";
   if (page.id === "contact") {
-    bodyContent = `<ul class="social-list static-contact-list">${config.socials
+    bodyContent = `
+      <div class="contact-action-cards">
+        <form class="contact-action-card contact-mail-form" id="contact-mail-form" action="https://formsubmit.co/${escapeAttr(config.author.email)}" method="POST">
+          <input type="hidden" name="_subject" value="Message from lonelyguy.tech" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_template" value="table" />
+          <div class="contact-action-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </div>
+          <div class="contact-action-body">
+            <strong>send me a mail</strong>
+            <span>type a message and hit send</span>
+          </div>
+          <div class="contact-mail-fields">
+            <input type="text" name="name" placeholder="your name" class="contact-field" autocomplete="name" required />
+            <input type="email" name="email" placeholder="your email" class="contact-field" autocomplete="email" required />
+            <textarea name="message" placeholder="write something..." rows="3" class="contact-field" required></textarea>
+            <button type="submit" class="contact-send-btn">send</button>
+          </div>
+        </form>
+        <div class="contact-action-card contact-substack-widget">
+          <div class="contact-action-icon contact-action-icon--substack">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="contact-action-body">
+            <strong>join the substack</strong>
+            <span>enter your email to subscribe</span>
+          </div>
+          <div data-supascribe-embed-id="226678047964" data-supascribe-subscribe></div>
+        </div>
+      </div>
+      <script>
+      (function(){
+        var f=document.getElementById("contact-mail-form");
+        if(!f)return;
+        f.addEventListener("submit",function(e){
+          e.preventDefault();
+          var fd=new FormData(f);
+          fetch(f.action,{method:"POST",body:fd,headers:{Accept:"application/json"}})
+            .then(function(){
+              f.innerHTML='<div class="contact-action-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="contact-action-body"><strong>sent</strong><span>message delivered, check your inbox for a copy.</span></div>';
+            })
+            .catch(function(){
+              f.innerHTML='<div class="contact-action-body"><strong>sorry, something went wrong</strong><span>try emailing directly at ${escapeHtml(config.author.email)}</span></div>';
+            });
+        });
+      })();
+      </script>
+      <ul class="social-list static-contact-list">${config.socials
       .map(
         (social) =>
           `<li><span>${escapeHtml(social.label)}</span><a href="${escapeAttr(social.url)}" target="_blank" rel="${escapeAttr(social.rel || "noreferrer")} noreferrer">${escapeHtml(social.url.replace(/^https?:\/\//, ""))}</a></li>`,
       )
       .join("")}
-      <li><span>email</span><a href="mailto:${escapeAttr(config.author.email)}">${escapeHtml(config.author.email)}</a></li>
-      <li><span>backup email</span><a href="mailto:${escapeAttr(config.author.secondaryEmail)}">${escapeHtml(config.author.secondaryEmail)}</a></li>
+      <li><span>email</span><a href="mailto:${escapeAttr(config.author.secondaryEmail)}">${escapeHtml(config.author.secondaryEmail)}</a></li>
       <li><span>discord</span><span>lonelyguy_se1</span></li>
     </ul>`;
   } else if (page.id === "stack") {
@@ -1362,7 +1410,7 @@ function makeGalleryPageHtml(config, assets, gallery) {
       url,
       name: "Gallery",
       description:
-        "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+        "Visual artifacts from Lonely Guy's robotics, reinforcement learning, cyber environment, and project work.",
       isPartOf: { "@id": `${config.baseUrl}/#website` },
     },
     itemListJsonLd(
@@ -1412,7 +1460,7 @@ function makeGalleryPageHtml(config, assets, gallery) {
       path: "/gallery",
       title: "Gallery",
       description:
-        "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+        "Visual artifacts from Lonely Guy's robotics, reinforcement learning, cyber environment, and project work.",
     },
     body,
     jsonLd,
@@ -1427,7 +1475,7 @@ function makeSearchPageHtml(config, assets) {
       "@id": `${url}#webpage`,
       url,
       name: "Search",
-      description: "Search SE1's portfolio, projects, articles, updates, and gallery.",
+      description: "Search Lonely Guy's portfolio, projects, articles, updates, and gallery.",
       isPartOf: { "@id": `${config.baseUrl}/#website` },
     },
     breadcrumbsJsonLd(config, [
@@ -1488,7 +1536,7 @@ function makeSearchPageHtml(config, assets) {
     {
       path: "/search",
       title: "Search",
-      description: "Search SE1's portfolio, projects, articles, updates, and gallery.",
+      description: "Search Lonely Guy's portfolio, projects, articles, updates, and gallery.",
     },
     body,
     jsonLd,
@@ -1522,7 +1570,7 @@ async function generatePages(config, assets, updates, articles, gallery, project
       assets,
       "updates",
       "Progress Updates",
-      "Short progress logs from SE1 on reinforcement learning, robotics, embodied AI, and systems.",
+      "Short progress logs from Lonely Guy on reinforcement learning, robotics, embodied AI, and systems.",
       updates,
     ),
   );
@@ -1533,7 +1581,7 @@ async function generatePages(config, assets, updates, articles, gallery, project
       assets,
       "articles",
       "Blogs",
-      "Longer technical write-ups from SE1 on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
+      "Longer technical write-ups from Lonely Guy on reinforcement learning, LLMs, cyber environments, robotics, and systems.",
       articles,
     ),
   );
@@ -1544,7 +1592,7 @@ async function generatePages(config, assets, updates, articles, gallery, project
       assets,
       "projects",
       "Projects",
-      "Selected project case studies from SE1 across embodied AI, RL, LLM agents, vision, systems, and simulation.",
+      "Selected project case studies from Lonely Guy across embodied AI, RL, LLM agents, vision, systems, and simulation.",
       projects,
     ),
   );
@@ -1727,7 +1775,7 @@ function makeSearchRecords(config, updates, articles, gallery, projects) {
     {
       type: "page",
       title: "Gallery",
-      summary: "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+      summary: "Visual artifacts from Lonely Guy's robotics, reinforcement learning, cyber environment, and project work.",
       url: "/gallery",
       content: gallery.map((item) => item.caption).join(" "),
     },
@@ -1801,7 +1849,7 @@ async function generateLlmsTxt(config, updates, articles, projects) {
     `# ${config.siteName}`,
     `> ${config.description}`,
     "",
-    `${config.author.name} (${config.author.alternateName}) is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.`,
+    `${config.author.alternateName} is building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, LLM agents, and systems work.`,
     "",
     "## Navigation",
     `- Home: ${canonicalUrl(config, "/")}`,
@@ -1833,6 +1881,16 @@ async function generateLlmsTxt(config, updates, articles, projects) {
   for (const social of config.socials || []) lines.push(`- [${social.label}](${social.url})`);
   await fs.writeFile(path.join(ROOT, "llms.txt"), lines.join("\n"), "utf8");
   console.log("  -> llms.txt");
+}
+
+async function generateRobotsTxt(config) {
+  const content = `User-agent: *
+Allow: /
+
+Sitemap: ${config.baseUrl}/sitemap.xml
+`;
+  await fs.writeFile(path.join(ROOT, "robots.txt"), content, "utf8");
+  console.log("  -> robots.txt");
 }
 
 async function hashAndCopyAsset(sourcePath, publicName) {
@@ -1911,7 +1969,7 @@ async function updateHomepage(config, assets, updates, articles, projects) {
       /<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/,
       `<meta name="description" content="${escapeAttr(config.seo.defaultDescription)}" />`,
     )
-    .replace(/<meta name="author" content="[^"]*"\s*\/>/, `<meta name="author" content="${escapeAttr(config.author.name)}" />`)
+    .replace(/<meta name="author" content="[^"]*"\s*\/>/, `<meta name="author" content="${escapeAttr(config.author.alternateName)}" />`)
     .replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${canonicalUrl(config, "/")}" />`)
     .replace(/\s*<meta name="google-site-verification" content="[^"]*"\s*\/>\n?/, "\n")
     .replace(/<meta property="og:site_name" content="[^"]*"\s*\/>/, `<meta property="og:site_name" content="${escapeAttr(config.siteName)}" />`)
@@ -1947,6 +2005,11 @@ async function updateHomepage(config, assets, updates, articles, projects) {
     .replace(/(?:<script>window\.PORTFOLIO_CONTENT_SRC="[^"]+";<\/script>|<script(?:\s+defer)? src="(?:scripts\/content\.js|\/assets\/build\/content\.[^"]+\.js)"><\/script>)/, `<script>window.PORTFOLIO_CONTENT_SRC="${assets.content}";</script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/main\.js|\/assets\/build\/main\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.main}"></script>`)
     .replace(/<script(?:\s+defer)? src="(?:scripts\/assistant\.js|\/assets\/build\/assistant\.[^"]+\.js)"><\/script>/, `<script defer src="${assets.assistant}"></script>`);
+
+  html = html.replace(
+    /<p class="footer-copy">[^<]*<\/p>/,
+    `<p class="footer-copy">&copy; ${new Date().getFullYear()} ${escapeHtml(config.author.alternateName)}. All rights reserved.</p>`,
+  );
 
   html = html.replace(
     /<section\s+class="tab-panel"\s+id="panel-stack"[\s\S]*?(?=\s*<section\s+class="tab-panel"\s+id="panel-(?:updates)")/,
@@ -1991,6 +2054,9 @@ async function build() {
 
   console.log("generating llms.txt...");
   await generateLlmsTxt(config, updates, articles, projects);
+
+  console.log("generating robots.txt...");
+  await generateRobotsTxt(config);
 
   console.log("updating homepage...");
   await updateHomepage(config, assets, updates, articles, projects);

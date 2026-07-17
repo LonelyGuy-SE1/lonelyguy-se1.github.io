@@ -2,7 +2,7 @@
   {
     "type": "page",
     "title": "Home",
-    "summary": "se1 (lonely guy) - cs undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied ai, and systems.",
+    "summary": "Lonely Guy - CS undergrad building towards autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.",
     "url": "/",
     "content": "CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems."
   },
@@ -23,7 +23,7 @@
   {
     "type": "page",
     "title": "Gallery",
-    "summary": "Visual artifacts from SE1's robotics, reinforcement learning, cyber environment, and project work.",
+    "summary": "Visual artifacts from Lonely Guy's robotics, reinforcement learning, cyber environment, and project work.",
     "url": "/gallery",
     "content": "biped arm result clanker pose env cybersec humanoid circuit shiori extension atari breakout atari breakout preprocessing bench raijin biped arm training graph biped arm yuri"
   },

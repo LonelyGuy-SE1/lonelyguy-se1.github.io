@@ -6,10 +6,10 @@
     "validate": "node scripts/validate-site.js",
     "seo:validate": "node scripts/validate-site.js",
     "seo:gsc:doctor": "gsc auth status && gsc sites list --format table && gsc doctor",
-    "seo:gsc:submit": "gsc sitemaps submit https://lonelyguy.vercel.app/sitemap.xml --site https://lonelyguy.vercel.app/ --format table",
-    "seo:gsc:inspect": "gsc inspect --sitemap --site https://lonelyguy.vercel.app/ --filter errors --concurrency 4 --format json > .seo-reports/gsc-inspection.json",
-    "seo:gsc:analytics": "gsc analytics query --site https://lonelyguy.vercel.app/ --days 28 --dimension page,query --format json > .seo-reports/gsc-analytics.json",
-    "perf:lighthouse": "lighthouse https://lonelyguy.vercel.app/ --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=.seo-reports/lighthouse-home.json --chrome-flags=\"--headless=new\""
+    "seo:gsc:submit": "gsc sitemaps submit https://lonelyguy.tech/sitemap.xml --site https://lonelyguy.tech/ --format table",
+    "seo:gsc:inspect": "gsc inspect --sitemap --site https://lonelyguy.tech/ --filter errors --concurrency 4 --format json > .seo-reports/gsc-inspection.json",
+    "seo:gsc:analytics": "gsc analytics query --site https://lonelyguy.tech/ --days 28 --dimension page,query --format json > .seo-reports/gsc-analytics.json",
+    "perf:lighthouse": "lighthouse https://lonelyguy.tech/ --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=.seo-reports/lighthouse-home.json --chrome-flags=\"--headless=new\""
   },
   "devDependencies": {
     "@gsc-cli/cli": "^0.0.4",

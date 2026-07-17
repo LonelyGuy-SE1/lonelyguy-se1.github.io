@@ -3,7 +3,7 @@
   --cinnabar: #ff6b35;
   --amber: #e87d2f;
   --ember: #dc2626;
-  --garnet: #c4284a;
+  --garnet: #cc5522;
   --gold: #cc8833;
   --moss: #4a7c59;
   --pitch-black: #0e0403;
@@ -12,7 +12,7 @@
   --text: #ff6b35;
   --text-amber: rgba(232, 125, 47, 0.92);
   --text-gold: rgba(235, 170, 82, 0.98);
-  --text-garnet: rgba(196, 40, 74, 0.92);
+  --text-garnet: rgba(204, 85, 34, 0.92);
   --muted: rgba(255, 139, 83, 0.9);
   --muted-gold: rgba(204, 136, 51, 0.65);
   --soft: rgba(224, 85, 42, 0.58);
@@ -22,8 +22,8 @@
   --amber-glow: rgba(232, 125, 47, 0.08);
   --gold-line: rgba(204, 136, 51, 0.25);
   --gold-glow: rgba(204, 136, 51, 0.08);
-  --garnet-line: rgba(196, 40, 74, 0.25);
-  --garnet-glow: rgba(196, 40, 74, 0.1);
+  --garnet-line: rgba(204, 85, 34, 0.25);
+  --garnet-glow: rgba(204, 85, 34, 0.1);
   --max-width: 1120px;
 }
 
@@ -847,7 +847,7 @@ summary,
 }
 
 .path-list li:nth-child(3)::before {
-  background: var(--garnet);
+  background: var(--cinnabar);
 }
 
 .path-list strong {
@@ -880,6 +880,150 @@ summary,
   height: 1rem;
   margin-right: 0.45rem;
   vertical-align: text-bottom;
+}
+
+.contact-action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.contact-action-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 107, 53, 0.06), rgba(14, 4, 3, 0.3)),
+    rgba(0, 5, 0, 0.46);
+  box-shadow: inset 0 1px 0 rgba(255, 139, 83, 0.09);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.contact-action-card:hover,
+.contact-action-card:focus-within {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(232, 125, 47, 0.12);
+}
+
+.contact-action-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 6px;
+  background: var(--pitch-black);
+  border: 1px solid var(--line);
+  color: var(--cinnabar);
+  flex-shrink: 0;
+}
+
+.contact-action-icon--substack {
+  color: var(--amber);
+}
+
+.contact-action-body {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.contact-action-body strong {
+  font-size: 0.95rem;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.contact-action-body span {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* Mail form */
+.contact-mail-form {
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.contact-mail-form .contact-action-icon,
+.contact-mail-form .contact-action-body {
+  display: inline-grid;
+  grid-column: 1 / -1;
+}
+
+.contact-mail-fields {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.contact-field {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--pitch-black);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.contact-field::placeholder {
+  color: var(--muted-gold);
+  opacity: 0.6;
+}
+
+.contact-field:focus {
+  border-color: var(--amber);
+}
+
+textarea.contact-field {
+  resize: vertical;
+  min-height: 3.5rem;
+}
+
+.contact-send-btn {
+  justify-self: start;
+  padding: 0.5rem 1.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--pitch-black);
+  color: var(--text-gold);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.contact-send-btn:hover,
+.contact-send-btn:focus-visible {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 2px rgba(232, 125, 47, 0.15);
+}
+
+/* Substack widget (Supascribe) */
+.contact-substack-widget {
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.contact-substack-widget .contact-action-icon,
+.contact-substack-widget .contact-action-body {
+  display: inline-grid;
+  grid-column: 1 / -1;
+}
+
+[data-supascribe-embed-id] {
+  width: 100%;
 }
 
 .updates-layout {
@@ -1222,9 +1366,9 @@ summary,
 
 .reader-head-actions a:hover,
 .reader-head-actions a:focus-visible {
-  background: var(--garnet);
+  background: var(--cinnabar);
   color: var(--black-2);
-  border-color: var(--garnet);
+  border-color: var(--cinnabar);
 }
 
 .reader-body img {

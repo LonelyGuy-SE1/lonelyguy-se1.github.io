@@ -25,7 +25,7 @@
     "title": "Gallery",
     "summary": "Visual artifacts from Lonely Guy's robotics, reinforcement learning, cyber environment, and project work.",
     "url": "/gallery",
-    "content": "biped arm result clanker pose env cybersec humanoid circuit shiori extension atari breakout atari breakout preprocessing bench raijin biped arm training graph biped arm yuri"
+    "content": "syntagma versions_default syntagma versions_rename_category syntagma versions_current_document syntagma versions_annotated_comparision syntagma submit_course_page syntagma preview_single_course syntagma preview_full_sem syntagma preview_full_doc syntagma home_page syntagma editor_single_course syntagma editor_sample_annotated syntagma editor_sample_1 syntagma courses_filtered_visible_toggle syntagma courses_delete_modal syntagma courses_default syntagma auth_page biped arm result clanker pose env cybersec humanoid circuit shiori extension atari breakout atari breakout preprocessing bench raijin biped arm training graph biped arm yuri"
   },
   {
     "type": "updates",
@@ -62,6 +62,15 @@
   },
   {
     "type": "articles",
+    "title": "Syntagma, Building An Agentic Curriculum Lifecycle Management System",
+    "summary": "A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend.",
+    "url": "/articles/2026-07-22-syntagma",
+    "date": "2026-07-22",
+    "tags": [],
+    "content": "Syntagma is an agentic curriculum lifecycle management system built for PES University, Bengaluru. It replaces a manual, error-prone process — faculty submitting raw course content in inconsistent formats, someone manually compiling it into the official syllabus document, no version history, no way to compare changes between years. The system spans the full pipeline: faculty submit course content through a form, AI refines it into structured records, an agentic editor with 36 tools lets admins propose and review changes, the curriculum renders as official A4 PDFs with letterhead, and every version is snapshotable with full diff history. Links: - Live demo: syntagma.lonelyguy.tech - Source: github.com/LonelyGuy-SE1/Syntagma - Docs: syntagma.lonelyguy.tech/docs/ Architecture Overview The system has three layers: Backend — FastAPI 0.138 on Python 3.12, 51 endpoints across 9 route files Frontend — Vanilla HTML/CSS/JS, zero build step, served as static files Infrastructure — Supabase (PostgreSQL) for persistence, Upstash Redis for cache, OpenRouter for AI, Docker on Hugging Face Spaces, Vercel for frontend Browser → Vercel (static) → /api/* → HF Spaces (FastAPI Docker) ├── OpenRouter (LLM) ├── Upstash Redis (cache) ├── Supabase Postgres └── WeasyPrint (PDF) Frontend surfaces: /auth/ (sign in), / (dashboard), /form/ (course submission), /courses/ (management table), /preview/ (PDF viewer), /live-editor/ (agentic editor), /versions/ (version history), /docs/ (documentation). The Submission Pipeline Faculty enter a course code, title, and raw content through a form. The backend auto-parses course codes — semester, department, and credit category are extracted from the code format itself (e.g., UE25CS242B → semester 4, CS department, credit category 2). A background task triggers AI refinement via OpenRouter. The LLM receives the raw faculty text and returns structured JSON matching the database schema — preserving all syllabus topics, only cleaning and structuring. The raw content is never lost; it lives alongside the refined record. The Agentic Editor The most architecturally interesting part. The editor is an AI chat that has access to 36 tools for reading and writing curriculum data, streamed via Server-Sent Events. The critical design rule: the agent never auto-applies changes. Every proposed edit creates a proposed draft in the agent_drafts table. The human must review and approve in the Review panel before anything touches refined_submissions . This is enforced at every level: create_course_draft creates a reviewable draft for one course create_document_draft creates a multi-course draft update_deterministic_fields creates a blocked draft for protected fields (program, hours, credits, course_type) Drafts have statuses: proposed → applied , or blocked if they touch protected fields Applying a draft writes to course_revision_history first (audit trail), then updates refined_submissions , then auto-creates a version snapshot The SSE stream is also interesting — it sends token events for text, draft events when a draft is created (so the frontend can update the Review panel in real time), refined_course events for new courses, and error events with graceful fallback. Version Snapshots The versioning system is effectively git for curriculum data. curriculum_versions stores named snapshots (conventional-commit-style names generated from diff summaries). finalized_submissions stores a JSON snapshot of every course at the time of version creation. Features: - Version creation detects no-change and rejects duplicate snapshots (409 Conflict) - Version restore creates full revision history and archives courses removed since the snapshot - Version-vs-version diff shows added, removed, and changed courses with per-course change percentages - Cache invalidation on any version operation The PDF Pipeline Curriculum PDFs render through Jinja2 templates → WeasyPrint → A4 PDF with PES University&#39;s letterhead (base64-encoded in _logo_data.py ). There are four template variants: jinja_sample.html — Single course, semester, or full curriculum layout with summary tables jinja_diff.html — Red/green side-by-side diff view jinja_program.html — Program educational objectives and outcomes jinja_sem_5_6.html — Specialization track brackets for semesters 5-6 A background thread pre-generates PDFs at startup for configured academic years, so the first request doesn&#39;t pay the cold-start cost. Agent Tools (36) The agent tools are defined as a registry of dataclass instances — each with a name, description, JSON Schema parameters, and a handler function. The tool listing is exposed at GET /agent/tools and ingested by OpenRouter&#39;s function-calling API. Categories: - Read (10 tools): granular course field access ( get_course_syllabus , get_course_textbooks , get_course_lab , get_course_fields , batch_read_courses ) - Write (6 tools): create_course_draft , update_agent_draft , create_refined_course (for new courses or draft-status updates), create_document_draft , update_deterministic_fields , create_curriculum_version - Diff (3 tools): diff_course_json , diff_versions , get_version - Specialization (7 tools): track definitions, elective assignment, AI-driven categorization - External (3 tools): fetch_url , web_search (DuckDuckGo), get_attachment_text - Output (2 tools): create_report (markdown/PDF), create_spreadsheet (CSV/XLSX) - Meta (4 tools): signal_done , ask_user , list_courses , get_preview_url Caching The cache layer ( cache.py , 134 lines) wraps both Upstash Redis and an in-memory dict behind the same interface. If Redis is unavailable, it falls back silently to in-memory. Lazy invalidation clears specific cache keys on writes — course visibility changes invalidate courses_list , sem_courses:* , pending_courses , all_course_ids , and the full curriculum cache. A cache prewarm thread runs at startup to populate all_course_ids , avoiding cold-start latency on the first request. OpenRouter Integration The LLM client ( openrouter.py , 475 lines) handles: - Tool calling — Streams token-by-token, intercepts tool_calls, executes them, sends results back - Fallback model — If the primary model returns 502/503 with certain provider messages, it switches to the fallback automatically - Fibonacci backoff — On transient errors, retries with delay doubling (1s, 2s, 3s, 5s, 8s...) - Context length management — Fetches model&#39;s actual context_length at startup, trims oldest messages when budget is exceeded - The system is model-agnostic; it works with any OpenAI-compatible endpoint Database Schema 12 tables in Supabase PostgreSQL: submissions — Raw faculty input with status lifecycle: pending → refined / refine_failed refined_submissions — Template-ready courses with 22 columns including JSONB units specialization_definitions — Tracks per semester with letter/key/name course_specialization_assignments — Many-to-many with unique constraint curriculum_versions — Snapshots with conventional-commit-style names finalized_submissions — Course JSON snapshots per version course_revision_history — Full audit trail of every applied change agent_drafts — Proposed/blocked/applied lifecycle agent_document_drafts — Multi-course drafts chat_sessions , chat_messages — Chat with metadata (tool calls, attachments) chat_attachments — Uploaded files and generated reports with text extraction Design Decisions Vanilla frontend, no framework. The frontend is intentionally plain HTML/CSS/JS. No React, no Vue, no build step. The backend serves it as static files. This was a deliberate choice — for a tool used by a small number of curriculum admins, the overhead of a modern SPA framework is unjustified. Every page is a standalone HTML file with inline logic. No async task queue. Celery or similar was considered and rejected. The requirements stated that only a few people would use the system simultaneously. Background refinement runs in FastAPI&#39;s BackgroundTasks , PDF pre-generation runs in a daemon thread at startup. Both are synchronous and fast enough for the expected load. Model-agnostic AI pipeline. The refinement and agent systems work with any OpenAI-compatible API. The model is configurable via environment variables ( OPENROUTER_MODEL , OPENROUTER_FALLBACK_MODEL ). This prevents vendor lock-in and allows swapping models as the ecosystem evolves. Drafts as first-class entities. The agent never directly modifies a course. Every change goes through agent_drafts , gets a diff_summary (JSON Patch + syllabus change percent + topic add/remove lists), and waits for human approval. This was the most important architectural constraint — it makes the AI a proposal tool, not an autonomous actor."
+  },
+  {
+    "type": "articles",
     "title": "Project Halide, Building A Small-Model Diagnostic Workbench For Damaged Film",
     "summary": "An open-weight film diagnostics workbench built around MiniCPM-V 4.6, Nemotron-Mini-4B, real negative failure cases, and a validator that became as important as the model.",
     "url": "/articles/2026-06-16-project-halide",
@@ -77,6 +86,21 @@
     "date": "2026-05-01",
     "tags": [],
     "content": "Something changed recently. I&#39;ve been watching attacks on major internet infrastructure that used to require serious expertise - and the people behind some of them are amateurs. They&#39;re not writing exploits. They&#39;re prompting. Projects like Mythos have found 0-days in established codebases with millions of lines of code by treating vulnerability research as a reasoning task. Software I thought was locked down for years has been cracked open. The asymmetry is uncomfortable: a capable AI assistant is available to attackers on day one. Defenders are still catching up. The logical response is to deploy an AI on your side - but training one on a live production network is obviously not an option. You need a realistic simulation. And most existing ones don&#39;t come close. The Problem With Existing Cyber Environments Most cyber-defense environments treat the problem as a classification task: _is this payload malicious?_ The world doesn&#39;t work that way. Real attackers don&#39;t strike all at once. They establish a foothold, sit quietly for days, pivot laterally, exfiltrate slowly. The threat is a process, not a moment. I wanted an environment that reflected this - one where: Attacks unfold over many steps with stochastic timing Early signals are deliberately weak and noisy Containment has a real business cost (taking a server offline costs something) An adaptive adversary adjusts its pace based on defender behavior So I built Cybersec OpenEnv : a long-horizon, partially observable Markov decision process (POMDP) where a scripted attacker and an LLM defender play out realistic enterprise attack chains, grounded in MITRE ATT&amp;CK techniques. Why a 1.5B Parameter Model? The defender is Qwen2.5-1.5B-Instruct , fine-tuned with GRPO (Group Relative Policy Optimization) via Hugging Face TRL and Unsloth 4-bit QLoRA on a single Colab T4 GPU. The size is deliberate. Iteration speed. Multiple full RL training cycles need to fit on consumer hardware. A 70B model makes that impossible. Privacy. Enterprise security telemetry - network topology, identity graphs, forensic signals - should never leave your infrastructure. Local, air-gapped models are the only defensible architecture for this use case. Deployment. If I want autonomous SOC agents running everywhere, they have to fit on standard enterprise hardware. The proof of concept has to work at the size that scales. The Environment Three training scenarios and one held-out evaluation scenario, all modeled on real attack kill-chains: Scenario Attack Chain Horizon supply_chain_token_drift CI-token theft → poisoned artifact → payments pivot → warehouse exfil 70 ticks federated_identity_takeover Spearphish → MFA fatigue → helpdesk pivot → HR portal → cloud exfil 70 ticks insider_repo_pivot Repo recon → secret harvest → staging → prod cluster → DB exfil 80 ticks cloud_metadata_ssrf _(held-out)_ SSRF → cloud metadata → role-chain → KMS replicate → cloud storage exfil 70 ticks The attacker is a scripted agent walking a deterministic DAG of attack stages, randomized with one of three personalities - stealthy , aggressive , or opportunistic - that vary its dwell time, detection footprint, and willingness to reroute around blocked stages. Each tick, the LLM reads a partial observation: lagged alerts with noisy severity scores, forensic results from past investigations, a list of valid targets, and the current containment state. It outputs a single JSON action - MONITOR , INVESTIGATE , ISOLATE_ASSET , REVOKE_IDENTITY , BLOCK_EGRESS , or PATCH_ASSET . Invalid or out-of-set actions still consume a tick and incur a penalty. The key constraint is information. The model never sees the full attack graph. It sees what a real SOC analyst would see: incomplete, delayed, ambiguous signals, and it has to decide. The Disruption Exploit Here is where the project got interesting. During initial GRPO training, the policy achieved a high average return. I felt good about it. Then I looked at the standard deviation of returns across the generated batches: 0.0 Exactly zero. Every rollout was scoring identically. That&#39;s not a trained policy - that&#39;s a degenerate one. What had happened: the environment&#39;s disruption penalty (the cost of taking an asset offline) had a hard cap per tick. The math worked out such that isolating _every server in the company at Tick 0_ was the globally optimal play. The LLM had discovered it could score perfectly by nuking the entire network before the attacker made a single move. _&quot;I solved the hack by unplugging the internet.&quot;_ Fix one: Remove the cap. The disruption penalty now scales linearly with the number of isolated assets. Mass isolation becomes self-defeating. But a second exploit emerged immediately. Even with the linear penalty, the model found a new shortcut: on Tick 0, before any alerts had fired, it would ISOLATE_ASSET the first valid target. Because the attack kill-chain is a linear DAG, blocking the root stage at Tick 0 instantly terminated the attack with a perfect terminal_clean_bonus . The model collected the prize without ever reading a single alert. It never investigated, never made a multi-step decision, never engaged with the environment&#39;s telemetry at all. _&quot;Unplug the first server. Collect the prize.&quot;_ These two exploits are worth sitting with for a moment, because they reveal something real about RL: your reward function is your actual policy . The model wasn&#39;t cheating. It was solving the problem you gave it, precisely and efficiently. The problem was that the problem you gave it wasn&#39;t the one you meant. Fix two: evidence-based containment. A new reward channel - evidence_bonus - pays +1.5 for containing a target that the model has _already confirmed compromised_ via an INVESTIGATE action. Blindly isolating on Tick 0 earns nothing. The optimal strategy is now: watch the alerts, investigate the suspicious target, confirm compromise, contain surgically. That&#39;s the workflow you actually want. On top of this, the training was restructured into on-policy iterative self-play : Outer Loop 0 (Warmup): A hardcoded heuristic policy generates 1,500 rows of seed data. The model learns the JSON schema and basic mechanics. Outer Loop 1+ (Self-Play): The LLM generates its own rollouts at temperature 1.4. It makes mistakes, explores novel states the heuristic never reached, endures false positive penalties, and learns that &quot;surgically investigate then contain&quot; genuinely outscores &quot;blindly isolate everything.&quot; Three additional dispersion signals ( reward_action_diversity , reward_observation_aware , reward_batch_action_entropy ) prevent mode collapse into a single repeated action under GRPO&#39;s group-relative updates. The Result After 120 optimizer steps across 2 outer loops, the numbers: Valid-action rate: 98.3% - up from ~59% at the start of Loop 1 Monitor fallback rate: 0.0% - the model emits well-formed JSON every tick Schema compliance: 97.1% - up from 72.1% at warmup The quantitative story that matters for out-of-distribution transfer is the held-out scenario cloud_metadata_ssrf (never in the fine-tuning corpus). There, mean cumulative return (n=30 episodes) is 5.48 (trained) vs 4.91 (zero-shot base LLM) vs 3.05 (heuristic) - i.e. the adapter generalizes past the frozen base weights on a novel attack chain, not only past the scripted baseline. _Figure: Left - aggregate mean cumulative reward over the three training scenarios. Right - same metric on held-out cloud_metadata_ssrf only; shaded bands are cross-seed spread._ On the training scenarios (left panel), the fine-tuned policy is in the same ballpark as the zero-shot base model at this light budget (120 steps, three scenarios). On the held-out scenario (right panel) - cloud_metadata_ssrf , which the model never saw during training - it leads every baseline: random, heuristic (+2.43 mean return vs heuristic), and the zero-shot base LLM (+0.57) on the same evaluation protocol. Scenario Heuristic Trained-LLM Δ vs heuristic supply_chain_token_drift 2.872 5.515 +2.643 federated_identity_takeover 2.985 1.139 −1.846 insider_repo_pivot 3.057 5.310 +2.253 cloud_metadata_ssrf _(held-out)_ 3.048 5.482 +2.434 The regression on federated_identity_takeover is real and worth acknowledging - identity-pivot scenarios with MFA fatigue are genuinely ambiguous environments, and the high variance (std=2.58) reflects a policy that&#39;s still exploring rather than converging. That&#39;s a known failure mode at this training budget and a clear direction for future work. The held-out result is what I wanted to demonstrate. The model wasn&#39;t memorising attack graphs. It had learned something transferable - a general defensive reasoning pattern that says: _wait for signal, investigate the suspicious thing, confirm before containing, don&#39;t burn the network down._ That pattern, learned on three scenarios, transferred cleanly to a fourth one it had never encountered. What&#39;s Next The environment is open and extensible. The immediate directions: Longer training runs on federated_identity_takeover to close the identity-pivot gap Adaptive attacker personalities that learn from the defender&#39;s containment patterns Multi-agent defender coordination across distributed SOC nodes The broader point: the combination of a realistic long-horizon environment, a well-designed multi-channel reward signal, and iterative on-policy self-play is enough to teach a 1.5B model to reason defensively about novel attack chains it was never trained on. You don&#39;t need a 70B model for that. You need the right environment. Live Space: huggingface.co/spaces/Lonelyguyse1/cybersec Repository and full write-up: github.com/LonelyGuy-SE1/cybersec_env (root README.md - tables, plots, held-out metrics) Package / HTTP API: cybersec/README.md GRPO training notebook (GitHub): notebooks/cybersec_grpo.ipynb - Reference run (saved cell outputs, same cells): notebooks/cybersec_grpo_results.ipynb -"
+  },
+  {
+    "type": "projects",
+    "title": "Syntagma",
+    "summary": "Agentic curriculum lifecycle management system for PES University. Faculty submit raw course content → AI refines it → agentic editor with 36 tools and reviewable drafts → versioned snapshots → official A4 PDFs with letterhead.",
+    "url": "/projects/syntagma",
+    "date": "2026-06-30",
+    "tags": [
+      "full-stack",
+      "agentic-ai",
+      "curriculum management",
+      "fastapi",
+      "supabase"
+    ],
+    "content": "Syntagma solves a real institutional problem: PES University revamps its B.Tech curriculum nearly every academic year. Faculty submit course content in raw, inconsistent formats. Someone manually compiles it into the official syllabus document. There is no version history, no way to compare changes between years — the entire process is manual, error-prone, and slow. Syntagma automates this workflow: faculty submit through a form, the system uses AI via OpenRouter to refine raw content into structured, curriculum-ready records, and an agentic AI assistant (36 tools via SSE streaming) lets admins review, edit, and approve changes through reviewable drafts that never auto-apply. The full curriculum renders as official A4 PDFs with PES University&#39;s letterhead, summary tables, and course details. Every change is tracked with named version snapshots, complete with a version-vs-version diff view. The architecture is designed for production: dual cache layer (Upstash Redis with in-memory fallback and lazy invalidation), cache prewarm on startup, Sentry error tracking, background PDF pre-generation, and a 36-tool agent system with OpenRouter&#39;s streaming tool-calling API. The frontend is deliberately vanilla HTML/CSS/JS with zero build step — served as static files from Vercel, proxying /api/* to the Docker backend on Hugging Face Spaces. Python 3.12 FastAPI Supabase (PostgreSQL) Upstash Redis OpenRouter WeasyPrint Jinja2 Vanilla HTML/CSS/JS 51 API endpoints across 9 route files 36 agent tools for curriculum data operations 12 database tables with versioned snapshots Dual cache layer: Upstash Redis + in-memory with lazy invalidation AI refinement with fallback model and Fibonacci backoff retry Full A4 PDF generation with PES University letterhead via WeasyPrint"
   },
   {
     "type": "projects",
@@ -137,6 +161,118 @@
       "gymnasium"
     ],
     "content": "Breakout-DQN is a deliberate first-principles RL project. The point is not to beat every public benchmark. The point is to understand the mechanics behind the early Atari agents: frame preprocessing, action repeat, replay buffers, target networks, value updates, and the instability that appears when any piece is wrong. The project belongs in the portfolio because it shows the learning path behind the bigger robotics and world-model ambitions. Python PyTorch Gymnasium OpenCV-style preprocessing Matplotlib Frame preprocessing pipeline Replay-buffer based value learning Target-network training loop"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma versions_default",
+    "summary": "syntagma versions_default",
+    "url": "/gallery",
+    "content": "gallery/syntagma.versions_default.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma versions_rename_category",
+    "summary": "syntagma versions_rename_category",
+    "url": "/gallery",
+    "content": "gallery/syntagma.versions_rename_category.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma versions_current_document",
+    "summary": "syntagma versions_current_document",
+    "url": "/gallery",
+    "content": "gallery/syntagma.versions_current_document.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma versions_annotated_comparision",
+    "summary": "syntagma versions_annotated_comparision",
+    "url": "/gallery",
+    "content": "gallery/syntagma.versions_annotated_comparision.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma submit_course_page",
+    "summary": "syntagma submit_course_page",
+    "url": "/gallery",
+    "content": "gallery/syntagma.submit_course_page.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma preview_single_course",
+    "summary": "syntagma preview_single_course",
+    "url": "/gallery",
+    "content": "gallery/syntagma.preview_single_course.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma preview_full_sem",
+    "summary": "syntagma preview_full_sem",
+    "url": "/gallery",
+    "content": "gallery/syntagma.preview_full_sem.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma preview_full_doc",
+    "summary": "syntagma preview_full_doc",
+    "url": "/gallery",
+    "content": "gallery/syntagma.preview_full_doc.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma home_page",
+    "summary": "syntagma home_page",
+    "url": "/gallery",
+    "content": "gallery/syntagma.home_page.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma editor_single_course",
+    "summary": "syntagma editor_single_course",
+    "url": "/gallery",
+    "content": "gallery/syntagma.editor_single_course.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma editor_sample_annotated",
+    "summary": "syntagma editor_sample_annotated",
+    "url": "/gallery",
+    "content": "gallery/syntagma.editor_sample_annotated.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma editor_sample_1",
+    "summary": "syntagma editor_sample_1",
+    "url": "/gallery",
+    "content": "gallery/syntagma.editor_sample_1.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma courses_filtered_visible_toggle",
+    "summary": "syntagma courses_filtered_visible_toggle",
+    "url": "/gallery",
+    "content": "gallery/syntagma.courses_filtered_visible_toggle.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma courses_delete_modal",
+    "summary": "syntagma courses_delete_modal",
+    "url": "/gallery",
+    "content": "gallery/syntagma.courses_delete_modal.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma courses_default",
+    "summary": "syntagma courses_default",
+    "url": "/gallery",
+    "content": "gallery/syntagma.courses_default.png"
+  },
+  {
+    "type": "gallery",
+    "title": "syntagma auth_page",
+    "summary": "syntagma auth_page",
+    "url": "/gallery",
+    "content": "gallery/syntagma.auth_page.png"
   },
   {
     "type": "gallery",

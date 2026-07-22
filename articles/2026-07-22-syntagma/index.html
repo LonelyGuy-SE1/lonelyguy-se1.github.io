@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Syntagma, Building An Agentic Curriculum Lifecycle Management System - Lonely Guy</title>
+    <meta name="description" content="A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend." />
+    <meta name="author" content="Lonely Guy" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1" />
+    <meta name="theme-color" content="#0b0504" />
+    <link rel="canonical" href="https://lonelyguy.tech/articles/2026-07-22-syntagma" />
+    <meta property="og:site_name" content="Lonely Guy" />
+    <meta property="og:title" content="Syntagma, Building An Agentic Curriculum Lifecycle Management System - Lonely Guy" />
+    <meta property="og:description" content="A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://lonelyguy.tech/articles/2026-07-22-syntagma" />
+    <meta property="og:image" content="https://lonelyguy.tech/gallery/syntagma.home_page.png" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lonelyguyse1" />
+    <meta name="twitter:creator" content="@lonelyguyse1" />
+    <meta name="twitter:title" content="Syntagma, Building An Agentic Curriculum Lifecycle Management System - Lonely Guy" />
+    <meta name="twitter:description" content="A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend." />
+    <meta name="twitter:image" content="https://lonelyguy.tech/gallery/syntagma.home_page.png" />
+    <meta property="article:published_time" content="2026-07-22" />
+    <meta property="article:modified_time" content="2026-07-22" />
+    <link rel="alternate" type="application/rss+xml" title="Lonely Guy - Articles" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Lonely Guy - Articles" href="/feed.json" />
+    <link rel="icon" type="image/jpeg" href="/assets/SE1.jpg" />
+    <link rel="stylesheet" href="/assets/build/main.6d13b84622.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://lonelyguy.tech/#person","name":"Greeshma Surya","alternateName":"Lonely Guy","url":"https://lonelyguy.tech","email":"loner@lonelyguy.tech","jobTitle":"CS undergraduate, embodied AI and robotics builder","description":"CS undergrad building toward autonomous robotic assistants through reinforcement learning, robotics, world models, embodied AI, and systems.","sameAs":["https://github.com/LonelyGuy-SE1","https://x.com/lonelyguyse1","https://huggingface.co/Lonelyguyse1","https://orcid.org/0009-0000-7221-863X","https://www.linkedin.com/in/greeshmasurya/","https://www.alphaxiv.org/@greeshma-surya"],"knowsAbout":["Reinforcement Learning","Robotics","Embodied AI","World Models","Deep Learning","Decentralized Systems","Systems","Large Language Models"],"speakable":{"@type":"SpeakableSpecification","cssSelector":[".brand-copy",".hero-text","#hero-title"]}},{"@type":"WebSite","@id":"https://lonelyguy.tech/#website","url":"https://lonelyguy.tech/","name":"Lonely Guy","description":"Lonely Guy (Greeshma Surya) - CS undergrad building autonomous robotic assistants through reinforcement learning, robotics, world models, and embodied AI. Projects, research, and technical writing on RL, systems, and LLM agents.","publisher":{"@id":"https://lonelyguy.tech/#person"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://lonelyguy.tech/search?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"Organization","@id":"https://lonelyguy.tech/#organization","name":"Lonely Guy","url":"https://lonelyguy.tech","logo":"https://lonelyguy.tech/assets/SE1.jpg","founder":{"@id":"https://lonelyguy.tech/#person"},"sameAs":["https://github.com/LonelyGuy-SE1","https://x.com/lonelyguyse1","https://huggingface.co/Lonelyguyse1","https://orcid.org/0009-0000-7221-863X","https://www.linkedin.com/in/greeshmasurya/","https://www.alphaxiv.org/@greeshma-surya"]},{"@type":"BlogPosting","@id":"https://lonelyguy.tech/articles/2026-07-22-syntagma#post","headline":"Syntagma, Building An Agentic Curriculum Lifecycle Management System","description":"A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend.","image":"https://lonelyguy.tech/gallery/syntagma.home_page.png","datePublished":"2026-07-22","dateModified":"2026-07-22","author":{"@id":"https://lonelyguy.tech/#person"},"publisher":{"@id":"https://lonelyguy.tech/#person"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://lonelyguy.tech/articles/2026-07-22-syntagma"},"isPartOf":{"@id":"https://lonelyguy.tech/#website"},"keywords":[],"timeRequired":"PT6M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://lonelyguy.tech/"},{"@type":"ListItem","position":2,"name":"Blogs","item":"https://lonelyguy.tech/articles"},{"@type":"ListItem","position":3,"name":"Syntagma, Building An Agentic Curriculum Lifecycle Management System","item":"https://lonelyguy.tech/articles/2026-07-22-syntagma"}]}]}</script>
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+<script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body>
+    
+    <a class="skip-link" href="#main">skip to main</a>
+    <header class="site-header" id="top">
+      <div class="site-width header-inner">
+        <a class="brand" href="/" data-scroll-top>
+          <img class="brand-mark" src="/assets/SE1.jpg" alt="" width="640" height="640" decoding="async" />
+          <span class="brand-copy"><strong>lonely guy</strong></span>
+        </a>
+
+        <nav class="breadcrumbs header-breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a href="/" data-scroll-top>home</a></li>
+            <li aria-current="page" id="crumb-current">home</li>
+          </ol>
+        </nav>
+
+        <div class="header-actions">
+          <nav class="header-nav" aria-label="Header">
+            <div class="header-tabs" role="tablist" aria-label="portfolio sections">
+              <a class="tab-button" href="/" role="tab" aria-selected="false" aria-controls="panel-home" tabindex="-1" data-tab="home">home</a><a class="tab-button" href="/stack" role="tab" aria-selected="false" aria-controls="panel-stack" tabindex="-1" data-tab="stack">stack</a><a class="tab-button" href="/updates" role="tab" aria-selected="false" aria-controls="panel-updates" tabindex="-1" data-tab="updates">updates</a><a class="tab-button" href="/articles" role="tab" aria-selected="false" aria-controls="panel-articles" tabindex="-1" data-tab="articles">blogs</a><a class="tab-button" href="/gallery" role="tab" aria-selected="false" aria-controls="panel-gallery" tabindex="-1" data-tab="gallery">gallery</a><a class="tab-button" href="/projects" role="tab" aria-selected="false" aria-controls="panel-projects" tabindex="-1" data-tab="projects">projects</a><a class="tab-button" href="/contact" role="tab" aria-selected="false" aria-controls="panel-contact" tabindex="-1" data-tab="contact">contact</a>
+            </div>
+          </nav>
+
+          <div class="header-search" role="search">
+            <div class="search-field" id="search-field">
+              <label for="site-search" class="visually-hidden">search site</label>
+              <input id="site-search" type="search" placeholder="search articles, updates, gallery..." autocomplete="off" spellcheck="false" />
+            </div>
+            <button class="search-trigger" id="search-trigger" type="button" aria-label="open search" title="search" aria-expanded="false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+            <div class="search-results" id="search-results" hidden></div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="site-width static-page" id="main">
+      <article>
+        <div class="reader-head">
+          <div>
+            <p class="reader-kicker">2026-07-22 / 6 min read</p>
+            <h1>Syntagma, Building An Agentic Curriculum Lifecycle Management System</h1>
+          </div>
+          <div class="reader-head-actions"><a href="/?t=articles">back to blogs</a></div>
+        </div>
+        <p class="static-page-summary">A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend.</p>
+        
+        <div class="reader-body"><p>Syntagma is an agentic curriculum lifecycle management system built for PES University, Bengaluru. It replaces a manual, error-prone process — faculty submitting raw course content in inconsistent formats, someone manually compiling it into the official syllabus document, no version history, no way to compare changes between years.</p><p>The system spans the full pipeline: faculty submit course content through a form, AI refines it into structured records, an agentic editor with 36 tools lets admins propose and review changes, the curriculum renders as official A4 PDFs with letterhead, and every version is snapshotable with full diff history.</p><p>Links:<br>- Live demo: <a href="https://syntagma.lonelyguy.tech/" target="_blank" rel="noreferrer">syntagma.lonelyguy.tech</a><br>- Source: <a href="https://github.com/LonelyGuy-SE1/Syntagma" target="_blank" rel="noreferrer">github.com/LonelyGuy-SE1/Syntagma</a><br>- Docs: <a href="https://syntagma.lonelyguy.tech/docs/" target="_blank" rel="noreferrer">syntagma.lonelyguy.tech/docs/</a></p><h2>Architecture Overview</h2><p>The system has three layers:</p><ol><li><strong>Backend</strong> — FastAPI 0.138 on Python 3.12, 51 endpoints across 9 route files</li><li><strong>Frontend</strong> — Vanilla HTML/CSS/JS, zero build step, served as static files</li><li><strong>Infrastructure</strong> — Supabase (PostgreSQL) for persistence, Upstash Redis for cache, OpenRouter for AI, Docker on Hugging Face Spaces, Vercel for frontend</li></ol><pre><code>Browser → Vercel (static) → /api/* → HF Spaces (FastAPI Docker)
+                                       ├── OpenRouter (LLM)
+                                       ├── Upstash Redis (cache)
+                                       ├── Supabase Postgres
+                                       └── WeasyPrint (PDF)</code></pre><p>Frontend surfaces: <code>/auth/</code> (sign in), <code>/</code> (dashboard), <code>/form/</code> (course submission), <code>/courses/</code> (management table), <code>/preview/</code> (PDF viewer), <code>/live-editor/</code> (agentic editor), <code>/versions/</code> (version history), <code>/docs/</code> (documentation).</p><h2>The Submission Pipeline</h2><p>Faculty enter a course code, title, and raw content through a form. The backend auto-parses course codes — semester, department, and credit category are extracted from the code format itself (e.g., <code>UE25CS242B</code> → semester 4, CS department, credit category 2).</p><p>A background task triggers AI refinement via OpenRouter. The LLM receives the raw faculty text and returns structured JSON matching the database schema — preserving all syllabus topics, only cleaning and structuring. The raw content is never lost; it lives alongside the refined record.</p><h2>The Agentic Editor</h2><p>The most architecturally interesting part. The editor is an AI chat that has access to 36 tools for reading and writing curriculum data, streamed via Server-Sent Events.</p><p><strong>The critical design rule: the agent never auto-applies changes.</strong> Every proposed edit creates a <code>proposed</code> draft in the <code>agent_drafts</code> table. The human must review and approve in the Review panel before anything touches <code>refined_submissions</code>. This is enforced at every level:</p><ul><li><code>create_course_draft</code> creates a reviewable draft for one course</li><li><code>create_document_draft</code> creates a multi-course draft</li><li><code>update_deterministic_fields</code> creates a <code>blocked</code> draft for protected fields (program, hours, credits, course_type)</li><li>Drafts have statuses: <code>proposed</code> → <code>applied</code>, or <code>blocked</code> if they touch protected fields</li><li>Applying a draft writes to <code>course_revision_history</code> first (audit trail), then updates <code>refined_submissions</code>, then auto-creates a version snapshot</li></ul><p>The SSE stream is also interesting — it sends <code>token</code> events for text, <code>draft</code> events when a draft is created (so the frontend can update the Review panel in real time), <code>refined_course</code> events for new courses, and <code>error</code> events with graceful fallback.</p><h2>Version Snapshots</h2><p>The versioning system is effectively git for curriculum data. <code>curriculum_versions</code> stores named snapshots (conventional-commit-style names generated from diff summaries). <code>finalized_submissions</code> stores a JSON snapshot of every course at the time of version creation.</p><p>Features:<br>- Version creation detects no-change and rejects duplicate snapshots (409 Conflict)<br>- Version restore creates full revision history and archives courses removed since the snapshot<br>- Version-vs-version diff shows added, removed, and changed courses with per-course change percentages<br>- Cache invalidation on any version operation</p><h2>The PDF Pipeline</h2><p>Curriculum PDFs render through Jinja2 templates → WeasyPrint → A4 PDF with PES University&#39;s letterhead (base64-encoded in <code>_logo_data.py</code>). There are four template variants:</p><ul><li><code>jinja_sample.html</code> — Single course, semester, or full curriculum layout with summary tables</li><li><code>jinja_diff.html</code> — Red/green side-by-side diff view</li><li><code>jinja_program.html</code> — Program educational objectives and outcomes</li><li><code>jinja_sem_5_6.html</code> — Specialization track brackets for semesters 5-6</li></ul><p>A background thread pre-generates PDFs at startup for configured academic years, so the first request doesn&#39;t pay the cold-start cost.</p><h2>Agent Tools (36)</h2><p>The agent tools are defined as a registry of dataclass instances — each with a name, description, JSON Schema parameters, and a handler function. The tool listing is exposed at <code>GET /agent/tools</code> and ingested by OpenRouter&#39;s function-calling API.</p><p>Categories:<br>- <strong>Read</strong> (10 tools): granular course field access (<code>get_course_syllabus</code>, <code>get_course_textbooks</code>, <code>get_course_lab</code>, <code>get_course_fields</code>, <code>batch_read_courses</code>)<br>- <strong>Write</strong> (6 tools): <code>create_course_draft</code>, <code>update_agent_draft</code>, <code>create_refined_course</code> (for new courses or draft-status updates), <code>create_document_draft</code>, <code>update_deterministic_fields</code>, <code>create_curriculum_version</code><br>- <strong>Diff</strong> (3 tools): <code>diff_course_json</code>, <code>diff_versions</code>, <code>get_version</code><br>- <strong>Specialization</strong> (7 tools): track definitions, elective assignment, AI-driven categorization<br>- <strong>External</strong> (3 tools): <code>fetch_url</code>, <code>web_search</code> (DuckDuckGo), <code>get_attachment_text</code><br>- <strong>Output</strong> (2 tools): <code>create_report</code> (markdown/PDF), <code>create_spreadsheet</code> (CSV/XLSX)<br>- <strong>Meta</strong> (4 tools): <code>signal_done</code>, <code>ask_user</code>, <code>list_courses</code>, <code>get_preview_url</code></p><h2>Caching</h2><p>The cache layer (<code>cache.py</code>, 134 lines) wraps both Upstash Redis and an in-memory dict behind the same interface. If Redis is unavailable, it falls back silently to in-memory. Lazy invalidation clears specific cache keys on writes — course visibility changes invalidate <code>courses_list</code>, <code>sem_courses:*</code>, <code>pending_courses</code>, <code>all_course_ids</code>, and the full curriculum cache.</p><p>A cache prewarm thread runs at startup to populate <code>all_course_ids</code>, avoiding cold-start latency on the first request.</p><h2>OpenRouter Integration</h2><p>The LLM client (<code>openrouter.py</code>, 475 lines) handles:<br>- <strong>Tool calling</strong> — Streams token-by-token, intercepts tool_calls, executes them, sends results back<br>- <strong>Fallback model</strong> — If the primary model returns 502/503 with certain provider messages, it switches to the fallback automatically<br>- <strong>Fibonacci backoff</strong> — On transient errors, retries with delay doubling (1s, 2s, 3s, 5s, 8s...)<br>- <strong>Context length management</strong> — Fetches model&#39;s actual context_length at startup, trims oldest messages when budget is exceeded<br>- The system is model-agnostic; it works with any OpenAI-compatible endpoint</p><h2>Database Schema</h2><p>12 tables in Supabase PostgreSQL:</p><ul><li><code>submissions</code> — Raw faculty input with status lifecycle: <code>pending</code> → <code>refined</code> / <code>refine_failed</code></li><li><code>refined_submissions</code> — Template-ready courses with 22 columns including JSONB <code>units</code></li><li><code>specialization_definitions</code> — Tracks per semester with letter/key/name</li><li><code>course_specialization_assignments</code> — Many-to-many with unique constraint</li><li><code>curriculum_versions</code> — Snapshots with conventional-commit-style names</li><li><code>finalized_submissions</code> — Course JSON snapshots per version</li><li><code>course_revision_history</code> — Full audit trail of every applied change</li><li><code>agent_drafts</code> — Proposed/blocked/applied lifecycle</li><li><code>agent_document_drafts</code> — Multi-course drafts</li><li><code>chat_sessions</code>, <code>chat_messages</code> — Chat with metadata (tool calls, attachments)</li><li><code>chat_attachments</code> — Uploaded files and generated reports with text extraction</li></ul><h2>Design Decisions</h2><p><strong>Vanilla frontend, no framework.</strong> The frontend is intentionally plain HTML/CSS/JS. No React, no Vue, no build step. The backend serves it as static files. This was a deliberate choice — for a tool used by a small number of curriculum admins, the overhead of a modern SPA framework is unjustified. Every page is a standalone HTML file with inline logic.</p><p><strong>No async task queue.</strong> Celery or similar was considered and rejected. The requirements stated that only a few people would use the system simultaneously. Background refinement runs in FastAPI&#39;s <code>BackgroundTasks</code>, PDF pre-generation runs in a daemon thread at startup. Both are synchronous and fast enough for the expected load.</p><p><strong>Model-agnostic AI pipeline.</strong> The refinement and agent systems work with any OpenAI-compatible API. The model is configurable via environment variables (<code>OPENROUTER_MODEL</code>, <code>OPENROUTER_FALLBACK_MODEL</code>). This prevents vendor lock-in and allows swapping models as the ecosystem evolves.</p><p><strong>Drafts as first-class entities.</strong> The agent never directly modifies a course. Every change goes through <code>agent_drafts</code>, gets a <code>diff_summary</code> (JSON Patch + syllabus change percent + topic add/remove lists), and waits for human approval. This was the most important architectural constraint — it makes the AI a proposal tool, not an autonomous actor.</p></div>
+      </article>
+    </main>
+    <footer class="site-footer" id="footer" data-nosnippet>
+      <div class="site-width footer-inner">
+        <p class="footer-kicker">stuck in my head while making this</p>
+        <blockquote class="footer-quote">
+          "Your enemy is a resilient one. The thing you all oppose isn't just
+          me. Nor is it heretics. It's part imagination and part curiosity. In
+          short, it's truth itself"
+        </blockquote>
+        <div class="footer-meta">
+          <span>this quote from ORB feels so deep, it was a banger. iykyk</span>
+          <a href="/">back to home</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 Lonely Guy. All rights reserved.</p>
+      </div>
+    </footer>
+    <script>
+    (function(){
+      var trigger=document.getElementById("search-trigger");
+      var field=document.getElementById("search-field");
+      var input=document.getElementById("site-search");
+      var results=document.getElementById("search-results");
+      var idx=null;
+      if(trigger){
+        trigger.addEventListener("click",function(){
+          var open=field.classList.toggle("search-field--open");
+          trigger.setAttribute("aria-expanded",String(open));
+          if(open){setTimeout(function(){input.focus();},100);}
+          else{results.hidden=true;input.value="";}
+        });
+      }
+      if(input){
+        input.addEventListener("input",function(){
+          var q=input.value.trim().toLowerCase();
+          if(!q){results.hidden=true;return;}
+          if(!idx){
+            fetch("/search-index.json").then(function(r){return r.json();}).then(function(d){idx=d;search(q);}).catch(function(){});
+          }else{search(q);}
+        });
+      }
+      function search(q){
+        if(!idx)return;
+        var items=idx.filter(function(r){return((r.title||"")+(r.summary||"")+(r.tags||"").join(" ")).toLowerCase().indexOf(q)!==-1;}).slice(0,12);
+        if(!items.length){results.innerHTML='<p class="dynamic-note">no results found.</p>';results.hidden=false;return;}
+        results.innerHTML=items.map(function(r){
+          var href=r.url||"/";
+          return '<a class="search-result" href="'+href+'"><strong>'+(r.title||"")+'</strong><span>'+(r.summary||"").slice(0,120)+'...</span></a>';
+        }).join("");
+        results.hidden=false;
+      }
+    })();
+    </script>
+    <script src="https://js.supascribe.com/v1/loader/nOC91cmI8ZfrfPBUQ1aSbvF7NLf1.js" async></script>
+    
+    <script defer src="/assets/build/assistant.2b83d49741.js"></script>
+</body>
+</html>

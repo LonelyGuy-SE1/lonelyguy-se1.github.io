@@ -14,12 +14,14 @@ Lonely Guy is building toward autonomous robotic assistants through reinforcemen
 - Site index JSON: https://lonelyguy.tech/site-index.json
 
 ## Projects
+- [Syntagma](https://lonelyguy.tech/projects/syntagma): Agentic curriculum lifecycle management system for PES University. Faculty submit raw course content → AI refines it → agentic editor with 36 tools and reviewable drafts → versioned snapshots → official A4 PDFs with letterhead.
 - [Raijin LOB](https://lonelyguy.tech/projects/raijin-lob): C++ limit order book engine built around low-latency market microstructure ideas, benchmarked publicly and now moving toward a simulator phase.
 - [Project Halide](https://lonelyguy.tech/projects/project-halide): Small-model diagnostic workbench for damaged film scans using MiniCPM-V, Nemotron-Mini, strict validation, overlays, telemetry, and a Gradio light-table UI.
 - [Cybersec OpenEnv](https://lonelyguy.tech/projects/cybersec-openenv): Long-horizon cyber-defense POMDP for training and evaluating small LLM SOC agents with GRPO, realistic attack chains, and reward-hacking resistant containment incentives.
 - [Breakout-DQN](https://lonelyguy.tech/projects/breakout-dqn): From-scratch Atari Breakout DQN study for building intuition around deep RL, preprocessing, replay, target networks, and early DeepMind-style agent design.
 
 ## Articles
+- [Syntagma, Building An Agentic Curriculum Lifecycle Management System](https://lonelyguy.tech/articles/2026-07-22-syntagma): A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend.
 - [Project Halide, Building A Small-Model Diagnostic Workbench For Damaged Film](https://lonelyguy.tech/articles/2026-06-16-project-halide): An open-weight film diagnostics workbench built around MiniCPM-V 4.6, Nemotron-Mini-4B, real negative failure cases, and a validator that became as important as the model.
 - [Teaching a 1.5B LLM to be a SOC Analyst (Without Burning Down the Network)](https://lonelyguy.tech/articles/2026-05-01-llm-soc-analyst): Fine-tuning a 1.5B LLM with GRPO to defend against realistic enterprise attack chains, and the unexpected lessons learned from reward hacking.
 

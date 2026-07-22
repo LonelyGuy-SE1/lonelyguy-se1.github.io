@@ -1,5 +1,38 @@
 [
   {
+    "title": "Syntagma",
+    "slug": "syntagma",
+    "summary": "Agentic curriculum lifecycle management system for PES University. Faculty submit raw course content → AI refines it → agentic editor with 36 tools and reviewable drafts → versioned snapshots → official A4 PDFs with letterhead.",
+    "status": "live demo",
+    "featured": true,
+    "tags": ["full-stack", "agentic-ai", "curriculum management", "fastapi", "supabase"],
+    "stack": ["Python 3.12", "FastAPI", "Supabase (PostgreSQL)", "Upstash Redis", "OpenRouter", "WeasyPrint", "Jinja2", "Vanilla HTML/CSS/JS"],
+    "repo": "LonelyGuy-SE1/Syntagma",
+    "demo": "https://syntagma.lonelyguy.tech/",
+    "images": [
+      { "src": "gallery/syntagma.home_page.png", "alt": "Syntagma dashboard" },
+      { "src": "gallery/syntagma.submit_course_page.png", "alt": "Course submission form" },
+      { "src": "gallery/syntagma.courses_default.png", "alt": "Course management table with filters" },
+      { "src": "gallery/syntagma.editor_sample_annotated.png", "alt": "Agentic editor with chat, fields panel, and draft review" },
+      { "src": "gallery/syntagma.preview_full_doc.png", "alt": "Full curriculum PDF preview" },
+      { "src": "gallery/syntagma.preview_single_course.png", "alt": "Single course PDF page with letterhead" },
+      { "src": "gallery/syntagma.versions_annotated_comparision.png", "alt": "Side-by-side version comparison diff" },
+      { "src": "gallery/syntagma.editor_single_course.png", "alt": "Single course agentic editor" }
+    ],
+    "metrics": [
+      "51 API endpoints across 9 route files",
+      "36 agent tools for curriculum data operations",
+      "12 database tables with versioned snapshots",
+      "Dual cache layer: Upstash Redis + in-memory with lazy invalidation",
+      "AI refinement with fallback model and Fibonacci backoff retry",
+      "Full A4 PDF generation with PES University letterhead via WeasyPrint"
+    ],
+    "role": "Designed and built the entire system — backend API, database schema, AI agent pipeline, PDF rendering engine, dual cache layer, authentication, and vanilla frontend.",
+    "started": "2026-06-01",
+    "updated": "2026-06-30",
+    "body": "Syntagma solves a real institutional problem: PES University revamps its B.Tech curriculum nearly every academic year. Faculty submit course content in raw, inconsistent formats. Someone manually compiles it into the official syllabus document. There is no version history, no way to compare changes between years — the entire process is manual, error-prone, and slow.\n\nSyntagma automates this workflow: faculty submit through a form, the system uses AI via OpenRouter to refine raw content into structured, curriculum-ready records, and an agentic AI assistant (36 tools via SSE streaming) lets admins review, edit, and approve changes through reviewable drafts that never auto-apply. The full curriculum renders as official A4 PDFs with PES University's letterhead, summary tables, and course details. Every change is tracked with named version snapshots, complete with a version-vs-version diff view.\n\nThe architecture is designed for production: dual cache layer (Upstash Redis with in-memory fallback and lazy invalidation), cache prewarm on startup, Sentry error tracking, background PDF pre-generation, and a 36-tool agent system with OpenRouter's streaming tool-calling API. The frontend is deliberately vanilla HTML/CSS/JS with zero build step — served as static files from Vercel, proxying /api/* to the Docker backend on Hugging Face Spaces."
+  },
+  {
     "title": "Raijin LOB",
     "slug": "raijin-lob",
     "summary": "C++ limit order book engine built around low-latency market microstructure ideas, benchmarked publicly and now moving toward a simulator phase.",

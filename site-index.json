@@ -31,7 +31,7 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-07-17T18:58:00.950Z",
+  "generatedAt": "2026-07-22T17:08:07.605Z",
   "routes": [
     {
       "type": "page",
@@ -97,6 +97,14 @@
     },
     {
       "type": "articles",
+      "title": "Syntagma, Building An Agentic Curriculum Lifecycle Management System",
+      "url": "https://lonelyguy.tech/articles/2026-07-22-syntagma",
+      "summary": "A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend.",
+      "tags": [],
+      "date": "2026-07-22"
+    },
+    {
+      "type": "articles",
       "title": "Project Halide, Building A Small-Model Diagnostic Workbench For Damaged Film",
       "url": "https://lonelyguy.tech/articles/2026-06-16-project-halide",
       "summary": "An open-weight film diagnostics workbench built around MiniCPM-V 4.6, Nemotron-Mini-4B, real negative failure cases, and a validator that became as important as the model.",
@@ -110,6 +118,20 @@
       "summary": "Fine-tuning a 1.5B LLM with GRPO to defend against realistic enterprise attack chains, and the unexpected lessons learned from reward hacking.",
       "tags": [],
       "date": "2026-05-01"
+    },
+    {
+      "type": "projects",
+      "title": "Syntagma",
+      "url": "https://lonelyguy.tech/projects/syntagma",
+      "summary": "Agentic curriculum lifecycle management system for PES University. Faculty submit raw course content → AI refines it → agentic editor with 36 tools and reviewable drafts → versioned snapshots → official A4 PDFs with letterhead.",
+      "tags": [
+        "full-stack",
+        "agentic-ai",
+        "curriculum management",
+        "fastapi",
+        "supabase"
+      ],
+      "date": "2026-06-30"
     },
     {
       "type": "projects",
@@ -166,6 +188,134 @@
         "gymnasium"
       ],
       "date": "2026-04-11"
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma versions_default",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma versions_default",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma versions_rename_category",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma versions_rename_category",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma versions_current_document",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma versions_current_document",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma versions_annotated_comparision",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma versions_annotated_comparision",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma submit_course_page",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma submit_course_page",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma preview_single_course",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma preview_single_course",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma preview_full_sem",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma preview_full_sem",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma preview_full_doc",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma preview_full_doc",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma home_page",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma home_page",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma editor_single_course",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma editor_single_course",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma editor_sample_annotated",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma editor_sample_annotated",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma editor_sample_1",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma editor_sample_1",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma courses_filtered_visible_toggle",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma courses_filtered_visible_toggle",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma courses_delete_modal",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma courses_delete_modal",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma courses_default",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma courses_default",
+      "tags": [],
+      "date": ""
+    },
+    {
+      "type": "gallery",
+      "title": "syntagma auth_page",
+      "url": "https://lonelyguy.tech/gallery",
+      "summary": "syntagma auth_page",
+      "tags": [],
+      "date": ""
     },
     {
       "type": "gallery",

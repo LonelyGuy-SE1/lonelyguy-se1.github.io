@@ -31,7 +31,7 @@
       "location": "India"
     }
   },
-  "generatedAt": "2026-07-22T17:08:07.605Z",
+  "generatedAt": "2026-07-22T17:34:42.650Z",
   "routes": [
     {
       "type": "page",
@@ -99,7 +99,7 @@
       "type": "articles",
       "title": "Syntagma, Building An Agentic Curriculum Lifecycle Management System",
       "url": "https://lonelyguy.tech/articles/2026-07-22-syntagma",
-      "summary": "A production-grade curriculum management platform for PES University — AI refinement, agentic editing with reviewable drafts, version snapshots, official PDFs, and a deliberately vanilla frontend.",
+      "summary": "A production-grade curriculum management platform for PES University: agentic refinement, 36-tool editor with reviewable drafts, git-like versioning, Jinja2-powered A4 PDFs, and a deliberately vanilla frontend.",
       "tags": [],
       "date": "2026-07-22"
     },
@@ -123,7 +123,7 @@
       "type": "projects",
       "title": "Syntagma",
       "url": "https://lonelyguy.tech/projects/syntagma",
-      "summary": "Agentic curriculum lifecycle management system for PES University. Faculty submit raw course content → AI refines it → agentic editor with 36 tools and reviewable drafts → versioned snapshots → official A4 PDFs with letterhead.",
+      "summary": "Agentic curriculum lifecycle management system for PES University. Faculty submit raw course content, the agent refines it into structured records, the 36-tool editor lets admins propose reviewable edits, and every state is snapshotable with full diff history and official A4 PDF output.",
       "tags": [
         "full-stack",
         "agentic-ai",
